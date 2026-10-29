@@ -26,15 +26,23 @@ const adapters: Record<string, Adapter> = {
   shopify: shopifyAdapter,
 };
 
+const fetcher = new PoliteFetcher();
+
 Deno.serve((request) =>
   handle(request, Deno.env, () => ({
+    linksToCheck: async (max) =>
+      (await sql`select deal_id, url from private.links_to_check(${max})`) as unknown as { deal_id: string; url: string }[],
+    checkLink: (url) => fetcher.check(url),
+    recordLink: async (dealId, outcome) => {
+      await sql`select private.record_link_check(${dealId}, ${outcome})`;
+    },
     dueSources: async (max) =>
       (await sql`
         select id, slug, kind::text as kind, base_url as "baseUrl", config,
                (select slug from public.brands b where b.id = s.brand_id) as "brandSlug"
         from private.ingest_due_sources(${max}) s`) as unknown as Source[],
     store,
-    fetcher: new PoliteFetcher(),
+    fetcher,
     adapters,
     now: () => Date.now(),
   })));

@@ -26,7 +26,8 @@ const adapter: Adapter = {
 const deps = (over: Partial<IngestDeps> = {}): IngestDeps => ({
   dueSources: async () => [source('a'), source('b')],
   store, fetcher: { getText: async () => '', getJson: async () => ({}) as never },
-  adapters: { test: adapter }, now: () => 0, ...over,
+  adapters: { test: adapter }, now: () => 0,
+  linksToCheck: async () => [], checkLink: async () => 'ok', recordLink: async () => {}, ...over,
 });
 
 test('needs the shared secret', async () => {
@@ -68,4 +69,16 @@ test('a store failure fails that source only', async () => {
   } finally {
     console.error = original;
   }
+});
+
+test('checks due links with the remaining time and records each outcome', async () => {
+  const recorded: [string, string][] = [];
+  const body = await (await handle(post(), env, () => deps({
+    dueSources: async () => [],
+    linksToCheck: async () => [{ deal_id: 'd1', url: 'https://a.pk/1' }, { deal_id: 'd2', url: 'https://a.pk/2' }],
+    checkLink: async (url) => (url.endsWith('2') ? 'broken' : 'ok'),
+    recordLink: async (id, o) => { recorded.push([id, o]); },
+  }))).json();
+  assert.deepEqual(recorded, [['d1', 'ok'], ['d2', 'broken']]);
+  assert.deepEqual(body.links, { ok: 1, broken: 1, unknown: 0 });
 });

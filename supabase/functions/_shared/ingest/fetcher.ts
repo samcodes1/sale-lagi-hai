@@ -60,6 +60,20 @@ export class PoliteFetcher {
     return this.request(target, accept, rules);
   }
 
+  /** Is this deal link still there? 404/410 = broken; anything we can't
+   * tell (network, robots, server errors) = unknown, never broken. */
+  async check(url: string): Promise<'ok' | 'broken' | 'unknown'> {
+    try {
+      await this.getText(url);
+      return 'ok';
+    } catch (error) {
+      if (error instanceof FetchRefused && error.reason === 'status' && (error.status === 404 || error.status === 410)) {
+        return 'broken';
+      }
+      return 'unknown';
+    }
+  }
+
   async getJson<T>(url: string): Promise<T> {
     return JSON.parse(await this.getText(url, 'application/json')) as T;
   }

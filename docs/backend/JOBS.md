@@ -62,3 +62,21 @@ The function connects with `SUPABASE_DB_URL`, which the platform provides, so th
 - **Ending and protecting deals:**
   - deals a source stops listing are expired, but only after a successful, non-empty run;
   - deals staff removed or rejected are never revived.
+
+## Moderation (sub-phase 3.5)
+- **`moderation_queue` view** (staff, under RLS): pending submissions, deals waiting for review, and reported deals with their report count, oldest first.
+- **`submission_duplicates(id)`:** live and waiting deals of the same brand with a similar title (trigram similarity of 0.45 or more), best match first.
+- **Actions** (`approve_submission`, `reject_submission`, `mark_submission_duplicate`):
+  - they run as the moderator, so RLS applies and an MFA session is required;
+  - each works only on a pending submission, so two moderators can't both decide;
+  - each records who decided.
+  - Approving creates the deal from the moderator's edited fields, as `source = 'user_submission'`.
+- **The submitter is told the outcome** in their language: live, already listed (with a link), or not published with the reason.
+
+## Freshness (sub-phase 3.6)
+- **Link checks:** the `ingest` function checks live deals' links daily with whatever time it has left.
+  - 404 or 410 counts as broken. Network trouble, robots rules and server errors count as unknown, never broken.
+  - Three broken checks in a row flag the deal.
+- **`stale_deals` view** (staff only): live deals with a broken link, low freshness, or no verification in 14 days, each with its reasons.
+- **Daily at 05:07 UTC** (`notify-staleness`), every admin gets "N deals need checking" when N > 0.
+- **Nothing is removed automatically:** a human decides.

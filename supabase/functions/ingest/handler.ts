@@ -9,6 +9,10 @@ export type Env = { get(name: string): string | undefined };
 
 export type IngestDeps = {
   dueSources: (max: number) => Promise<Source[]>;
+  /** Dead-link checks (3.6), with whatever time is left. */
+  linksToCheck: (max: number) => Promise<{ deal_id: string; url: string }[]>;
+  checkLink: (url: string) => Promise<'ok' | 'broken' | 'unknown'>;
+  recordLink: (dealId: string, outcome: 'ok' | 'broken' | 'unknown') => Promise<void>;
   store: IngestStore;
   fetcher: Fetcher;
   adapters: Record<string, Adapter>;
@@ -32,6 +36,7 @@ export async function handle(request: Request, env: Env, deps: () => IngestDeps)
   const d = deps();
   const started = d.now();
   const runs: { source: string; status: RunResult['status'] | 'skipped'; created: number; updated: number; ended: number }[] = [];
+  const links = { ok: 0, broken: 0, unknown: 0 };
   try {
     for (const source of await d.dueSources(10)) {
       if (d.now() - started > BUDGET_MS) {
@@ -52,9 +57,15 @@ export async function handle(request: Request, env: Env, deps: () => IngestDeps)
         runs.push({ source: source.slug, status: 'failed', created: 0, updated: 0, ended: 0 });
       }
     }
+    for (const link of await d.linksToCheck(50)) {
+      if (d.now() - started > BUDGET_MS) break;
+      const outcome = await d.checkLink(link.url);
+      await d.recordLink(link.deal_id, outcome);
+      links[outcome]++;
+    }
   } catch (error) {
     console.error('ingest failed', error instanceof Error ? error.name : 'error');
     return json(500, { error: 'ingest_failed' });
   }
-  return json(200, { runs });
+  return json(200, { runs, links });
 }

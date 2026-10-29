@@ -269,3 +269,19 @@ test('runner: duplicates in one listing are written once', async () => {
   assert.equal(r.created, 1);
   assert.equal(mem.deals.size, 1);
 });
+
+test('link checks: 404/410 broken, network and server errors unknown', async () => {
+  const { http } = fakeHttp({
+    '/robots.txt': () => new Response(''),
+    '/ok': () => new Response('fine'),
+    '/gone': () => new Response('', { status: 410 }),
+    '/missing': () => new Response('', { status: 404 }),
+    '/down': () => new Response('', { status: 503 }),
+  });
+  const fetcher = new PoliteFetcher(http, fakeClock().clock, { minIntervalMs: 0, maxAttempts: 1 });
+  assert.equal(await fetcher.check('https://s.example.pk/ok'), 'ok');
+  assert.equal(await fetcher.check('https://s.example.pk/gone'), 'broken');
+  assert.equal(await fetcher.check('https://s.example.pk/missing'), 'broken');
+  assert.equal(await fetcher.check('https://s.example.pk/down'), 'unknown');
+  assert.equal(await fetcher.check('http://s.example.pk/ok'), 'unknown');
+});
