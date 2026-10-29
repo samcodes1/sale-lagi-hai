@@ -7,7 +7,10 @@ import 'package:sale_lagi_hai/core/result/app_failure.dart';
 /// sensitive ends up there by accident under an ad-hoc key.
 enum SecureKey {
   /// The Supabase auth session (access and refresh tokens).
-  authSession('auth_session');
+  authSession('auth_session'),
+
+  /// The PKCE code verifier while a sign-in is in progress.
+  authPkce('auth_pkce');
 
   new(this.storageKey);
 
