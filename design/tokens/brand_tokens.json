@@ -1,0 +1,719 @@
+{
+  "$schema": "sale-lagi-hai brand tokens v1",
+  "meta": {
+    "brand": "Sale Lagi Hai!",
+    "version": "1.0.0",
+    "generatedBy": "design/_src/build_tokens.py"
+  },
+  "color": {
+    "palette": {
+      "haldi": {
+        "50": "#FFF8E1",
+        "100": "#FFEDB3",
+        "200": "#FFE07A",
+        "300": "#FFD447",
+        "400": "#FFCB2B",
+        "500": "#FFC414",
+        "600": "#E6A800",
+        "700": "#B78100",
+        "800": "#8A5F00",
+        "900": "#5C3F00"
+      },
+      "surma": {
+        "0": "#FFFFFF",
+        "50": "#FAF8F4",
+        "100": "#F2EFEA",
+        "200": "#E3DFD9",
+        "300": "#CBC6C0",
+        "400": "#A29DA6",
+        "500": "#7B7585",
+        "600": "#5D5769",
+        "700": "#433D50",
+        "800": "#2C263A",
+        "900": "#1A1433",
+        "950": "#0F0B1F"
+      },
+      "neel": {
+        "50": "#EEEFFF",
+        "100": "#DCDDFF",
+        "200": "#BCBEFF",
+        "300": "#9EA2FF",
+        "400": "#7378F2",
+        "500": "#3B3FD9",
+        "600": "#2F32B8",
+        "700": "#262894",
+        "800": "#1D1F70",
+        "900": "#15164D"
+      },
+      "mirch": {
+        "50": "#FFF0EE",
+        "100": "#FFDAD5",
+        "200": "#FFB4AB",
+        "300": "#FF8A7E",
+        "400": "#FF6B5E",
+        "500": "#DC2E24",
+        "600": "#B8221A",
+        "700": "#921A14",
+        "800": "#6E130F",
+        "900": "#4A0C09"
+      },
+      "success": {
+        "50": "#E6F6EC",
+        "300": "#5FD39A",
+        "500": "#18794E",
+        "800": "#0E3B27"
+      },
+      "warning": {
+        "50": "#FFF1DC",
+        "300": "#FFB547",
+        "500": "#A34D00",
+        "800": "#4A2600"
+      },
+      "error": {
+        "50": "#FEE4E2",
+        "300": "#FF8F87",
+        "500": "#B42318",
+        "800": "#55120C"
+      },
+      "info": {
+        "50": "#EEEFFF",
+        "300": "#9EA2FF",
+        "500": "#3B3FD9",
+        "800": "#1D1F70"
+      },
+      "kaghaz": {
+        "500": "#FFF8E7"
+      }
+    },
+    "themes": {
+      "light": {
+        "background": {
+          "ref": "surma.50",
+          "value": "#FAF8F4"
+        },
+        "surface": {
+          "ref": "surma.0",
+          "value": "#FFFFFF"
+        },
+        "surfaceVariant": {
+          "ref": "surma.100",
+          "value": "#F2EFEA"
+        },
+        "surfaceInverse": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        },
+        "onSurfaceInverse": {
+          "ref": "kaghaz.500",
+          "value": "#FFF8E7"
+        },
+        "textPrimary": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        },
+        "textSecondary": {
+          "ref": "surma.600",
+          "value": "#5D5769"
+        },
+        "textDisabled": {
+          "ref": "surma.400",
+          "value": "#A29DA6"
+        },
+        "outline": {
+          "ref": "surma.200",
+          "value": "#E3DFD9"
+        },
+        "outlineStrong": {
+          "ref": "surma.500",
+          "value": "#7B7585"
+        },
+        "primary": {
+          "ref": "haldi.500",
+          "value": "#FFC414"
+        },
+        "onPrimary": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        },
+        "primaryContainer": {
+          "ref": "haldi.100",
+          "value": "#FFEDB3"
+        },
+        "onPrimaryContainer": {
+          "ref": "haldi.900",
+          "value": "#5C3F00"
+        },
+        "primaryText": {
+          "ref": "haldi.800",
+          "value": "#8A5F00"
+        },
+        "secondary": {
+          "ref": "neel.500",
+          "value": "#3B3FD9"
+        },
+        "onSecondary": {
+          "ref": "surma.0",
+          "value": "#FFFFFF"
+        },
+        "secondaryContainer": {
+          "ref": "neel.50",
+          "value": "#EEEFFF"
+        },
+        "onSecondaryContainer": {
+          "ref": "neel.800",
+          "value": "#1D1F70"
+        },
+        "deal": {
+          "ref": "mirch.500",
+          "value": "#DC2E24"
+        },
+        "onDeal": {
+          "ref": "surma.0",
+          "value": "#FFFFFF"
+        },
+        "dealContainer": {
+          "ref": "mirch.50",
+          "value": "#FFF0EE"
+        },
+        "onDealContainer": {
+          "ref": "mirch.700",
+          "value": "#921A14"
+        },
+        "featured": {
+          "ref": "haldi.500",
+          "value": "#FFC414"
+        },
+        "onFeatured": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        },
+        "success": {
+          "ref": "success.500",
+          "value": "#18794E"
+        },
+        "successContainer": {
+          "ref": "success.50",
+          "value": "#E6F6EC"
+        },
+        "warning": {
+          "ref": "warning.500",
+          "value": "#A34D00"
+        },
+        "warningContainer": {
+          "ref": "warning.50",
+          "value": "#FFF1DC"
+        },
+        "error": {
+          "ref": "error.500",
+          "value": "#B42318"
+        },
+        "onError": {
+          "ref": "surma.0",
+          "value": "#FFFFFF"
+        },
+        "errorContainer": {
+          "ref": "error.50",
+          "value": "#FEE4E2"
+        },
+        "info": {
+          "ref": "info.500",
+          "value": "#3B3FD9"
+        },
+        "infoContainer": {
+          "ref": "info.50",
+          "value": "#EEEFFF"
+        },
+        "focus": {
+          "ref": "neel.500",
+          "value": "#3B3FD9"
+        },
+        "indicator": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        }
+      },
+      "dark": {
+        "background": {
+          "ref": "surma.950",
+          "value": "#0F0B1F"
+        },
+        "surface": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        },
+        "surfaceVariant": {
+          "ref": "surma.800",
+          "value": "#2C263A"
+        },
+        "surfaceInverse": {
+          "ref": "surma.50",
+          "value": "#FAF8F4"
+        },
+        "onSurfaceInverse": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        },
+        "textPrimary": {
+          "ref": "surma.50",
+          "value": "#FAF8F4"
+        },
+        "textSecondary": {
+          "ref": "surma.400",
+          "value": "#A29DA6"
+        },
+        "textDisabled": {
+          "ref": "surma.600",
+          "value": "#5D5769"
+        },
+        "outline": {
+          "ref": "surma.700",
+          "value": "#433D50"
+        },
+        "outlineStrong": {
+          "ref": "surma.500",
+          "value": "#7B7585"
+        },
+        "primary": {
+          "ref": "haldi.500",
+          "value": "#FFC414"
+        },
+        "onPrimary": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        },
+        "primaryContainer": {
+          "ref": "haldi.900",
+          "value": "#5C3F00"
+        },
+        "onPrimaryContainer": {
+          "ref": "haldi.100",
+          "value": "#FFEDB3"
+        },
+        "primaryText": {
+          "ref": "haldi.500",
+          "value": "#FFC414"
+        },
+        "secondary": {
+          "ref": "neel.300",
+          "value": "#9EA2FF"
+        },
+        "onSecondary": {
+          "ref": "neel.900",
+          "value": "#15164D"
+        },
+        "secondaryContainer": {
+          "ref": "neel.800",
+          "value": "#1D1F70"
+        },
+        "onSecondaryContainer": {
+          "ref": "neel.100",
+          "value": "#DCDDFF"
+        },
+        "deal": {
+          "ref": "mirch.400",
+          "value": "#FF6B5E"
+        },
+        "onDeal": {
+          "ref": "surma.950",
+          "value": "#0F0B1F"
+        },
+        "dealContainer": {
+          "ref": "mirch.900",
+          "value": "#4A0C09"
+        },
+        "onDealContainer": {
+          "ref": "mirch.200",
+          "value": "#FFB4AB"
+        },
+        "featured": {
+          "ref": "haldi.500",
+          "value": "#FFC414"
+        },
+        "onFeatured": {
+          "ref": "surma.900",
+          "value": "#1A1433"
+        },
+        "success": {
+          "ref": "success.300",
+          "value": "#5FD39A"
+        },
+        "successContainer": {
+          "ref": "success.800",
+          "value": "#0E3B27"
+        },
+        "warning": {
+          "ref": "warning.300",
+          "value": "#FFB547"
+        },
+        "warningContainer": {
+          "ref": "warning.800",
+          "value": "#4A2600"
+        },
+        "error": {
+          "ref": "error.300",
+          "value": "#FF8F87"
+        },
+        "onError": {
+          "ref": "surma.950",
+          "value": "#0F0B1F"
+        },
+        "errorContainer": {
+          "ref": "error.800",
+          "value": "#55120C"
+        },
+        "info": {
+          "ref": "info.300",
+          "value": "#9EA2FF"
+        },
+        "infoContainer": {
+          "ref": "info.800",
+          "value": "#1D1F70"
+        },
+        "focus": {
+          "ref": "neel.300",
+          "value": "#9EA2FF"
+        },
+        "indicator": {
+          "ref": "haldi.500",
+          "value": "#FFC414"
+        }
+      }
+    }
+  },
+  "font": {
+    "display": {
+      "family": "BricolageCondensed",
+      "file": "BricolageGrotesqueCondensed-ExtraBold.ttf",
+      "weight": 800,
+      "note": "Bricolage Grotesque, wght 800 wdth 75 opsz 96 (static instance)"
+    },
+    "title": {
+      "family": "BricolageGrotesque",
+      "file": "BricolageGrotesque-Bold.ttf",
+      "weight": 700,
+      "note": "Bricolage Grotesque, wght 700 wdth 100 opsz 24"
+    },
+    "ui": {
+      "family": "InstrumentSans",
+      "files": {
+        "400": "InstrumentSans-Regular.ttf",
+        "500": "InstrumentSans-Medium.ttf",
+        "600": "InstrumentSans-SemiBold.ttf",
+        "700": "InstrumentSans-Bold.ttf"
+      }
+    },
+    "urdu": {
+      "family": "NotoNastaliqUrdu",
+      "files": {
+        "400": "NotoNastaliqUrdu-Regular.ttf",
+        "700": "NotoNastaliqUrdu-Bold.ttf"
+      }
+    },
+    "urduCompact": {
+      "family": "NotoNaskhArabic",
+      "files": {
+        "400": "NotoNaskhArabic-Regular.ttf",
+        "700": "NotoNaskhArabic-Bold.ttf"
+      },
+      "note": "Optional compact Urdu (Naskh) for tight numeric UI."
+    }
+  },
+  "typography": {
+    "displayLarge": {
+      "font": "display",
+      "family": "BricolageCondensed",
+      "size": 44,
+      "lineHeight": 1.04,
+      "weight": 800,
+      "letterSpacing": -0.4,
+      "features": []
+    },
+    "displayMedium": {
+      "font": "display",
+      "family": "BricolageCondensed",
+      "size": 36,
+      "lineHeight": 1.06,
+      "weight": 800,
+      "letterSpacing": -0.3,
+      "features": []
+    },
+    "headline": {
+      "font": "display",
+      "family": "BricolageCondensed",
+      "size": 28,
+      "lineHeight": 1.1,
+      "weight": 800,
+      "letterSpacing": -0.2,
+      "features": []
+    },
+    "price": {
+      "font": "display",
+      "family": "BricolageCondensed",
+      "size": 28,
+      "lineHeight": 1.0,
+      "weight": 800,
+      "letterSpacing": 0.0,
+      "features": [
+        "tnum"
+      ]
+    },
+    "badge": {
+      "font": "display",
+      "family": "BricolageCondensed",
+      "size": 15,
+      "lineHeight": 1.0,
+      "weight": 800,
+      "letterSpacing": 0.3,
+      "features": [
+        "tnum"
+      ]
+    },
+    "titleLarge": {
+      "font": "title",
+      "family": "BricolageGrotesque",
+      "size": 22,
+      "lineHeight": 1.25,
+      "weight": 700,
+      "letterSpacing": -0.1,
+      "features": []
+    },
+    "titleMedium": {
+      "font": "ui",
+      "family": "InstrumentSans",
+      "size": 17,
+      "lineHeight": 1.35,
+      "weight": 600,
+      "letterSpacing": 0.0,
+      "features": []
+    },
+    "bodyLarge": {
+      "font": "ui",
+      "family": "InstrumentSans",
+      "size": 16,
+      "lineHeight": 1.5,
+      "weight": 400,
+      "letterSpacing": 0.0,
+      "features": []
+    },
+    "bodyMedium": {
+      "font": "ui",
+      "family": "InstrumentSans",
+      "size": 14,
+      "lineHeight": 1.45,
+      "weight": 400,
+      "letterSpacing": 0.05,
+      "features": []
+    },
+    "bodySmall": {
+      "font": "ui",
+      "family": "InstrumentSans",
+      "size": 12,
+      "lineHeight": 1.4,
+      "weight": 400,
+      "letterSpacing": 0.1,
+      "features": []
+    },
+    "labelLarge": {
+      "font": "ui",
+      "family": "InstrumentSans",
+      "size": 15,
+      "lineHeight": 1.2,
+      "weight": 600,
+      "letterSpacing": 0.1,
+      "features": []
+    },
+    "labelSmall": {
+      "font": "ui",
+      "family": "InstrumentSans",
+      "size": 12,
+      "lineHeight": 1.2,
+      "weight": 600,
+      "letterSpacing": 0.3,
+      "features": []
+    },
+    "numeric": {
+      "font": "ui",
+      "family": "InstrumentSans",
+      "size": 14,
+      "lineHeight": 1.3,
+      "weight": 500,
+      "letterSpacing": 0.0,
+      "features": [
+        "tnum"
+      ]
+    },
+    "urduDisplay": {
+      "font": "urdu",
+      "family": "NotoNastaliqUrdu",
+      "size": 34,
+      "lineHeight": 2.0,
+      "weight": 700,
+      "letterSpacing": 0.0,
+      "features": []
+    },
+    "urduHeadline": {
+      "font": "urdu",
+      "family": "NotoNastaliqUrdu",
+      "size": 26,
+      "lineHeight": 2.0,
+      "weight": 700,
+      "letterSpacing": 0.0,
+      "features": []
+    },
+    "urduTitle": {
+      "font": "urdu",
+      "family": "NotoNastaliqUrdu",
+      "size": 20,
+      "lineHeight": 2.0,
+      "weight": 700,
+      "letterSpacing": 0.0,
+      "features": []
+    },
+    "urduBody": {
+      "font": "urdu",
+      "family": "NotoNastaliqUrdu",
+      "size": 18,
+      "lineHeight": 2.1,
+      "weight": 400,
+      "letterSpacing": 0.0,
+      "features": []
+    },
+    "urduBodySmall": {
+      "font": "urdu",
+      "family": "NotoNastaliqUrdu",
+      "size": 15,
+      "lineHeight": 2.1,
+      "weight": 400,
+      "letterSpacing": 0.0,
+      "features": []
+    },
+    "urduLabel": {
+      "font": "urdu",
+      "family": "NotoNastaliqUrdu",
+      "size": 16,
+      "lineHeight": 1.9,
+      "weight": 700,
+      "letterSpacing": 0.0,
+      "features": []
+    }
+  },
+  "radius": {
+    "none": 0,
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "full": 999
+  },
+  "spacing": {
+    "0": 0,
+    "1": 2,
+    "2": 4,
+    "3": 8,
+    "4": 12,
+    "5": 16,
+    "6": 20,
+    "7": 24,
+    "8": 32,
+    "9": 40,
+    "10": 48,
+    "11": 64
+  },
+  "elevation": {
+    "0": [],
+    "1": [
+      {
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "color": "#1A1433",
+        "opacity": 0.08
+      }
+    ],
+    "2": [
+      {
+        "x": 0,
+        "y": 2,
+        "blur": 6,
+        "spread": -1,
+        "color": "#1A1433",
+        "opacity": 0.1
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "color": "#1A1433",
+        "opacity": 0.06
+      }
+    ],
+    "3": [
+      {
+        "x": 0,
+        "y": 8,
+        "blur": 20,
+        "spread": -4,
+        "color": "#1A1433",
+        "opacity": 0.16
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "blur": 4,
+        "spread": 0,
+        "color": "#1A1433",
+        "opacity": 0.06
+      }
+    ],
+    "stamp": [
+      {
+        "x": 3,
+        "y": 3,
+        "blur": 0,
+        "spread": 0,
+        "color": "#1A1433",
+        "opacity": 1.0
+      }
+    ]
+  },
+  "motion": {
+    "duration": {
+      "instant": 80,
+      "fast": 140,
+      "base": 220,
+      "slow": 320,
+      "stamp": 180,
+      "splash": 700
+    },
+    "easing": {
+      "standard": [
+        0.2,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "enter": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "exit": [
+        0.3,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "stamp": [
+        0.34,
+        1.4,
+        0.64,
+        1.0
+      ]
+    },
+    "notes": "stamp = the nuqta landing: quick overshoot, used once per screen at most (new-deal badge, alert bell)."
+  }
+}
