@@ -1,0 +1,3 @@
+-- Seed data (sub-phase 2.6): cities, areas, categories, banks, card
+-- products and top brands. It must be idempotent: `supabase db reset` runs
+-- it on every reset.
