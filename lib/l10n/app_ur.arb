@@ -73,6 +73,15 @@
   "errorUnexpected": "کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔",
 
   "settingsLanguage": "زبان",
+  "dealTitle": "ڈیل",
+  "brandTitle": "برانڈ",
+  "categoryTitle": "کیٹیگری",
+  "comingSoon": "جلد آ رہا ہے",
+  "notFoundTitle": "صفحہ نہیں ملا",
+  "notFoundBody": "یہ لنک کہیں نہیں جاتا۔ شاید یہ پرانا ہے یا غلط لکھا گیا ہے۔",
+  "actionGoHome": "ہوم پر جائیں",
+  "exploreHint": "برانڈز، کھانے اور کارڈ ڈیلز تلاش کریں",
+
   "languageEnglish": "English",
   "languageUrdu": "اردو",
   "themeSystem": "سسٹم کے مطابق",

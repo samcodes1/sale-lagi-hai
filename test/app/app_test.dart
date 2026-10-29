@@ -8,9 +8,10 @@ import 'package:sale_lagi_hai/app/config/flavor.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
-import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
 import 'package:sale_lagi_hai/design_system/theme/deal_colors.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/features/home/presentation/home_screen.dart';
+import 'package:sale_lagi_hai/features/profile/presentation/profile_screen.dart';
 
 import '../helpers/fakes.dart';
 
@@ -33,7 +34,7 @@ void main() {
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(app.title, 'SLH Dev');
     expect(app.debugShowCheckedModeBanner, isFalse);
-    expect(find.byType(ThemePreviewPage), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
   });
 
   testWidgets('App fails loudly if the config was never provided', (
@@ -108,7 +109,7 @@ void main() {
 
     testWidgets('an English phone gets English, left to right', (tester) async {
       await pumpApp(tester, const Locale('en', 'PK'));
-      final context = tester.element(find.byType(ThemePreviewPage));
+      final context = tester.element(find.byType(HomeScreen));
 
       expect(Localizations.localeOf(context), AppLocales.english);
       expect(Directionality.of(context), TextDirection.ltr);
@@ -122,7 +123,7 @@ void main() {
       tester,
     ) async {
       await pumpApp(tester, const Locale('ur', 'PK'));
-      final context = tester.element(find.byType(ThemePreviewPage));
+      final context = tester.element(find.byType(HomeScreen));
 
       expect(Localizations.localeOf(context), AppLocales.urdu);
       expect(Directionality.of(context), TextDirection.rtl);
@@ -130,19 +131,23 @@ void main() {
         Theme.of(context).textTheme.headlineMedium!.fontFamily,
         BrandFonts.urdu,
       );
-      // The toggle offers the other language, labelled in that language.
-      expect(find.text('English'), findsOneWidget);
+      expect(find.text('ہوم'), findsOneWidget);
     });
 
-    testWidgets('switching language re-renders the whole app', (tester) async {
+    testWidgets('choosing Urdu in Profile re-renders the whole app', (
+      tester,
+    ) async {
       final container = await pumpApp(tester, const Locale('en'));
 
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('اردو'));
       await tester.pumpAndSettle();
 
       expect(container.read(localeControllerProvider), AppLocales.urdu);
+      expect(find.text('پروفائل'), findsWidgets);
       expect(
-        Directionality.of(tester.element(find.byType(ThemePreviewPage))),
+        Directionality.of(tester.element(find.byType(ProfileScreen))),
         TextDirection.rtl,
       );
 

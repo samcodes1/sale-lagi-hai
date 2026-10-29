@@ -92,6 +92,16 @@
   "errorUnexpected": "Something went wrong. Try again.",
 
   "settingsLanguage": "Language",
+  "dealTitle": "Deal",
+  "brandTitle": "Brand",
+  "categoryTitle": "Category",
+  "comingSoon": "Coming soon",
+  "notFoundTitle": "Page not found",
+  "@notFoundTitle": { "description": "Shown for unknown links. Never include the link itself: it may contain anything." },
+  "notFoundBody": "This link doesn't go anywhere. It may be old or mistyped.",
+  "actionGoHome": "Go to Home",
+  "exploreHint": "Search brands, food and card deals",
+
   "languageEnglish": "English",
   "languageUrdu": "اردو",
   "@languageUrdu": { "description": "Always shown in its own script in both languages." },

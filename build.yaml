@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      go_router_builder:
+        options:
+          # Two routes on one path is always a bug.
+          duplicate_route_paths: error

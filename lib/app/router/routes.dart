@@ -1,0 +1,204 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
+import 'package:sale_lagi_hai/app/router/route_params.dart';
+import 'package:sale_lagi_hai/app/shell/app_shell.dart';
+import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
+import 'package:sale_lagi_hai/features/alerts/presentation/alerts_screen.dart';
+import 'package:sale_lagi_hai/features/brands/presentation/brand_screen.dart';
+import 'package:sale_lagi_hai/features/categories/presentation/category_screen.dart';
+import 'package:sale_lagi_hai/features/deals/presentation/deal_detail_screen.dart';
+import 'package:sale_lagi_hai/features/explore/presentation/explore_screen.dart';
+import 'package:sale_lagi_hai/features/home/presentation/home_screen.dart';
+import 'package:sale_lagi_hai/features/profile/presentation/profile_screen.dart';
+import 'package:sale_lagi_hai/features/saved/presentation/saved_screen.dart';
+
+part 'routes.g.dart';
+
+/// The navigator above the tab shell. Full-screen pages (deal, brand,
+/// category) open here, so they cover the bottom navigation while the tab
+/// they were opened from stays underneath for "back".
+final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+
+// ------------------------------------------------------------------ shell ---
+
+@TypedStatefulShellRoute<AppShellRoute>(
+  branches: [
+    TypedStatefulShellBranch<HomeBranch>(
+      routes: [
+        TypedGoRoute<HomeRoute>(
+          path: '/',
+          routes: [
+            TypedGoRoute<DealRoute>(path: 'deal/:dealId'),
+            TypedGoRoute<BrandRoute>(path: 'brand/:slug'),
+            TypedGoRoute<CategoryRoute>(path: 'category/:slug'),
+          ],
+        ),
+      ],
+    ),
+    TypedStatefulShellBranch<ExploreBranch>(
+      routes: [TypedGoRoute<ExploreRoute>(path: '/explore')],
+    ),
+    TypedStatefulShellBranch<AlertsBranch>(
+      routes: [TypedGoRoute<AlertsRoute>(path: '/alerts')],
+    ),
+    TypedStatefulShellBranch<SavedBranch>(
+      routes: [TypedGoRoute<SavedRoute>(path: '/saved')],
+    ),
+    TypedStatefulShellBranch<ProfileBranch>(
+      routes: [
+        TypedGoRoute<ProfileRoute>(
+          path: '/profile',
+          routes: [TypedGoRoute<ThemePreviewRoute>(path: 'dev/theme')],
+        ),
+      ],
+    ),
+  ],
+)
+final class AppShellRoute extends StatefulShellRouteData {
+  const new();
+
+  @override
+  Widget builder(
+    BuildContext context,
+    GoRouterState state,
+    StatefulNavigationShell navigationShell,
+  ) => AppShell(navigationShell: navigationShell);
+}
+
+final class HomeBranch extends StatefulShellBranchData {
+  const new();
+}
+
+final class ExploreBranch extends StatefulShellBranchData {
+  const new();
+}
+
+final class AlertsBranch extends StatefulShellBranchData {
+  const new();
+}
+
+final class SavedBranch extends StatefulShellBranchData {
+  const new();
+}
+
+final class ProfileBranch extends StatefulShellBranchData {
+  const new();
+}
+
+// ------------------------------------------------------------------- tabs ---
+
+final class HomeRoute extends GoRouteData with $HomeRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const HomeScreen();
+}
+
+final class ExploreRoute extends GoRouteData with $ExploreRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const ExploreScreen();
+}
+
+final class AlertsRoute extends GoRouteData with $AlertsRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const AlertsScreen();
+}
+
+final class SavedRoute extends GoRouteData with $SavedRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const SavedScreen();
+}
+
+final class ProfileRoute extends GoRouteData with $ProfileRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const ProfileScreen();
+}
+
+// ------------------------------------------------------ full-screen pages ---
+
+/// `/deal/<uuid>`. An invalid ID goes Home: the value is never shown.
+final class DealRoute extends GoRouteData with $DealRoute {
+  const new({required this.dealId});
+
+  final String dealId;
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
+      RouteParams.isId(dealId) ? null : const HomeRoute().location;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      DealDetailScreen(dealId: dealId);
+}
+
+/// `/brand/<slug>`.
+final class BrandRoute extends GoRouteData with $BrandRoute {
+  const new({required this.slug});
+
+  final String slug;
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
+      RouteParams.isSlug(slug) ? null : const HomeRoute().location;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      BrandScreen(slug: slug);
+}
+
+/// `/category/<slug>`.
+final class CategoryRoute extends GoRouteData with $CategoryRoute {
+  const new({required this.slug});
+
+  final String slug;
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
+      RouteParams.isSlug(slug) ? null : const HomeRoute().location;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      CategoryScreen(slug: slug);
+}
+
+// -------------------------------------------------------------- dev only ---
+
+/// `/profile/dev/theme`: the theme preview. Not reachable in production.
+final class ThemePreviewRoute extends GoRouteData with $ThemePreviewRoute {
+  const new();
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
+      ProviderScope.containerOf(
+        context,
+        listen: false,
+      ).read(appConfigProvider).flavor.isProduction
+      ? const ProfileRoute().location
+      : null;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const ThemePreviewPage();
+}
