@@ -5,6 +5,8 @@ include: package:very_good_analysis/analysis_options.yaml
 analyzer:
   exclude:
     - build/**
+    # Generated brand sources: changed only by design/_src generators.
+    - design/**
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
     - lib/l10n/gen/**

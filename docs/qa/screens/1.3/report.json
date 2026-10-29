@@ -1,0 +1,322 @@
+[
+  {
+    "name": "home_360x800_light_en-PK",
+    "route": "/",
+    "size": "360x800",
+    "theme": "light",
+    "locale": "en-PK",
+    "scale": 1,
+    "screenshot": "docs/qa/screens/1.3/home_360x800_light_en-PK.png",
+    "loadMs": 4899,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 10,
+      "unlabeledInteractive": 0,
+      "smallTargets": 3
+    }
+  },
+  {
+    "name": "home_360x800_light_en-PK_ts2",
+    "route": "/",
+    "size": "360x800",
+    "theme": "light",
+    "locale": "en-PK",
+    "scale": 2,
+    "screenshot": "docs/qa/screens/1.3/home_360x800_light_en-PK_ts2.png",
+    "loadMs": 4854,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 1,
+      "unlabeledInteractive": 0,
+      "smallTargets": 0
+    }
+  },
+  {
+    "name": "home_360x800_light_ur-PK",
+    "route": "/",
+    "size": "360x800",
+    "theme": "light",
+    "locale": "ur-PK",
+    "scale": 1,
+    "screenshot": "docs/qa/screens/1.3/home_360x800_light_ur-PK.png",
+    "loadMs": 4854,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 10,
+      "unlabeledInteractive": 0,
+      "smallTargets": 3
+    }
+  },
+  {
+    "name": "home_360x800_light_ur-PK_ts2",
+    "route": "/",
+    "size": "360x800",
+    "theme": "light",
+    "locale": "ur-PK",
+    "scale": 2,
+    "screenshot": "docs/qa/screens/1.3/home_360x800_light_ur-PK_ts2.png",
+    "loadMs": 4824,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 1,
+      "unlabeledInteractive": 0,
+      "smallTargets": 0
+    }
+  },
+  {
+    "name": "home_360x800_dark_en-PK",
+    "route": "/",
+    "size": "360x800",
+    "theme": "dark",
+    "locale": "en-PK",
+    "scale": 1,
+    "screenshot": "docs/qa/screens/1.3/home_360x800_dark_en-PK.png",
+    "loadMs": 4834,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 10,
+      "unlabeledInteractive": 0,
+      "smallTargets": 3
+    }
+  },
+  {
+    "name": "home_360x800_dark_en-PK_ts2",
+    "route": "/",
+    "size": "360x800",
+    "theme": "dark",
+    "locale": "en-PK",
+    "scale": 2,
+    "screenshot": "docs/qa/screens/1.3/home_360x800_dark_en-PK_ts2.png",
+    "loadMs": 4852,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 1,
+      "unlabeledInteractive": 0,
+      "smallTargets": 0
+    }
+  },
+  {
+    "name": "home_360x800_dark_ur-PK",
+    "route": "/",
+    "size": "360x800",
+    "theme": "dark",
+    "locale": "ur-PK",
+    "scale": 1,
+    "screenshot": "docs/qa/screens/1.3/home_360x800_dark_ur-PK.png",
+    "loadMs": 4846,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 10,
+      "unlabeledInteractive": 0,
+      "smallTargets": 3
+    }
+  },
+  {
+    "name": "home_360x800_dark_ur-PK_ts2",
+    "route": "/",
+    "size": "360x800",
+    "theme": "dark",
+    "locale": "ur-PK",
+    "scale": 2,
+    "screenshot": "docs/qa/screens/1.3/home_360x800_dark_ur-PK_ts2.png",
+    "loadMs": 4907,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 1,
+      "unlabeledInteractive": 0,
+      "smallTargets": 0
+    }
+  },
+  {
+    "name": "home_412x915_light_en-PK",
+    "route": "/",
+    "size": "412x915",
+    "theme": "light",
+    "locale": "en-PK",
+    "scale": 1,
+    "screenshot": "docs/qa/screens/1.3/home_412x915_light_en-PK.png",
+    "loadMs": 4858,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 12,
+      "unlabeledInteractive": 0,
+      "smallTargets": 2
+    }
+  },
+  {
+    "name": "home_412x915_light_en-PK_ts2",
+    "route": "/",
+    "size": "412x915",
+    "theme": "light",
+    "locale": "en-PK",
+    "scale": 2,
+    "screenshot": "docs/qa/screens/1.3/home_412x915_light_en-PK_ts2.png",
+    "loadMs": 4843,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 1,
+      "unlabeledInteractive": 0,
+      "smallTargets": 0
+    }
+  },
+  {
+    "name": "home_412x915_light_ur-PK",
+    "route": "/",
+    "size": "412x915",
+    "theme": "light",
+    "locale": "ur-PK",
+    "scale": 1,
+    "screenshot": "docs/qa/screens/1.3/home_412x915_light_ur-PK.png",
+    "loadMs": 4845,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 12,
+      "unlabeledInteractive": 0,
+      "smallTargets": 2
+    }
+  },
+  {
+    "name": "home_412x915_light_ur-PK_ts2",
+    "route": "/",
+    "size": "412x915",
+    "theme": "light",
+    "locale": "ur-PK",
+    "scale": 2,
+    "screenshot": "docs/qa/screens/1.3/home_412x915_light_ur-PK_ts2.png",
+    "loadMs": 4853,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 1,
+      "unlabeledInteractive": 0,
+      "smallTargets": 0
+    }
+  },
+  {
+    "name": "home_412x915_dark_en-PK",
+    "route": "/",
+    "size": "412x915",
+    "theme": "dark",
+    "locale": "en-PK",
+    "scale": 1,
+    "screenshot": "docs/qa/screens/1.3/home_412x915_dark_en-PK.png",
+    "loadMs": 4828,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 12,
+      "unlabeledInteractive": 0,
+      "smallTargets": 2
+    }
+  },
+  {
+    "name": "home_412x915_dark_en-PK_ts2",
+    "route": "/",
+    "size": "412x915",
+    "theme": "dark",
+    "locale": "en-PK",
+    "scale": 2,
+    "screenshot": "docs/qa/screens/1.3/home_412x915_dark_en-PK_ts2.png",
+    "loadMs": 4823,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 1,
+      "unlabeledInteractive": 0,
+      "smallTargets": 0
+    }
+  },
+  {
+    "name": "home_412x915_dark_ur-PK",
+    "route": "/",
+    "size": "412x915",
+    "theme": "dark",
+    "locale": "ur-PK",
+    "scale": 1,
+    "screenshot": "docs/qa/screens/1.3/home_412x915_dark_ur-PK.png",
+    "loadMs": 4859,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 12,
+      "unlabeledInteractive": 0,
+      "smallTargets": 2
+    }
+  },
+  {
+    "name": "home_412x915_dark_ur-PK_ts2",
+    "route": "/",
+    "size": "412x915",
+    "theme": "dark",
+    "locale": "ur-PK",
+    "scale": 2,
+    "screenshot": "docs/qa/screens/1.3/home_412x915_dark_ur-PK_ts2.png",
+    "loadMs": 4862,
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "unexpectedHosts": [],
+    "semantics": {
+      "nodes": 1,
+      "unlabeledInteractive": 0,
+      "smallTargets": 0
+    }
+  }
+]

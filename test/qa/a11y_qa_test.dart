@@ -1,8 +1,8 @@
 // QA (sub-phase 1.1): accessibility guidelines and 200% text scale for the
 // two screens that exist so far (placeholder App and ConfigErrorApp).
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/app/app.dart';
 import 'package:sale_lagi_hai/app/config/app_config.dart';
 import 'package:sale_lagi_hai/app/config/app_config_provider.dart';

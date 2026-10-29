@@ -1,0 +1,4 @@
+# Test tags. `golden` marks alchemist golden tests, so they can be run or
+# skipped together: `flutter test --tags golden` / `--exclude-tags golden`.
+tags:
+  golden:

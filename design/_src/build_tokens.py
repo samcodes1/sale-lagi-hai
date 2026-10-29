@@ -298,7 +298,7 @@ def build_dart():
     scrim: BrandColors.surma950,
     inverseSurface: {c('surfaceInverse')},
     onInverseSurface: {c('onSurfaceInverse')},
-    inversePrimary: BrandColors.haldi800,
+    inversePrimary: {'BrandColors.haldi500' if th == 'light' else 'BrandColors.haldi800'},
     surfaceTint: Colors.transparent,
   );"""
     w('/// Material 3 colour schemes. tertiary = the Mirch deal accent.')
@@ -314,8 +314,12 @@ def build_dart():
         w(f"  /// {v.get('note', v['family'])}")
         w(f"  static const String {k} = '{v['family']}';")
     w('')
-    w('  /// Fallback for Latin styles that meet Urdu text.')
-    w("  static const List<String> latinFallback = <String>['NotoNastaliqUrdu'];")
+    w('  /// Fallback for Latin styles that meet Urdu text. Naskh first: it fits')
+    w('  /// Latin line heights, where Nastaliq would overlap the next line.')
+    w("  static const List<String> latinFallback = <String>[")
+    w("    'NotoNaskhArabic',")
+    w("    'NotoNastaliqUrdu',")
+    w("  ];")
     w('')
     w('  /// Fallback for Urdu styles that meet Latin (brand names, prices).')
     w("  static const List<String> urduFallback = <String>['InstrumentSans'];")

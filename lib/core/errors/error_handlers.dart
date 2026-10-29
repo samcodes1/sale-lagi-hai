@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
+import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 
 /// Routes every uncaught error to [logger], so nothing fails silently and
 /// nothing reaches the console unredacted.
@@ -45,7 +46,7 @@ class ReleaseErrorWidget extends StatelessWidget {
     return const ColoredBox(
       color: Color(0x00000000),
       child: Center(
-        child: Icon(Icons.error_outline, size: 24, color: Color(0xFF7B7585)),
+        child: Icon(Icons.error_outline, size: 24, color: BrandColors.surma500),
       ),
     );
   }

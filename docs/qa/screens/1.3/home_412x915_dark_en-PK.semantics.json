@@ -1,0 +1,98 @@
+[
+  {
+    "role": "group",
+    "name": "",
+    "w": 412,
+    "h": 859,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "group",
+    "name": "-40%\nFeatured",
+    "w": 380,
+    "h": 191,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "Set alert",
+    "w": 101,
+    "h": 48,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "Share on WhatsApp",
+    "w": 183,
+    "h": 48,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "View terms",
+    "w": 104,
+    "h": 48,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "Disabled",
+    "w": 103,
+    "h": 48,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "checkbox",
+    "name": "Food",
+    "w": 63,
+    "h": 32,
+    "unlabeledInteractive": false,
+    "smallTarget": true
+  },
+  {
+    "role": "checkbox",
+    "name": "Fashion",
+    "w": 112,
+    "h": 32,
+    "unlabeledInteractive": false,
+    "smallTarget": true
+  },
+  {
+    "role": "",
+    "name": "Search deals",
+    "w": 388,
+    "h": 54,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "switch",
+    "name": "Deal alerts",
+    "w": 380,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "checkbox",
+    "name": "Only deals for my cards",
+    "w": 380,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "progressbar",
+    "name": "60",
+    "w": 380,
+    "h": 4,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  }
+]

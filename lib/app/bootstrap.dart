@@ -11,6 +11,7 @@ import 'package:sale_lagi_hai/core/errors/error_handlers.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/core/logging/log_sinks.dart';
 import 'package:sale_lagi_hai/core/state/retry_policy.dart';
+import 'package:sale_lagi_hai/design_system/fonts/font_licenses.dart';
 
 /// Validates the build config, installs error handling and starts the app.
 ///
@@ -37,6 +38,7 @@ Future<void> bootstrap() async {
   }
 
   logger.info('App starting', context: {'flavor': config.flavor.name});
+  registerFontLicenses();
 
   runApp(
     ProviderScope(

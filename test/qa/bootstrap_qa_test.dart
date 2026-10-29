@@ -4,9 +4,9 @@
 // Without defines (plain `flutter test`, as CI runs it) the config error path
 // runs. Run with `--dart-define-from-file=env/dev.json` to exercise the
 // success path as well.
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/app/app.dart';
 import 'package:sale_lagi_hai/app/bootstrap.dart';
 import 'package:sale_lagi_hai/main.dart' as entrypoint;
@@ -57,7 +57,7 @@ void main() {
 
         expect(find.byType(App), findsOneWidget);
         expect(find.byType(ConfigErrorApp), findsNothing);
-        expect(find.text(_appName), findsOneWidget);
+        // Since 1.3 the home is the theme preview, so check the title.
         final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
         expect(app.title, _appName);
         expect(FlutterError.onError, isNot(same(flutterOnError)));

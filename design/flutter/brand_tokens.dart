@@ -437,7 +437,7 @@ abstract final class BrandColorSchemes {
     scrim: BrandColors.surma950,
     inverseSurface: BrandColors.surma900,
     onInverseSurface: BrandColors.kaghaz500,
-    inversePrimary: BrandColors.haldi800,
+    inversePrimary: BrandColors.haldi500,
     surfaceTint: Colors.transparent,
   );
 
@@ -491,8 +491,12 @@ abstract final class BrandFonts {
   /// Optional compact Urdu (Naskh) for tight numeric UI.
   static const String urduCompact = 'NotoNaskhArabic';
 
-  /// Fallback for Latin styles that meet Urdu text.
-  static const List<String> latinFallback = <String>['NotoNastaliqUrdu'];
+  /// Fallback for Latin styles that meet Urdu text. Naskh first: it fits
+  /// Latin line heights, where Nastaliq would overlap the next line.
+  static const List<String> latinFallback = <String>[
+    'NotoNaskhArabic',
+    'NotoNastaliqUrdu',
+  ];
 
   /// Fallback for Urdu styles that meet Latin (brand names, prices).
   static const List<String> urduFallback = <String>['InstrumentSans'];
