@@ -255,6 +255,49 @@ void main() {
       );
       expect(tester.takeException(), isNull);
     });
+
+    // Phase 1 gate: the BUG-8 fix switches to vertical above 115%. Check the
+    // band just below the switch, where the horizontal header still shows.
+    for (final locale in AppLocales.supported) {
+      for (final scale in [1.0, 1.1, 1.15, 1.2, 1.5, 2.0]) {
+        testWidgets('horizontal type at ${(scale * 100).round()}% '
+            '${locale.languageCode}, 360dp: no overflow', (tester) async {
+          await _pump(
+            tester,
+            SizedBox(
+              height: 900,
+              child: AppStepper(
+                type: StepperType.horizontal,
+                onStepContinue: () {},
+                onStepCancel: () {},
+                steps: locale == AppLocales.urdu
+                    ? const [
+                        Step(
+                          title: Text('شہر'),
+                          content: Text('a'),
+                          isActive: true,
+                        ),
+                        Step(title: Text('دلچسپی'), content: Text('b')),
+                        Step(title: Text('الرٹس'), content: Text('c')),
+                      ]
+                    : const [
+                        Step(
+                          title: Text('City'),
+                          content: Text('a'),
+                          isActive: true,
+                        ),
+                        Step(title: Text('Interests'), content: Text('b')),
+                        Step(title: Text('Alerts'), content: Text('c')),
+                      ],
+              ),
+            ),
+            locale: locale,
+            textScale: scale,
+          );
+          expect(tester.takeException(), isNull);
+        });
+      }
+    }
   });
 
   group('AppTabBar (round-2 scroll switch)', () {
