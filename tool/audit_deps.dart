@@ -27,7 +27,9 @@ Future<void> main(List<String> args) async {
   );
   final packages = parseLockfile(File(path).readAsStringSync());
   final problems = [
+    if (packages.isEmpty) '$path lists no packages; is it a pubspec.lock?',
     for (final p in packages) ...offlineProblems(p),
+    // Fails closed: a package that can't be checked is a problem too.
     if (args.contains('--online')) ...await _onlineProblems(packages),
   ];
 
@@ -79,8 +81,9 @@ List<LockedPackage> parseLockfile(String lockfile) {
       if (value case final YamlMap entry)
         LockedPackage(
           name: key as String,
-          version: entry['version'] as String,
-          source: entry['source'] as String,
+          // Missing fields become offline problems, not crashes.
+          version: entry['version'] is String ? entry['version'] as String : '',
+          source: entry['source'] is String ? entry['source'] as String : '',
           url: switch (entry['description']) {
             final YamlMap d => d['url'] as String?,
             _ => null,
@@ -90,6 +93,8 @@ List<LockedPackage> parseLockfile(String lockfile) {
 }
 
 List<String> offlineProblems(LockedPackage p) => [
+  if (p.source != 'sdk' && _parseVersion(p.version) == null)
+    '${p.name} has no valid version in the lockfile.',
   if (bannedPackages[p.name] case final reason?)
     '${p.name} is banned: $reason.',
   switch (p.source) {
@@ -120,7 +125,8 @@ List<String> metadataProblems(LockedPackage p, Map<String, Object?> json) {
 /// Advisories (`/api/packages/<name>/advisories`, OSV format) that affect
 /// the locked version.
 List<String> advisoryProblems(LockedPackage p, Map<String, Object?> json) {
-  final version = Version.parse(p.version);
+  final version = _parseVersion(p.version);
+  if (version == null) return const [];
   final problems = <String>[];
   for (final advisory
       in (json['advisories'] as List<Object?>? ?? [])
@@ -145,19 +151,21 @@ bool _affects(Map<String, Object?> affected, Version version) {
   for (final range
       in (affected['ranges'] as List<Object?>? ?? [])
           .cast<Map<String, Object?>>()) {
-    if (range['type'] != 'SEMVER') continue;
+    // pub.dev serves ECOSYSTEM ranges; pub versions are semver, so both
+    // compare the same way. GIT ranges (commit hashes) don't apply.
+    if (range['type'] != 'SEMVER' && range['type'] != 'ECOSYSTEM') continue;
     // OSV events, in order: introduced, then fixed or last_affected.
     Version? introduced;
     for (final event
         in (range['events'] as List<Object?>? ?? [])
             .cast<Map<String, Object?>>()) {
       if (event['introduced'] case final String v) {
-        introduced = v == '0' ? Version.none : Version.parse(v);
+        introduced = v == '0' ? Version.none : _parseVersion(v);
       } else if (introduced != null) {
         final inRange = switch (event) {
-          {'fixed': final String v} =>
+          {'fixed': final String v} when _parseVersion(v) != null =>
             version >= introduced && version < Version.parse(v),
-          {'last_affected': final String v} =>
+          {'last_affected': final String v} when _parseVersion(v) != null =>
             version >= introduced && version <= Version.parse(v),
           _ => false,
         };
@@ -177,12 +185,19 @@ Future<List<String>> _onlineProblems(List<LockedPackage> packages) async {
   try {
     final problems = <String>[];
     for (final p in packages.where((p) => p.source == 'hosted')) {
-      final base = 'https://pub.dev/api/packages/${p.name}';
-      problems
-        ..addAll(metadataProblems(p, await _getJson(client, base)))
-        ..addAll(
-          advisoryProblems(p, await _getJson(client, '$base/advisories')),
-        );
+      final base =
+          'https://pub.dev/api/packages/${Uri.encodeComponent(p.name)}';
+      try {
+        problems
+          ..addAll(metadataProblems(p, await _getJson(client, base)))
+          ..addAll(
+            advisoryProblems(p, await _getJson(client, '$base/advisories')),
+          );
+      } on _NotFound {
+        problems.add('${p.name} is not on pub.dev (removed or unpublished).');
+      } on Exception catch (e) {
+        problems.add('${p.name} could not be checked: $e');
+      }
     }
     return problems;
   } finally {
@@ -190,13 +205,47 @@ Future<List<String>> _onlineProblems(List<LockedPackage> packages) async {
   }
 }
 
+final class _NotFound implements Exception;
+
+/// GETs JSON with a timeout, retrying network errors, 429 and 5xx up to
+/// three times with backoff.
 Future<Map<String, Object?>> _getJson(HttpClient client, String url) async {
-  final request = await client.getUrl(Uri.parse(url));
-  request.headers.set('accept', 'application/json');
-  final response = await request.close();
-  final body = await response.transform(utf8.decoder).join();
-  if (response.statusCode != 200) {
-    throw HttpException('$url answered ${response.statusCode}');
+  for (var attempt = 1; ; attempt++) {
+    try {
+      final request = await client
+          .getUrl(Uri.parse(url))
+          .timeout(const Duration(seconds: 20));
+      request.headers.set('accept', 'application/json');
+      final response = await request.close().timeout(
+        const Duration(seconds: 20),
+      );
+      final body = await response.transform(utf8.decoder).join();
+      if (response.statusCode == 404) throw _NotFound();
+      if (response.statusCode == 200) {
+        return jsonDecode(body) as Map<String, Object?>;
+      }
+      if (response.statusCode != 429 && response.statusCode < 500) {
+        throw HttpException('$url answered ${response.statusCode}');
+      }
+      if (attempt >= 3) {
+        throw HttpException('$url answered ${response.statusCode}');
+      }
+    } on _NotFound {
+      rethrow;
+    } on HttpException {
+      if (attempt >= 3) rethrow;
+    } on Exception {
+      // SocketException, TimeoutException, FormatException...
+      if (attempt >= 3) rethrow;
+    }
+    await Future<void>.delayed(Duration(seconds: 2 * attempt));
   }
-  return jsonDecode(body) as Map<String, Object?>;
+}
+
+Version? _parseVersion(String text) {
+  try {
+    return Version.parse(text);
+  } on FormatException {
+    return null;
+  }
 }

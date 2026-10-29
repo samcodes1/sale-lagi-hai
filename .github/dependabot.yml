@@ -1,5 +1,6 @@
-# Dependency updates. Security updates are opened as soon as an advisory is
-# published; version updates are batched weekly so CI runs stay few.
+# Dependency updates, batched weekly so CI runs stay few. Security updates
+# (opened as soon as an advisory is published) also need "Dependabot
+# security updates" on in the repository's Settings → Code security.
 version: 2
 updates:
   - package-ecosystem: pub

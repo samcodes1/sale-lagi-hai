@@ -7,7 +7,7 @@ The security baseline from sub-phase 1.7, mapped to OWASP MASVS v2.1 and the Mob
 ## Enforced automatically
 | What | Where it's enforced |
 |---|---|
-| Manifest: no cleartext, network config used, only the launcher exported, no `VIEW` deep links, Flutter deep linking off, INTERNET only, unused SDK permissions stripped, never debuggable | `test/security/android_config_test.dart` |
+| Manifest: no cleartext, network config used, only the launcher exported, no `VIEW` deep links, Flutter deep linking off (on the activity, where Flutter reads it), our manifest asks only for INTERNET, unused SDK permissions stripped, never debuggable | `test/security/android_config_test.dart` |
 | Network config: cleartext off in every config; release builds trust system CAs only; user CAs in `debug-overrides` only | same |
 | Backups: secure storage excluded from cloud backup, device transfer and legacy full backup; only preferences and DataStore included | same |
 | Release build: R8 minify and resource shrinking, keep rules, `REQUIRE_RELEASE_SIGNING`, target API ≥ 36, signing files gitignored | same |
@@ -55,6 +55,7 @@ The security baseline from sub-phase 1.7, mapped to OWASP MASVS v2.1 and the Mob
 | M10 Insufficient cryptography | No custom cryptography |
 
 ## Notes
-- **Dart networking ignores Android's network security config.** `dart:io`'s `HttpClient` (and packages built on it, such as `http` and Supabase's client) uses Dart's own TLS stack. So the cleartext ban in `network_security_config.xml` covers only platform networking: plugins, Custom Tabs and image loaders on the platform stack. On the Dart side it is enforced by `AppConfig` (the Supabase URL must be `https://`) and by the hygiene test (no `http://` URLs). If we ever need the platform rules to apply to Dart traffic, use `cronet_http` (skill §5).
+- **Dart networking ignores Android's network security config.** `dart:io`'s `HttpClient` (and packages built on it, such as `http` and Supabase's client) uses Dart's own TLS stack. So the cleartext ban in `network_security_config.xml` covers only platform networking in our process, such as plugins and image loaders that use the platform stack. Custom Tabs run in the browser, under the browser's own rules. On the Dart side it is enforced by `AppConfig` (the Supabase URL must be `https://`) and by the hygiene test (no `http://` URLs). If we ever need the platform rules to apply to Dart traffic, use `cronet_http` (skill §5).
+- **Plugins add permissions.** connectivity_plus adds `ACCESS_NETWORK_STATE` (normal, install-time). Declare every merged permission in the Data safety form.
 - **Re-check the merged manifest whenever a plugin is added:** `android/app/build/intermediates/merged_manifests/<variant>/AndroidManifest.xml`. Plugins can add permissions, exported components and backup settings. The lint test reads only our source manifest.
 - **Owner to-dos before the first release** are in `docs/RELEASE.md`: upload key, Play App Signing, and the CI secrets.

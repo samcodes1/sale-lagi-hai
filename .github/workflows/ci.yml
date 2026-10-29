@@ -32,6 +32,9 @@ jobs:
       - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # .gitleaks.toml uses [[allowlists]], which needs gitleaks 8.25+;
+          # the action's default is older.
+          GITLEAKS_VERSION: "8.30.1"
 
   # Known vulnerabilities in the locked dependencies (OSV database), plus
   # pub.dev's own checks: advisories, retracted versions, discontinued or

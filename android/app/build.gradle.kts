@@ -58,8 +58,9 @@ android {
     }
 
     // Release signing: the upload key comes from android/key.properties
-    // (gitignored; written from CI secrets). Without it, local release
-    // builds fall back to the debug key, and CI release builds fail.
+    // (gitignored; written from CI secrets). Without it, release builds
+    // fall back to the debug key, unless REQUIRE_RELEASE_SIGNING=true (set
+    // it in the job that builds uploads), which fails the build instead.
     signingConfigs {
         if (keystoreProperties.isNotEmpty()) {
             create("release") {

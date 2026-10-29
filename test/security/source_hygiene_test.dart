@@ -24,13 +24,27 @@ final List<File> _shippedFiles = [
       if (f is File && !_binary.any(f.path.endsWith)) f,
 ];
 
+/// Build scripts, where signing passwords would be hard-coded.
+final List<File> _buildScripts = [
+  for (final f in Directory('android').listSync(recursive: true))
+    if (f is File &&
+        (f.path.endsWith('.gradle') ||
+            f.path.endsWith('.gradle.kts') ||
+            f.path.endsWith('.properties')) &&
+        !f.path.contains(
+          '${Platform.pathSeparator}build${Platform.pathSeparator}',
+        ) &&
+        !f.path.contains('.gradle${Platform.pathSeparator}'))
+      f,
+];
+
 const _binary = ['.ttf', '.otf', '.png', '.jpg', '.webp', '.jar', '.so'];
 
-/// The source without `//` comments (doc comments may name a pattern).
-String _code(File f) => f.readAsStringSync().replaceAll(
-  RegExp(r'^\s*//.*$|\s//.*$', multiLine: true),
-  '',
-);
+/// The source without whole-line `//` comments (doc comments may name a
+/// pattern). Trailing comments stay: stripping them would also eat code
+/// after a string that holds `//`.
+String _code(File f) =>
+    f.readAsStringSync().replaceAll(RegExp(r'^\s*//.*$', multiLine: true), '');
 
 List<String> _matches(
   Iterable<File> files,
@@ -53,15 +67,23 @@ void main() {
     // console sink writes to the console.
     final offenders = _matches(
       _libFiles.where((f) => !f.path.endsWith('log_sinks.dart')),
-      RegExp(r'\b(print|debugPrint|debugPrintStack)\b|\bstd(out|err)\.'),
+      RegExp(
+        r'\b(print|debugPrint\w*)\b|\bstd(out|err)\.|\bdeveloper\.log\b'
+        '|dart:developer',
+      ),
     );
     expect(offenders, isEmpty);
   });
 
   test('no cleartext URLs', () {
+    // Any case, split literals ('http:' '//...'), Uri.http and http
+    // schemes, and cleartext WebSockets. No host is exempt in app code.
     final offenders = _matches(
       _shippedFiles.where((f) => !f.path.endsWith('.xml')),
-      RegExp(r'http://(?!localhost|127\.0\.0\.1|10\.0\.2\.2)'),
+      RegExp(
+        r'[hH][tT][tT][pP]:|[wW][sS]://|\bUri\.http\('
+        r'|scheme:\s*.[hH][tT][tT][pP].',
+      ),
     );
     expect(offenders, isEmpty);
   });
@@ -76,7 +98,7 @@ void main() {
 
   test('no secret keys or tokens in code, templates or assets', () {
     final offenders = _matches(
-      _shippedFiles,
+      [..._shippedFiles, ..._buildScripts],
       code: false,
       RegExp(
         // Supabase secret keys, any JWT, private key blocks, keystore
@@ -84,8 +106,9 @@ void main() {
         'sb_secret_[A-Za-z0-9_-]{8,}'
         r'|eyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}'
         '|-----BEGIN [A-Z ]*PRIVATE KEY-----'
-        r'|(store|key)Password\s*=\s*\S+'
+        r'|(store|key)Password\s*[=:\s]\s*["\x27]?[^\s$()"\x27]{6,}["\x27]?\s*$'
         '|AIza[0-9A-Za-z_-]{35}',
+        multiLine: true,
       ),
     );
     expect(offenders, isEmpty);

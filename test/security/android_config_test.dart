@@ -73,12 +73,24 @@ void main() {
           .findAllElements('action')
           .where((a) => _attr(a, 'name') == 'android.intent.action.VIEW');
       expect(views, isEmpty);
-      final deeplinking = application
+      // FlutterActivity reads the flag from the activity's own meta-data
+      // and defaults to true; under <application> it is ignored.
+      final activity = application
+          .findElements('activity')
+          .singleWhere((a) => _attr(a, 'name') == '.MainActivity');
+      final deeplinking = activity
           .findElements('meta-data')
           .singleWhere(
             (m) => _attr(m, 'name') == 'flutter_deeplinking_enabled',
           );
       expect(_attr(deeplinking, 'value'), 'false');
+      expect(
+        application
+            .findElements('meta-data')
+            .where((m) => _attr(m, 'name') == 'flutter_deeplinking_enabled'),
+        isEmpty,
+        reason: 'misplaced: Flutter ignores it here',
+      );
     });
 
     test('permissions: INTERNET only; unused SDK permissions stripped', () {
