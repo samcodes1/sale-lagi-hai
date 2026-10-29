@@ -20,10 +20,10 @@ Widget _app() => ProviderScope(
   child: const App(),
 );
 
+const _together =
+    'SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY must be set together.';
 final List<String> _manyProblems = [
-  for (var i = 0; i < 30; i++)
-    'Problem $i: SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY must be set '
-        'together.',
+  for (var i = 0; i < 30; i++) 'Problem $i: $_together',
 ];
 
 void main() {
