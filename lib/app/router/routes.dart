@@ -7,6 +7,7 @@ import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
 import 'package:sale_lagi_hai/app/router/route_params.dart';
 import 'package:sale_lagi_hai/app/shell/app_shell.dart';
 import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
+import 'package:sale_lagi_hai/design_system/gallery/widget_gallery_page.dart';
 import 'package:sale_lagi_hai/features/alerts/presentation/alerts_screen.dart';
 import 'package:sale_lagi_hai/features/brands/presentation/brand_screen.dart';
 import 'package:sale_lagi_hai/features/categories/presentation/category_screen.dart';
@@ -52,7 +53,10 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
       routes: [
         TypedGoRoute<ProfileRoute>(
           path: '/profile',
-          routes: [TypedGoRoute<ThemePreviewRoute>(path: 'dev/theme')],
+          routes: [
+            TypedGoRoute<ThemePreviewRoute>(path: 'dev/theme'),
+            TypedGoRoute<WidgetGalleryRoute>(path: 'dev/gallery'),
+          ],
         ),
       ],
     ),
@@ -191,14 +195,31 @@ final class ThemePreviewRoute extends GoRouteData with $ThemePreviewRoute {
 
   @override
   FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
-      ProviderScope.containerOf(
-        context,
-        listen: false,
-      ).read(appConfigProvider).flavor.isProduction
-      ? const ProfileRoute().location
-      : null;
+      _devOnly(context);
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const ThemePreviewPage();
 }
+
+/// `/profile/dev/gallery`: every design-system widget. Not in production.
+final class WidgetGalleryRoute extends GoRouteData with $WidgetGalleryRoute {
+  const new();
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
+      _devOnly(context);
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const WidgetGalleryPage();
+}
+
+/// Sends developer routes back to Profile in production builds.
+String? _devOnly(BuildContext context) =>
+    ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(appConfigProvider).flavor.isProduction
+    ? const ProfileRoute().location
+    : null;

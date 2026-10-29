@@ -60,6 +60,11 @@ class ProfileScreen extends ConsumerWidget {
               title: const Text('Theme preview (dev)'),
               onTap: () => const ThemePreviewRoute().go(context),
             ),
+            ListTile(
+              leading: const Icon(Icons.widgets_outlined),
+              title: const Text('Widget gallery (dev)'),
+              onTap: () => const WidgetGalleryRoute().go(context),
+            ),
           ],
         ],
       ),

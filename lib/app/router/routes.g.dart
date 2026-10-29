@@ -79,6 +79,11 @@ RouteBase get $appShellRoute => StatefulShellRouteData.$route(
               hasOverriddenOnExit: false,
               factory: $ThemePreviewRoute._fromState,
             ),
+            GoRouteData.$route(
+              path: 'dev/gallery',
+              hasOverriddenOnExit: false,
+              factory: $WidgetGalleryRoute._fromState,
+            ),
           ],
         ),
       ],
@@ -268,6 +273,27 @@ mixin $ThemePreviewRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/profile/dev/theme');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $WidgetGalleryRoute on GoRouteData {
+  static WidgetGalleryRoute _fromState(GoRouterState state) =>
+      const WidgetGalleryRoute();
+
+  @override
+  String get location => GoRouteData.$location('/profile/dev/gallery');
 
   @override
   void go(BuildContext context) => context.go(location);
