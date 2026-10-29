@@ -13,8 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xml/xml.dart';
 import 'package:yaml/yaml.dart';
 
-import 'known_bugs.dart';
-
 const _android = 'http://schemas.android.com/apk/res/android';
 const _tools = 'http://schemas.android.com/tools';
 

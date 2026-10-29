@@ -46,7 +46,6 @@ import 'package:sale_lagi_hai/features/profile/presentation/profile_screen.dart'
 
 import '../features/onboarding/onboarding_harness.dart';
 import '../helpers/fakes.dart';
-import 'known_bugs.dart';
 
 const _dealId = '3f2a9c1e-7b4d-4e8a-9c2f-1a2b3c4d5e6f';
 

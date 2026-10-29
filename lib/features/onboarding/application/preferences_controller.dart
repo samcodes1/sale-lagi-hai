@@ -72,8 +72,9 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
       if (!ref.mounted) return;
       if (stored != const ShopperPreferences()) state = stored;
       _canSave = true;
-      if (state != stored)
+      if (state != stored) {
         await ref.read(preferencesStoreProvider).write(state);
+      }
     } on Object catch (error) {
       if (!ref.mounted) return;
       ref
