@@ -13,8 +13,19 @@ import 'package:sale_lagi_hai/features/onboarding/application/preferences_contro
 /// [NotFoundScreen], which never displays the location.
 final routerProvider = Provider<GoRouter>((ref) {
   final onboarded = ValueNotifier<bool>(ref.read(onboardedProvider));
-  ref.listen(onboardedProvider, (_, next) => onboarded.value = next);
+  // A link is kept only if it opened the app (before the first onboarding
+  // of this session). After a reset (account deletion) the page the
+  // shopper was on is not a link to reopen (QA 4.1 R2-1).
+  var keepLinks = !onboarded.value;
   String? pending;
+  ref.listen(onboardedProvider, (_, next) {
+    if (next) {
+      keepLinks = false;
+    } else {
+      pending = null;
+    }
+    onboarded.value = next;
+  });
 
   final router = GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -32,7 +43,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
         // Keep the link for afterwards (it is validated again then, by
         // its own route's redirect).
-        if (location != const HomeRoute().location) pending = location;
+        if (keepLinks && location != const HomeRoute().location) {
+          pending = location;
+        }
         return welcomePath;
       }
       if (inWelcome) {

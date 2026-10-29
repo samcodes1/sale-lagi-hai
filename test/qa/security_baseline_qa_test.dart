@@ -184,8 +184,14 @@ void main() {
       final application = _xml('android/app/src/main/AndroidManifest.xml')
           .findAllElements('application')
           .single;
+      // A `tools:node="remove"` entry only strips a plugin's component at
+      // merge time (merged_manifest_qa_test.dart checks the result); it
+      // adds no component, so it needs no `exported`.
       final components = [
-        for (final tag in _components) ...application.findAllElements(tag),
+        for (final tag in _components)
+          ...application
+              .findAllElements(tag)
+              .where((c) => _attr(c, 'node', ns: _tools) != 'remove'),
       ];
       for (final c in components) {
         expect(_attr(c, 'exported'), isNotNull, reason: _attr(c, 'name'));

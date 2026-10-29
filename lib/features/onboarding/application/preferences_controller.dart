@@ -51,6 +51,10 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
   /// replace a returning shopper's choices with whatever this session holds.
   bool _canSave = true;
 
+  /// Bumped by [reset]: a re-read that started before it must not bring
+  /// the old choices back.
+  int _generation = 0;
+
   @override
   ShopperPreferences build() {
     final saved = ref.watch(savedPreferencesProvider);
@@ -67,14 +71,10 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
   /// otherwise this session's choices are kept (and now saved). If it still
   /// fails, choices stay in memory for this session only.
   Future<void> _recover() async {
+    final generation = _generation;
+    final ShopperPreferences stored;
     try {
-      final stored = await ref.read(preferencesStoreProvider).read();
-      if (!ref.mounted) return;
-      if (stored != const ShopperPreferences()) state = stored;
-      _canSave = true;
-      if (state != stored) {
-        await ref.read(preferencesStoreProvider).write(state);
-      }
+      stored = await ref.read(preferencesStoreProvider).read();
     } on Object catch (error) {
       if (!ref.mounted) return;
       ref
@@ -83,6 +83,19 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
             'Saved preferences still unreadable; not saving this session',
             error: error,
           );
+      return;
+    }
+    if (!ref.mounted || generation != _generation) return;
+    if (stored != const ShopperPreferences()) state = stored;
+    _canSave = true;
+    if (state == stored) return;
+    try {
+      await ref.read(preferencesStoreProvider).write(state);
+    } on Object catch (error) {
+      if (!ref.mounted) return;
+      ref
+          .read(loggerProvider)
+          .warning('Could not save the shopper preferences', error: error);
     }
   }
 
@@ -116,6 +129,8 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
   /// Back to a first launch (after account deletion): everything chosen
   /// is forgotten, and the router returns to onboarding.
   Future<void> reset() async {
+    _generation++;
+    _canSave = true;
     state = const ShopperPreferences();
     try {
       await ref.read(preferencesStoreProvider).clear();
