@@ -1,0 +1,26 @@
+# Strict lints for a production app. Do not disable rules to make code pass;
+# fix the code. Any exception needs a comment explaining why.
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - lib/**/*.g.dart
+    - lib/**/*.freezed.dart
+    - lib/l10n/gen/**
+    - android/**
+    - ios/**
+    - web/**
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # Treat these as hard errors, not hints.
+    missing_required_param: error
+    missing_return: error
+
+linter:
+  rules:
+    # This is an app, not a published package.
+    public_member_api_docs: false

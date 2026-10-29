@@ -1,0 +1,6 @@
+{
+  "FLAVOR": "staging",
+  "APP_NAME": "SLH Staging",
+  "SUPABASE_URL": "https://YOUR-STAGING-PROJECT.supabase.co",
+  "SUPABASE_ANON_KEY": "sb_publishable_REPLACE_ME"
+}
