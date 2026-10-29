@@ -253,12 +253,28 @@ final class DemoGateway implements BackendGateway {
     throw UnsupportedError('demo backend has no RPC $function');
   }
 
-  bool _follows(Map<String, Object?> deal) => _tables['follows']!.any(
-    (f) =>
-        f['user_id'] == userId &&
-        (f['brand_id'] == deal['brand_id'] ||
-            f['category_id'] == deal['category_id']),
-  );
+  /// The alert planner's rules: the brand; the category or its parent; a
+  /// bank whose cards the deal needs; or, for local deals, a city they
+  /// target (all demo local deals are in Karachi).
+  bool _follows(Map<String, Object?> deal) {
+    final parent = demoCategories.firstWhere(
+      (c) => c['id'] == deal['category_id'],
+    )['parent_id'];
+    final bankIds = {
+      for (final b in demoBanks)
+        if ((deal['card_banks']! as List).contains(b['short_name'])) b['id'],
+    };
+    return _tables['follows']!.any(
+      (f) =>
+          f['user_id'] == userId &&
+          (f['brand_id'] == deal['brand_id'] ||
+              (f['category_id'] != null &&
+                  (f['category_id'] == deal['category_id'] ||
+                      f['category_id'] == parent)) ||
+              (f['bank_id'] != null && bankIds.contains(f['bank_id'])) ||
+              (deal['scope'] == 'local' && f['city_id'] == karachiId)),
+    );
+  }
 
   /// Typo tolerance like pg_trgm's: one edit per four letters.
   static bool _close(String a, String b) {

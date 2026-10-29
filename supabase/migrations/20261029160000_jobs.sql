@@ -13,12 +13,17 @@
 -- Rate limits: reports and submissions per user. Over the limit the insert
 -- fails with SQLSTATE PT429, which PostgREST returns as HTTP 429 (the app
 -- maps it to RateLimitedFailure). Users can read their own rows, so the
--- count runs with the caller's own RLS.
+-- count runs with the caller's own RLS. The server sets created_at: a
+-- client-chosen (backdated) time would never count.
 -- ===========================================================================
 create function private.limit_reports() returns trigger
 language plpgsql set search_path = '' as $$
 begin
-  if not private.is_trusted_caller() and (
+  if private.is_trusted_caller() then
+    return new;
+  end if;
+  new.created_at := now();
+  if (
     select count(*) from public.reports r
     where r.reporter_id = (select auth.uid()) and r.created_at > now() - interval '1 hour'
   ) >= 10 then
@@ -39,6 +44,7 @@ begin
   if private.is_trusted_caller() then
     return new;
   end if;
+  new.created_at := now();
   select count(*) filter (where s.created_at > now() - interval '1 hour'), count(*)
     into last_hour, last_day
   from public.submissions s
@@ -113,7 +119,8 @@ end $$;
 
 -- ===========================================================================
 -- Push tokens: one row per device token. Registering through the RPC moves
--- a token to the signed-in user (a phone that switches accounts).
+-- a token to the signed-in user (a phone that switches accounts). A user
+-- keeps their 10 most recently seen devices; older tokens are dropped.
 -- ===========================================================================
 create table public.push_tokens (
   token text primary key check (length(token) between 20 and 4096),
@@ -141,18 +148,32 @@ begin
   values (register_push_token.token, (select auth.uid()), register_push_token.platform)
   on conflict on constraint push_tokens_pkey do update
     set user_id = excluded.user_id, platform = excluded.platform, last_seen_at = now();
+  delete from public.push_tokens t
+  where t.user_id = (select auth.uid())
+    and t.token not in (
+      select k.token from public.push_tokens k
+      where k.user_id = (select auth.uid())
+      order by k.last_seen_at desc, k.created_at desc
+      limit 10);
 end $$;
 revoke execute on function public.register_push_token(text, text) from public, anon;
 grant execute on function public.register_push_token(text, text) to authenticated;
 
 -- ===========================================================================
--- Alert queue: deals that went live and still need alerts. A deal is
--- queued once, however often it is republished.
+-- Alert queue: published deals that still need alerts. A deal alerts its
+-- followers once, ever: the row stays (with alerted_at) after its alerts
+-- go out, so republishing or editing a live deal never alerts again. A
+-- published deal that is not live yet (it starts later, or staff haven't
+-- activated its brand) waits in the queue until it is.
 -- ===========================================================================
 create table private.alert_queue (
   deal_id uuid primary key references public.deals on delete cascade,
   queued_at timestamptz not null default now(),
-  processed_at timestamptz
+  -- Set when the planner is done with the row: it alerted (alerted_at is
+  -- set too) or the deal was no longer published.
+  processed_at timestamptz,
+  alerted_at timestamptz,
+  check (alerted_at is null or processed_at is not null)
 );
 create index alert_queue_pending_idx on private.alert_queue (queued_at)
   where processed_at is null;
@@ -160,7 +181,10 @@ create index alert_queue_pending_idx on private.alert_queue (queued_at)
 create function private.queue_alerts() returns trigger
 language plpgsql security definer set search_path = '' as $$
 begin
-  insert into private.alert_queue (deal_id) values (new.id) on conflict do nothing;
+  -- A deal dropped before it alerted (taken back to draft) is queued again.
+  insert into private.alert_queue as q (deal_id) values (new.id)
+  on conflict (deal_id) do update set queued_at = now(), processed_at = null
+    where q.alerted_at is null and q.processed_at is not null;
   return null;
 end $$;
 create trigger deals_queue_alerts after insert or update of status on public.deals
@@ -257,18 +281,24 @@ begin
     ) on commit drop;
   end if;
 
+  -- Rows the planner can finish now: live deals, and deals that are no
+  -- longer published or have ended. Deals that are not live yet wait.
   for job in
     select q.deal_id from private.alert_queue q
+    join public.deals dd on dd.id = q.deal_id
+    join public.brands bb on bb.id = dd.brand_id
     where q.processed_at is null
+      and (dd.status <> 'published'
+           or (dd.ends_at is not null and dd.ends_at <= now())
+           or (dd.starts_at <= now() and bb.is_active))
     order by q.queued_at
     limit least(greatest(max_deals, 1), 200)
-    for update skip locked
+    for update of q skip locked
   loop
     select * into d from public.deals where id = job.deal_id;
     select * into b from public.brands where id = d.brand_id;
 
-    if d.status = 'published' and d.starts_at <= now()
-       and (d.ends_at is null or d.ends_at > now()) and b.is_active then
+    if private.is_live(d.status, d.starts_at, d.ends_at) and b.is_active then
       truncate pg_temp.alert_recipients;
 
       insert into pg_temp.alert_recipients
@@ -360,9 +390,11 @@ begin
                           and o.brand_id = d.brand_id);
       get diagnostics n = row_count;
       planned := planned + n;
+      update private.alert_queue set processed_at = now(), alerted_at = now()
+      where deal_id = job.deal_id;
+    else
+      update private.alert_queue set processed_at = now() where deal_id = job.deal_id;
     end if;
-
-    update private.alert_queue set processed_at = now() where deal_id = job.deal_id;
   end loop;
   return planned;
 end $$;
@@ -400,7 +432,8 @@ language sql volatile security definer set search_path = '' as $$
   select count(*)::integer from done;
 $$;
 
--- FCM said these tokens are dead (UNREGISTERED, INVALID_ARGUMENT).
+-- FCM said these tokens are dead (UNREGISTERED, SENDER_ID_MISMATCH, or an
+-- INVALID_ARGUMENT about the registration token).
 create function private.drop_push_tokens(tokens text[]) returns integer
 language sql volatile security definer set search_path = '' as $$
   with gone as (delete from public.push_tokens where token = any(tokens) returning 1)
@@ -411,7 +444,9 @@ $$;
 create function private.cleanup_old_rows() returns void
 language sql volatile security definer set search_path = '' as $$
   delete from private.push_outbox where coalesce(sent_at, created_at) < now() - interval '30 days';
-  delete from private.alert_queue where processed_at < now() - interval '7 days';
+  -- Alerted rows stay: they stop a deal from alerting twice.
+  delete from private.alert_queue
+  where alerted_at is null and processed_at < now() - interval '7 days';
   delete from public.notifications where created_at < now() - interval '90 days';
 $$;
 

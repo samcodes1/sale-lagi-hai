@@ -93,19 +93,42 @@ export function message(push: Push) {
   };
 }
 
-/** Maps an FCM v1 response to what the dispatcher should do. */
+type FcmError = {
+  status?: string;
+  message?: string;
+  details?: { errorCode?: string; fieldViolations?: { field?: string }[] }[];
+};
+
+/**
+ * Maps an FCM v1 response to what the dispatcher should do. A token is
+ * dropped only when FCM says that token is the problem: a wrong project
+ * id (404 NOT_FOUND) or a bad payload field (INVALID_ARGUMENT) affects
+ * every request, and must not wipe every user's devices.
+ */
 export function classify(status: number, body: unknown): SendResult {
   if (status >= 200 && status < 300) return { kind: 'sent' };
-  if (status === 429 || status >= 500) return { kind: 'retry' };
-  const error = (body as { error?: { status?: string; details?: { errorCode?: string }[] } })?.error;
-  const codes = [error?.status, ...(error?.details ?? []).map((d) => d.errorCode)];
-  if (codes.includes('UNREGISTERED') || status === 404) return { kind: 'dead-token' };
-  if (codes.includes('INVALID_ARGUMENT')) return { kind: 'dead-token' };
+  // 401: our access token was rejected (revoked, clock skew); send() has
+  // already fetched a fresh one once, so try again on the next run.
+  if (status === 401 || status === 429 || status >= 500) return { kind: 'retry' };
+  const error = (body as { error?: FcmError } | null)?.error;
+  const details = error?.details ?? [];
+  const codes = details.map((d) => d.errorCode);
+  if (codes.includes('UNREGISTERED') || codes.includes('SENDER_ID_MISMATCH')) {
+    return { kind: 'dead-token' };
+  }
+  const aboutToken =
+    details.some((d) => (d.fieldViolations ?? []).some((v) => v.field === 'message.token')) ||
+    /registration token/i.test(error?.message ?? '');
+  if ((error?.status === 'INVALID_ARGUMENT' || codes.includes('INVALID_ARGUMENT')) && aboutToken) {
+    return { kind: 'dead-token' };
+  }
   return { kind: 'failed', status };
 }
 
 export class FcmClient {
   private token: { value: string; expiresAt: number } | null = null;
+  // Concurrent first sends share one OAuth exchange.
+  private pending: Promise<string> | null = null;
   private readonly account: ServiceAccount;
   private readonly http: Fetch;
   private readonly now: () => number;
@@ -120,6 +143,13 @@ export class FcmClient {
 
   async accessToken(): Promise<string> {
     if (this.token && this.token.expiresAt - 60_000 > this.now()) return this.token.value;
+    this.pending ??= this.fetchAccessToken().finally(() => {
+      this.pending = null;
+    });
+    return this.pending;
+  }
+
+  private async fetchAccessToken(): Promise<string> {
     const assertion = await signedAssertion(this.account, Math.floor(this.now() / 1000));
     const response = await this.http(TOKEN_URL, {
       method: 'POST',
@@ -136,6 +166,14 @@ export class FcmClient {
   }
 
   async send(push: Push): Promise<SendResult> {
+    const first = await this.sendOnce(push);
+    if (first.kind !== 'unauthorized') return first.result;
+    // FCM rejected the cached access token: forget it and try once more.
+    this.token = null;
+    return (await this.sendOnce(push)).result;
+  }
+
+  private async sendOnce(push: Push): Promise<{ kind: 'done' | 'unauthorized'; result: SendResult }> {
     try {
       const response = await this.http(
         `https://fcm.googleapis.com/v1/projects/${encodeURIComponent(this.account.project_id)}/messages:send`,
@@ -154,9 +192,10 @@ export class FcmClient {
       } catch {
         // Non-JSON error page.
       }
-      return classify(response.status, body);
+      const result = classify(response.status, body);
+      return { kind: response.status === 401 ? 'unauthorized' : 'done', result };
     } catch {
-      return { kind: 'retry' };
+      return { kind: 'done', result: { kind: 'retry' } };
     }
   }
 }

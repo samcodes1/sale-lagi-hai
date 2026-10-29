@@ -1,6 +1,6 @@
 -- Access: businesses, members, brands and outlets.
 begin;
-select plan(24);
+select plan(26);
 
 create temp table w as select * from tests.make_world();
 grant select on w to anon, authenticated;
@@ -35,8 +35,8 @@ select throws_ok($$ update public.businesses set status = 'verified', verified_a
   '42501', null, 'owners cannot verify their own business');
 select lives_ok($$ insert into public.business_members (business_id, user_id, role)
   values ((select biz_a from w), (select shopper from w), 'editor') $$, 'owners add members');
-select throws_ok($$ delete from public.business_members where user_id = (select owner from w) $$,
-  '23514', null, 'the last owner cannot leave');
+select throws_ok($$ update public.business_members set role = 'editor' where user_id = (select owner from w) $$,
+  '23514', null, 'the last owner cannot hand back ownership without a successor');
 
 -- Owner of B cannot touch A.
 select tests.authenticate_as((select other_owner from w));
@@ -54,11 +54,15 @@ select tests.authenticate_as((select owner from w));
 select throws_ok($$ insert into public.brands (slug, name, business_id, category_id)
   values ('test-khaadi', 'Khaadi', (select biz_a from w), (select category_id from public.brands where slug = 'kolachi')) $$,
   '42501', null, 'a business cannot add a brand that goes live immediately');
+select throws_ok($$ insert into public.brands (slug, name, business_id, category_id, is_active)
+  values ('test-khaadi-2', 'Khaadi', (select biz_a from w),
+          (select category_id from public.brands where slug = 'kolachi'), false) $$,
+  '42501', null, 'a business cannot pick a brand''s public address');
 select lives_ok($$ insert into public.brands (slug, name, business_id, category_id, is_active)
-  values ('kolachi-express', 'Kolachi Express', (select biz_a from w),
+  values ('pending-kolachi-express', 'Kolachi Express', (select biz_a from w),
           (select category_id from public.brands where slug = 'kolachi'), false) $$,
   'a business adds a brand, hidden until staff check it');
-select throws_ok($$ update public.brands set is_active = true where slug = 'kolachi-express' $$,
+select throws_ok($$ update public.brands set is_active = true where slug = 'pending-kolachi-express' $$,
   '42501', null, 'a business cannot activate its own brand');
 select throws_ok($$ update public.brands set is_verified = true where id = (select brand_a from w) $$,
   '42501', null, 'a business cannot mark its brand verified');
@@ -69,7 +73,7 @@ select lives_ok($$ insert into public.outlets (brand_id, city_id, name, address,
   'a business adds an outlet');
 
 select tests.authenticate_as_anon();
-select is((select count(*)::int from public.brands where slug in ('kolachi', 'kolachi-express')), 1,
+select is((select count(*)::int from public.brands where slug in ('kolachi', 'pending-kolachi-express')), 1,
   'anon sees active brands only');
 select is((select count(*)::int from public.outlets where brand_id = (select brand_a from w)), 1,
   'anon sees active outlets');
@@ -78,8 +82,14 @@ select is((select count(*)::int from public.outlets where brand_id = (select bra
 select tests.staff((select moderator from w));
 select lives_ok($$ update public.businesses set status = 'verified', verified_at = now() where id = (select biz_a from w) $$,
   'a moderator verifies a business');
-select lives_ok($$ update public.brands set is_active = true, is_verified = true where slug = 'kolachi-express' $$,
-  'a moderator activates and verifies a brand');
+select lives_ok($$ update public.brands set slug = 'kolachi-express', is_active = true, is_verified = true
+  where slug = 'pending-kolachi-express' $$,
+  'a moderator gives a brand its address, activates and verifies it');
+
+-- Anyone may leave, even the last owner; staff then reassign the business.
+select tests.authenticate_as((select owner from w));
+select lives_ok($$ delete from public.business_members where user_id = (select owner from w) $$,
+  'the last owner can still leave');
 
 select * from finish();
 rollback;

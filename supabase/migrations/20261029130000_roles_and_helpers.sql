@@ -62,6 +62,15 @@ language sql stable security definer set search_path = '' as $$
   where bm.user_id = (select auth.uid()) and bm.role = 'owner';
 $$;
 
+-- Businesses the current user may act for: a suspended business's members
+-- can still see their data but not change anything.
+create function private.my_active_business_ids() returns setof uuid
+language sql stable security definer set search_path = '' as $$
+  select bm.business_id from public.business_members bm
+  join public.businesses b on b.id = bm.business_id
+  where bm.user_id = (select auth.uid()) and b.status <> 'suspended';
+$$;
+
 -- Brands of the businesses the current user belongs to.
 create function private.my_brand_ids() returns setof uuid
 language sql stable security definer set search_path = '' as $$
@@ -69,6 +78,17 @@ language sql stable security definer set search_path = '' as $$
   where b.business_id in (
     select bm.business_id from public.business_members bm
     where bm.user_id = (select auth.uid())
+  );
+$$;
+
+-- Brands the current user may change (their business is not suspended).
+create function private.my_writable_brand_ids() returns setof uuid
+language sql stable security definer set search_path = '' as $$
+  select b.id from public.brands b
+  where b.business_id in (
+    select bm.business_id from public.business_members bm
+    join public.businesses bz on bz.id = bm.business_id
+    where bm.user_id = (select auth.uid()) and bz.status <> 'suspended'
   );
 $$;
 
@@ -84,7 +104,8 @@ revoke execute on all functions in schema private from public;
 grant execute on function
   private.has_role(public.app_role), private.mfa_verified(), private.is_moderator(),
   private.is_admin(), private.my_business_ids(), private.my_owned_business_ids(),
-  private.my_brand_ids(), private.is_trusted_caller()
+  private.my_brand_ids(), private.my_active_business_ids(), private.my_writable_brand_ids(),
+  private.is_trusted_caller()
   to authenticated, service_role;
 -- Anon reaches only these, through policies on public content and guards.
 grant execute on function private.is_trusted_caller(), private.mfa_verified(),

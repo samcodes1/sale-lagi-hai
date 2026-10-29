@@ -110,6 +110,44 @@ void main() {
     );
   });
 
+  test('following a parent category includes its subcategories', () async {
+    final food = demoCategories.firstWhere((c) => c['parent_id'] == null);
+    await demo.insert('follows', {'category_id': food['id']});
+    final deals = await demo.rpc('feed', {
+      'city_id': karachiId,
+      'following_only': true,
+    });
+    expect(deals, isNotEmpty);
+    final foodIds = {
+      food['id'],
+      for (final c in demoCategories)
+        if (c['parent_id'] == food['id']) c['id'],
+    };
+    expect(deals.every((d) => foodIds.contains(d['category_id'])), isTrue);
+  });
+
+  test('following a city follows its local deals only', () async {
+    await demo.insert('follows', {'city_id': karachiId});
+    final deals = await demo.rpc('feed', {
+      'city_id': karachiId,
+      'following_only': true,
+    });
+    expect(deals, isNotEmpty);
+    expect(deals.every((d) => d['scope'] == 'local'), isTrue);
+  });
+
+  test('following a bank follows its card offers', () async {
+    final hbl = demoBanks.firstWhere((b) => b['slug'] == 'hbl');
+    await demo.insert('follows', {'bank_id': hbl['id']});
+    final deals = await demo.rpc('feed', {
+      'city_id': karachiId,
+      'following_only': true,
+    });
+    expect(deals.map((d) => d['card_banks']), [
+      ['HBL'],
+    ]);
+  });
+
   test(
     'featured: by priority, marked, city placements in their city',
     () async {

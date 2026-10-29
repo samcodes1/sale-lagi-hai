@@ -52,7 +52,7 @@ language sql stable security definer set search_path = '' as $$
           p.folders[1] = 'staff'
           or p.folders[1] in (select b.id::text from public.businesses b)))
        or (
-         p.folders[1] in (select id::text from private.my_business_ids() id)
+         p.folders[1] in (select id::text from private.my_active_business_ids() id)
          and case kind
            when 'deal' then p.folders[2] in (
              select d.id::text from public.deals d

@@ -65,12 +65,16 @@ export async function normalize(
     if (!isRupees(o.pricePkr) || !isRupees(o.originalPricePkr) || o.originalPricePkr <= o.pricePkr!) {
       return { rejected: 'original price must be above the price' };
     }
-    // Never a fake discount: a percentage next to two prices must be the
-    // real one, rounded down (the database checks this too).
-    if (o.kind === 'percent_off') {
-      const real = Math.floor(((o.originalPricePkr - o.pricePkr!) * 100) / o.originalPricePkr);
-      if (o.percent !== real) return { rejected: `percent ${o.percent} is not the real ${real}` };
+    // Never a fake discount: a badge next to two prices must match them
+    // (the database checks the same rules).
+    const real = Math.floor(((o.originalPricePkr - o.pricePkr!) * 100) / o.originalPricePkr);
+    if ((o.kind === 'percent_off' || o.kind === 'flat_percent_off') && o.percent !== real) {
+      return { rejected: `percent ${o.percent} is not the real ${real}` };
     }
+    if (o.kind === 'amount_off' && o.amountOffPkr !== o.originalPricePkr - o.pricePkr!) {
+      return { rejected: 'amount off is not the price difference' };
+    }
+    if (o.kind === 'up_to_percent_off') return { rejected: '"up to" never comes with one price pair' };
   }
 
   return {

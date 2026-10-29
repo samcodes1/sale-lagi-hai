@@ -56,7 +56,16 @@ test('messages carry title, body and deal id only, collapsed per deal', () => {
 test('FCM responses are classified', () => {
   assert.deepEqual(classify(200, {}), { kind: 'sent' });
   assert.deepEqual(classify(404, { error: { status: 'NOT_FOUND', details: [{ errorCode: 'UNREGISTERED' }] } }), { kind: 'dead-token' });
-  assert.deepEqual(classify(400, { error: { status: 'INVALID_ARGUMENT' } }), { kind: 'dead-token' });
+  assert.deepEqual(
+    classify(400, { error: { status: 'INVALID_ARGUMENT', message: 'The registration token is not a valid FCM registration token' } }),
+    { kind: 'dead-token' },
+  );
+  assert.deepEqual(
+    classify(400, { error: { status: 'INVALID_ARGUMENT', details: [{ fieldViolations: [{ field: 'message.token' }] }] } }),
+    { kind: 'dead-token' },
+  );
+  // A bad payload field is our bug, not the token's.
+  assert.deepEqual(classify(400, { error: { status: 'INVALID_ARGUMENT' } }), { kind: 'failed', status: 400 });
   assert.deepEqual(classify(429, null), { kind: 'retry' });
   assert.deepEqual(classify(503, null), { kind: 'retry' });
   assert.deepEqual(classify(403, { error: { status: 'PERMISSION_DENIED' } }), { kind: 'failed', status: 403 });

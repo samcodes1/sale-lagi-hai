@@ -10,11 +10,11 @@ Who can do what, enforced by grants, RLS policies and guard triggers (`supabase/
 | Cities, areas, categories, banks, card products | Read active | Read active | Read active | Read all | Read all, write |
 | Profiles | — | Own: read, edit name, avatar, city, language | Own | Read all | Read all |
 | User roles | — | Read own | Read own | Read own | Read all, grant, revoke (not their own admin) |
-| Businesses | — | Register one (becomes owner) | Read own. Owners edit details; never verify | Read all, verify, suspend | Delete |
-| Business members | — | — | Read team. Owners add, remove and change roles; anyone may leave; the last owner can't | Read all | Manage |
-| Brands | Read active | Read active | Read own. Add (hidden until staff activate). Edit details, not slug, owner, bank, verified or active | Read all, add, edit, activate, verify | Delete |
+| Businesses | — | Register one (becomes owner) | Read own. Owners edit details; never verify. A verified business that changes its name or registration number goes back to review | Read all, verify, suspend | Delete |
+| Business members | — | — | Read team. Owners add, remove and change roles; anyone may leave, even the last owner; the last owner can't hand over the role without a successor | Read all | Manage |
+| Brands | Read active | Read active | Read own. Add with a `pending-…` slug (hidden until staff set the real slug and activate it). Edit details, not slug, owner, bank, verified or active; rename only while hidden | Read all, add, edit, activate, verify | Delete |
 | Outlets | Read active | Read active | Manage own brands' outlets | Manage | Manage |
-| Deals | Read published and expired, once started | Same | Read all own. Write drafts, send for review, take back to draft, remove; edit content only as a draft; never publish, reject or verify | Read all, publish, reject, edit | Delete |
+| Deals | Read published and expired, once started | Same | Read all own. Write drafts, send for review, take back to draft, remove; edit content only as a draft (not while in review); never publish, reject or verify | Read all, publish, reject, edit | Delete |
 | Deal targets, card offers | With their deal | With their deal | Edit while the deal is a draft | Manage | Manage |
 | Follows, saves, my cards | — | Own (saves: only deals they can see) | Own | Own | Own (no one reads others') |
 | Alert preferences | — | Read and edit own | Own | Own | Own |
@@ -29,6 +29,7 @@ Notes:
 - **Column grants limit what a client can send.** For example, a profile's id and timestamps, notification text, and a deal's `published_at`, `fingerprint`, `source` and `created_by` are not client-writable.
 - `created_by`, `granted_by`, `reporter_id` and `submitter_id` default to the caller, and policies require them to equal the caller.
 - The Custom Access Token Hook adds `user_roles` to the JWT **for the apps' UI only**; policies always read the table. Enable it in the dashboard (Authentication → Hooks).
+- **A suspended business is read-only.** Its members still read their data, but every write (brands, outlets, deals, targets, card offers, placements, media) fails with 42501 until staff lift the suspension.
 - **Account deletion always succeeds.** If the user was a business's last owner, the business is left without an owner for staff to reassign.
 
 ## Storage

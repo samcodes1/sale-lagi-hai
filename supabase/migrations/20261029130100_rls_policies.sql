@@ -127,10 +127,21 @@ create trigger businesses_add_creator after insert on public.businesses
 create function private.guard_business() returns trigger
 language plpgsql set search_path = '' as $$
 begin
-  if (new.status, new.verified_at) is distinct from (old.status, old.verified_at)
-     and not private.is_trusted_caller() and not private.is_moderator() then
+  if private.is_trusted_caller() or private.is_moderator() then
+    return new;
+  end if;
+  if (new.status, new.verified_at) is distinct from (old.status, old.verified_at) then
     raise exception 'only staff can verify or suspend a business'
       using errcode = '42501';
+  end if;
+  if old.status = 'suspended' then
+    raise exception 'a suspended business cannot change its details' using errcode = '42501';
+  end if;
+  -- A verified business that changes who it is goes back to review.
+  if old.status = 'verified'
+     and (new.name, new.registration_no) is distinct from (old.name, old.registration_no) then
+    new.status := 'pending';
+    new.verified_at := null;
   end if;
   return new;
 end $$;
@@ -159,15 +170,17 @@ create policy "members: owners remove, or leave" on public.business_members
          or user_id = (select auth.uid()));
 select pg_temp.staff_writes('business_members', 'is_admin');
 
--- A business always keeps an owner, unless the business itself is deleted
--- or the owner deletes their account (which must always work; staff then
--- reassign the business).
+-- A business keeps an owner when roles change. Anyone may still leave,
+-- even the last owner (nobody is stuck in a business someone else added
+-- them to), and account deletion always works; staff then reassign the
+-- business.
 create function private.keep_an_owner() returns trigger
 language plpgsql security definer set search_path = '' as $$
 begin
   if old.role = 'owner'
      and exists (select 1 from public.businesses b where b.id = old.business_id)
      and exists (select 1 from auth.users u where u.id = old.user_id)
+     and not (tg_op = 'DELETE' and old.user_id = (select auth.uid()))
      and not exists (
        select 1 from public.business_members m
        where m.business_id = old.business_id and m.role = 'owner'
@@ -198,13 +211,16 @@ create policy "brands: staff read" on public.brands
   for select to authenticated using ((select private.is_moderator()));
 create policy "brands: members add" on public.brands
   for insert to authenticated
-  with check (business_id in (select private.my_business_ids())
-              and not is_verified and not is_active and bank_id is null);
+  with check (business_id in (select private.my_active_business_ids())
+              and not is_verified and not is_active and bank_id is null
+              -- A placeholder slug: staff set the real one on approval, so
+              -- nobody can reserve a famous brand's address.
+              and slug like 'pending-%');
 create policy "brands: staff add" on public.brands
   for insert to authenticated with check ((select private.is_moderator()));
 create policy "brands: members update own" on public.brands
   for update to authenticated using (business_id in (select private.my_business_ids()))
-  with check (business_id in (select private.my_business_ids()));
+  with check (business_id in (select private.my_active_business_ids()));
 create policy "brands: staff update" on public.brands
   for update to authenticated using ((select private.is_moderator()))
   with check ((select private.is_moderator()));
@@ -220,6 +236,11 @@ begin
      and not private.is_trusted_caller() and not private.is_moderator() then
     raise exception 'only staff can change a brand''s slug, owner, bank or status'
       using errcode = '42501';
+  end if;
+  -- Shoppers know a live brand by its name: only staff rename it.
+  if old.is_active and (new.name, new.name_ur) is distinct from (old.name, old.name_ur)
+     and not private.is_trusted_caller() and not private.is_moderator() then
+    raise exception 'ask staff to rename a live brand' using errcode = '42501';
   end if;
   return new;
 end $$;
@@ -241,12 +262,12 @@ create policy "outlets: members read own" on public.outlets
 create policy "outlets: staff read" on public.outlets
   for select to authenticated using ((select private.is_moderator()));
 create policy "outlets: members add" on public.outlets
-  for insert to authenticated with check (brand_id in (select private.my_brand_ids()));
+  for insert to authenticated with check (brand_id in (select private.my_writable_brand_ids()));
 create policy "outlets: members update" on public.outlets
   for update to authenticated using (brand_id in (select private.my_brand_ids()))
-  with check (brand_id in (select private.my_brand_ids()));
+  with check (brand_id in (select private.my_writable_brand_ids()));
 create policy "outlets: members delete" on public.outlets
-  for delete to authenticated using (brand_id in (select private.my_brand_ids()));
+  for delete to authenticated using (brand_id in (select private.my_writable_brand_ids()));
 select pg_temp.staff_writes('outlets', 'is_moderator');
 
 -- ===========================================================================
@@ -275,7 +296,7 @@ create policy "deals: staff read" on public.deals
 
 create policy "deals: members write drafts" on public.deals
   for insert to authenticated
-  with check (brand_id in (select private.my_brand_ids())
+  with check (brand_id in (select private.my_writable_brand_ids())
               and status in ('draft', 'pending_review')
               and source = 'business' and created_by = (select auth.uid())
               and verified_at is null and published_at is null and fingerprint is null);
@@ -283,24 +304,28 @@ create policy "deals: staff add" on public.deals
   for insert to authenticated
   with check ((select private.is_moderator()) and created_by = (select auth.uid()));
 
+-- Updates match on every brand the member can see but must pass the check
+-- for writable ones, so a suspended business gets an error, not a silent
+-- no-op.
 create policy "deals: members update own" on public.deals
   for update to authenticated using (brand_id in (select private.my_brand_ids()))
-  with check (brand_id in (select private.my_brand_ids()));
+  with check (brand_id in (select private.my_writable_brand_ids()));
 create policy "deals: staff update" on public.deals
   for update to authenticated using ((select private.is_moderator()))
   with check ((select private.is_moderator()));
 
 create policy "deals: members delete drafts" on public.deals
   for delete to authenticated
-  using (brand_id in (select private.my_brand_ids()) and status = 'draft');
+  using (brand_id in (select private.my_writable_brand_ids()) and status = 'draft');
 create policy "deals: admins delete" on public.deals
   for delete to authenticated using ((select private.is_admin()));
 
 -- What members (not staff) may do to a deal:
 -- - status: draft → pending_review → draft; published → draft or removed;
 --   rejected or removed → draft. Never publish, reject or expire.
--- - content: only while the deal is, or becomes, a draft or is sent for
---   review. Editing a live deal means taking it back to draft first.
+-- - content: only while the deal is, or becomes, a draft. A deal in
+--   review or live is taken back to draft first, so a moderator always
+--   approves the text that goes live.
 -- - verified_at: never (staff and ingestion only).
 create function private.guard_deal() returns trigger
 language plpgsql set search_path = '' as $$
@@ -320,7 +345,7 @@ begin
   if new.verified_at is distinct from old.verified_at then
     raise exception 'only staff and ingestion mark a deal verified' using errcode = '42501';
   end if;
-  if new.status not in ('draft', 'pending_review') and (
+  if new.status <> 'draft' and (
        new.brand_id, new.category_id, new.kind, new.scope, new.title_en, new.title_ur,
        new.description_en, new.description_ur, new.terms_en, new.terms_ur, new.offer_kind,
        new.percent, new.amount_off_pkr, new.price_pkr, new.original_price_pkr,
@@ -355,20 +380,20 @@ begin
     execute format($p$create policy "%1$s: members edit drafts" on public.%1$I
       for insert to authenticated
       with check (deal_id in (select d.id from public.deals d
-                              where d.brand_id in (select private.my_brand_ids())
+                              where d.brand_id in (select private.my_writable_brand_ids())
                                 and d.status = 'draft'))$p$, t);
     execute format($p$create policy "%1$s: members update drafts" on public.%1$I
       for update to authenticated
       using (deal_id in (select d.id from public.deals d
-                         where d.brand_id in (select private.my_brand_ids())
+                         where d.brand_id in (select private.my_writable_brand_ids())
                            and d.status = 'draft'))
       with check (deal_id in (select d.id from public.deals d
-                              where d.brand_id in (select private.my_brand_ids())
+                              where d.brand_id in (select private.my_writable_brand_ids())
                                 and d.status = 'draft'))$p$, t);
     execute format($p$create policy "%1$s: members delete from drafts" on public.%1$I
       for delete to authenticated
       using (deal_id in (select d.id from public.deals d
-                         where d.brand_id in (select private.my_brand_ids())
+                         where d.brand_id in (select private.my_writable_brand_ids())
                            and d.status = 'draft'))$p$, t);
     perform pg_temp.staff_writes(t, 'is_moderator');
   end loop;
@@ -483,16 +508,16 @@ create policy "placements: staff read" on public.placements
   for select to authenticated using ((select private.is_moderator()));
 create policy "placements: members draft" on public.placements
   for insert to authenticated
-  with check (business_id in (select private.my_business_ids()) and status = 'draft'
+  with check (business_id in (select private.my_active_business_ids()) and status = 'draft'
               and priority = 0 and created_by = (select auth.uid()));
 create policy "placements: members edit drafts" on public.placements
   for update to authenticated
   using (business_id in (select private.my_business_ids()) and status = 'draft')
-  with check (business_id in (select private.my_business_ids())
+  with check (business_id in (select private.my_active_business_ids())
               and status in ('draft', 'cancelled') and priority = 0);
 create policy "placements: members delete drafts" on public.placements
   for delete to authenticated
-  using (business_id in (select private.my_business_ids()) and status = 'draft');
+  using (business_id in (select private.my_active_business_ids()) and status = 'draft');
 select pg_temp.staff_writes('placements', 'is_admin');
 
 -- ===========================================================================

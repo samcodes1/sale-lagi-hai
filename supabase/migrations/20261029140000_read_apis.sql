@@ -79,25 +79,46 @@ returns boolean language sql stable as $$
   );
 $$;
 
--- In one of these categories, or their subcategories. Null: any.
+-- In one of these categories, or their subcategories. Null or empty: any.
 create function private.in_categories(category uuid, wanted uuid[])
 returns boolean language sql stable as $$
-  select wanted is null or category = any(wanted) or exists (
+  select wanted is null or cardinality(wanted) = 0 or category = any(wanted) or exists (
     select 1 from public.categories c where c.id = category and c.parent_id = any(wanted)
   );
 $$;
 
--- Does the current user follow this deal's brand, category, one of its
--- banks, or the city? Security definer so anon can call feed (follows is
--- not readable by anon); it only ever reads the caller's own follows.
-create function private.follows_deal(deal uuid, brand uuid, category uuid, city uuid)
-returns boolean language sql stable security definer set search_path = '' as $$
-  select (select auth.uid()) is not null and exists (
-    select 1 from public.follows f
-    where f.user_id = (select auth.uid())
-      and (f.brand_id = brand or f.category_id = category
-           or f.bank_id in (select co.bank_id from public.card_offers co where co.deal_id = deal)
-           or (f.city_id is not null and f.city_id = city)));
+-- What the current user follows (nothing for anon). Security definer so
+-- anon can call feed (follows is not readable by anon); it only ever reads
+-- the caller's own follows. The feed reads it once per call, not per row.
+create function private.my_follows()
+returns table (brand_id uuid, category_id uuid, bank_id uuid, city_id uuid)
+language sql stable security definer set search_path = '' rows 20 as $$
+  select f.brand_id, f.category_id, f.bank_id, f.city_id
+  from public.follows f
+  where f.user_id = (select auth.uid());
+$$;
+
+-- Does the current user follow this deal? The same rules as the alert
+-- planner: its brand; its category or that category's parent; a bank whose
+-- cards it needs; or, for local deals, a city it targets. Plain SQL so it
+-- inlines; my_follows() runs once per query as a hashed subplan.
+create function private.follows_deal(
+  deal uuid, brand uuid, category uuid, scope public.deal_scope
+) returns boolean language sql stable as $$
+  select brand in (select f.brand_id from private.my_follows() f where f.brand_id is not null)
+    or category in (select f.category_id from private.my_follows() f where f.category_id is not null)
+    or exists (
+      select 1 from public.categories c
+      where c.id = category
+        and c.parent_id in (select f.category_id from private.my_follows() f where f.category_id is not null))
+    or exists (
+      select 1 from public.card_offers co
+      where co.deal_id = deal
+        and co.bank_id in (select f.bank_id from private.my_follows() f where f.bank_id is not null))
+    or (scope = 'local' and exists (
+      select 1 from public.deal_targets t
+      where t.deal_id = deal
+        and t.city_id in (select f.city_id from private.my_follows() f where f.city_id is not null)));
 $$;
 
 -- Saves per deal in the last `days` days (1-30). Counts only, never who
@@ -119,7 +140,8 @@ $$;
 grant execute on function private.is_live(public.deal_status, timestamptz, timestamptz),
   private.shown_in_city(uuid, public.deal_scope, uuid),
   private.in_categories(uuid, uuid[]), private.page_size(integer),
-  private.follows_deal(uuid, uuid, uuid, uuid), private.recent_save_counts(integer)
+  private.my_follows(), private.follows_deal(uuid, uuid, uuid, public.deal_scope),
+  private.recent_save_counts(integer)
   to anon, authenticated, service_role;
 
 -- Index lookups that RLS would block. Postgres applies RLS policies before
@@ -168,6 +190,9 @@ begin
     join public.deals d on d.id = h.id
     join public.brands b on b.id = d.brand_id
     where b.is_active and private.is_live(d.status, d.starts_at, d.ends_at)
+    -- The best 250: search shows at most 5 pages of 50.
+    order by 2 desc, d.id
+    limit 250
   $q$, text_query);
 end $$;
 
@@ -205,7 +230,7 @@ language sql stable security invoker as $$
     and private.shown_in_city(d.id, d.scope, feed.city_id)
     and private.in_categories(d.category_id, feed.category_ids)
     and (not following_only
-         or private.follows_deal(d.id, d.brand_id, d.category_id, feed.city_id))
+         or private.follows_deal(d.id, d.brand_id, d.category_id, d.scope))
     and (after_published_at is null
          or (d.published_at, d.id) < (after_published_at, coalesce(after_id, 'ffffffff-ffff-ffff-ffff-ffffffffffff'::uuid)))
   order by d.published_at desc, d.id desc
@@ -223,14 +248,20 @@ create function public.featured_deals(
   page_size integer default 5
 ) returns setof public.deal_card
 language sql stable security invoker as $$
+  with best as (
+    -- A deal with several matching placements is listed once, at its best.
+    select distinct on (p.deal_id) p.deal_id, p.priority, p.starts_at
+    from public.placements p
+    where p.slot = featured_deals.slot
+      and p.status = 'active' and now() >= p.starts_at and now() < p.ends_at
+      and (p.city_id is null or p.city_id = featured_deals.city_id)
+      and (featured_deals.category_id is null or p.category_id = featured_deals.category_id)
+    order by p.deal_id, p.priority desc, p.starts_at
+  )
   select d.*, true, null::integer
-  from public.placements p
+  from best p
   join public.deal_cards d on d.id = p.deal_id
-  where p.slot = featured_deals.slot
-    and p.status = 'active' and now() >= p.starts_at and now() < p.ends_at
-    and (p.city_id is null or p.city_id = featured_deals.city_id)
-    and (featured_deals.category_id is null or p.category_id = featured_deals.category_id)
-    and private.is_live(d.status, d.starts_at, d.ends_at)
+  where private.is_live(d.status, d.starts_at, d.ends_at)
     and private.shown_in_city(d.id, d.scope, featured_deals.city_id)
   order by p.priority desc, p.starts_at, d.id
   limit least(private.page_size(page_size), 10);
@@ -246,14 +277,22 @@ create function public.trending_deals(
   page_size integer default 20
 ) returns setof public.deal_card
 language sql stable security invoker as $$
+  -- Rank ids on the deals table first; build cards for the page only.
+  with ranked as (
+    select d.id, d.published_at,
+           coalesce(recent.saves, 0) / (1 + extract(epoch from now() - d.published_at) / 86400.0) as score
+    from public.deals d
+    join public.brands b on b.id = d.brand_id
+    left join private.recent_save_counts(trending_deals.days) recent on recent.deal_id = d.id
+    where private.is_live(d.status, d.starts_at, d.ends_at)
+      and private.shown_in_city(d.id, d.scope, trending_deals.city_id)
+    order by score desc, d.published_at desc, d.id desc
+    limit private.page_size(page_size)
+  )
   select d.*, false, null::integer
-  from public.deal_cards d
-  left join private.recent_save_counts(trending_deals.days) recent on recent.deal_id = d.id
-  where private.is_live(d.status, d.starts_at, d.ends_at)
-    and private.shown_in_city(d.id, d.scope, trending_deals.city_id)
-  order by coalesce(recent.saves, 0) / (1 + extract(epoch from now() - d.published_at) / 86400.0) desc,
-           d.published_at desc, d.id desc
-  limit private.page_size(page_size);
+  from ranked r
+  join public.deal_cards d on d.id = r.id
+  order by r.score desc, r.published_at desc, r.id desc;
 $$;
 
 -- ---------------------------------------------------------------------------
@@ -268,25 +307,31 @@ create function public.nearby_deals(
   page_size integer default 20
 ) returns setof public.deal_card
 language sql stable security invoker as $$
+  -- Rank (deal, nearest outlet) on the deals table first; build cards for
+  -- the page only.
   with near as (
     select * from private.outlets_near(lat, lng, radius_m)
+  ),
+  ranked as (
+    select d.id, min(n.distance) as distance
+    from public.deals d
+    join near n on n.brand_id = d.brand_id
+    where private.is_live(d.status, d.starts_at, d.ends_at)
+      and d.scope <> 'online'
+      -- Local deals: in a target city that is live (as in the feed).
+      and (d.scope = 'nationwide' or exists (
+        select 1 from public.deal_targets t
+        join public.cities ci on ci.id = t.city_id and ci.is_live
+        where t.deal_id = d.id and t.city_id = n.city_id
+          and (t.area_id is null or t.area_id = n.area_id)))
+    group by d.id
+    order by min(n.distance), d.id
+    limit private.page_size(page_size)
   )
-  select d.*, false, round(min(n.distance))::integer
-  from public.deal_cards d
-  join near n on n.brand_id = d.brand_id
-  where private.is_live(d.status, d.starts_at, d.ends_at)
-    and d.scope <> 'online'
-    and (d.scope = 'nationwide' or exists (
-      select 1 from public.deal_targets t
-      where t.deal_id = d.id and t.city_id = n.city_id
-        and (t.area_id is null or t.area_id = n.area_id)))
-  group by d.id, d.brand_id, d.brand_slug, d.brand_name, d.brand_name_ur, d.brand_logo_path,
-           d.brand_is_verified, d.category_id, d.category_slug, d.kind, d.scope, d.status,
-           d.title_en, d.title_ur, d.offer_kind, d.percent, d.amount_off_pkr, d.price_pkr,
-           d.original_price_pkr, d.offer_text_en, d.offer_text_ur, d.promo_code, d.url,
-           d.image_path, d.starts_at, d.ends_at, d.verified_at, d.published_at, d.card_banks
-  order by min(n.distance), d.id
-  limit private.page_size(page_size);
+  select d.*, false, round(r.distance)::integer
+  from ranked r
+  join public.deal_cards d on d.id = r.id
+  order by r.distance, r.id;
 $$;
 
 -- ---------------------------------------------------------------------------

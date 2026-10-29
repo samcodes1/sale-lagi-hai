@@ -105,11 +105,21 @@ create table public.deals (
   check (offer_text_ur is null or offer_text_en is not null),
   check (original_price_pkr is null or
          (price_pkr is not null and original_price_pkr > price_pkr)),
-  -- Never a fake discount: a percentage shown next to two prices must be
-  -- the real one, rounded down (as DealOffer.fromPrices does).
-  check (offer_kind <> 'percent_off' or price_pkr is null
+  -- Never a fake discount. A deal card shows the two prices next to the
+  -- badge, so the badge must match them:
+  -- - "-40%" and "Flat 40% off": the real percentage, rounded down (as
+  --   DealOffer.fromPrices does);
+  -- - "Rs 500 off": exactly the difference;
+  -- - "Up to 70% off" describes a range, so it never comes with one price
+  --   pair.
+  check (offer_kind not in ('percent_off', 'flat_percent_off') or price_pkr is null
          or original_price_pkr is null
          or percent = ((original_price_pkr - price_pkr) * 100) / original_price_pkr),
+  check (offer_kind <> 'amount_off' or price_pkr is null or original_price_pkr is null
+         or amount_off_pkr = original_price_pkr - price_pkr),
+  check (offer_kind <> 'amount_off' or original_price_pkr is null
+         or amount_off_pkr <= original_price_pkr),
+  check (offer_kind <> 'up_to_percent_off' or original_price_pkr is null),
 
   check (kind <> 'promo_code' or promo_code is not null),
   check (scope <> 'online' or url is not null)
