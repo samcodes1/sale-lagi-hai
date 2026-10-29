@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:sale_lagi_hai/app/config/flavor.dart';
 
 /// Build-time configuration for one environment.
@@ -64,10 +64,10 @@ final class AppConfig {
 
     if (supabaseAnonKey.isEmpty) {
       if (backendRequired) problems.add('SUPABASE_ANON_KEY is missing.');
-    } else if (_looksLikeSecretKey(supabaseAnonKey)) {
+    } else if (!_isPublishableKey(supabaseAnonKey)) {
       problems.add(
-        'SUPABASE_ANON_KEY is a secret/service_role key. Only the '
-        'publishable (anon) key may be shipped in the app.',
+        'SUPABASE_ANON_KEY must be the publishable key (sb_publishable_…) '
+        'or a legacy anon JWT. Never ship a secret/service_role key.',
       );
     }
 
@@ -93,10 +93,26 @@ final class AppConfig {
   /// Whether a backend is configured for this build.
   bool get hasBackend => supabaseUrl.isNotEmpty;
 
-  /// Detects Supabase secret keys: the newer `sb_secret_…` format and
-  /// legacy JWT keys whose `role` claim is `service_role`.
-  static bool _looksLikeSecretKey(String key) {
-    if (key.startsWith('sb_secret_')) return true;
+  /// Throws if the native build flavor (Android/iOS `--flavor`) does not
+  /// match the Dart config, e.g. a prod app ID built with `env/dev.json`.
+  ///
+  /// [buildFlavor] is Flutter's `appFlavor`; it is `null` on platforms
+  /// without flavors (web, tests), where there is nothing to compare.
+  void verifyBuildFlavor(String? buildFlavor) {
+    if (buildFlavor == null || buildFlavor == flavor.name) return;
+    final problem =
+        'Built with --flavor $buildFlavor but the config is for '
+        '${flavor.name}. Use --dart-define-from-file=env/$buildFlavor.json.';
+    throw AppConfigException([problem]);
+  }
+
+  /// An allowlist: only the publishable key format, or a legacy JWT key
+  /// whose `role` claim is exactly `anon`, may ship in the app. Anything
+  /// else (secret keys, service_role or admin JWTs, unrelated tokens) is
+  /// rejected.
+  static bool _isPublishableKey(String key) {
+    const prefix = 'sb_publishable_';
+    if (key.startsWith(prefix)) return key.length > prefix.length;
     final parts = key.split('.');
     if (parts.length != 3) return false;
     try {
@@ -104,7 +120,7 @@ final class AppConfig {
         base64Url.decode(base64Url.normalize(parts[1])),
       );
       final claims = jsonDecode(payload);
-      return claims is Map && claims['role'] == 'service_role';
+      return claims is Map && claims['role'] == 'anon';
     } on FormatException {
       return false;
     }

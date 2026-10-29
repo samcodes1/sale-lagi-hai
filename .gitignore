@@ -48,8 +48,10 @@ app.*.map.json
 .widget_preview/
 
 # Environment config: commit only the *.example.json templates.
-/env/*.json
+/env/**
 !/env/*.example.json
+.env
+.env.*
 
 # Release signing: never commit keystores or their passwords.
 /android/key.properties
@@ -59,3 +61,4 @@ app.*.map.json
 # Supabase local state
 /supabase/.temp/
 /supabase/.branches/
+__pycache__/

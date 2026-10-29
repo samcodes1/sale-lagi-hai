@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/app/app.dart';
@@ -13,7 +14,7 @@ Future<void> bootstrap() async {
 
   final AppConfig config;
   try {
-    config = AppConfig.fromEnvironment();
+    config = AppConfig.fromEnvironment()..verifyBuildFlavor(appFlavor);
   } on AppConfigException catch (e) {
     runApp(ConfigErrorApp(problems: e.problems));
     return;

@@ -139,10 +139,27 @@ void main() {
       );
     });
 
-    test('does not crash on a malformed three-part key', () {
-      final config = AppConfig.fromMap(validValues(key: 'a.%%%.c'));
+    test('rejects a malformed three-part key cleanly', () {
+      expect(
+        () => AppConfig.fromMap(validValues(key: 'a.%%%.c')),
+        throwsConfigProblem('must be the publishable key'),
+      );
+    });
 
-      expect(config.supabaseAnonKey, 'a.%%%.c');
+    test('only allows publishable keys and anon JWTs', () {
+      for (final key in [
+        fakeJwt('authenticated'),
+        fakeJwt('supabase_admin'),
+        'sk_live_51Habcdef',
+        'sb_publishable_',
+        'Bearer sb_publishable_x',
+      ]) {
+        expect(
+          () => AppConfig.fromMap(validValues(key: key)),
+          throwsConfigProblem('must be the publishable key'),
+          reason: key,
+        );
+      }
     });
 
     test('requires URL and key together, even in dev', () {
@@ -166,6 +183,32 @@ void main() {
         expect(e.problems, hasLength(2));
         expect(e.toString(), startsWith('Invalid app configuration:'));
       }
+    });
+  });
+
+  group('verifyBuildFlavor', () {
+    final config = AppConfig.fromMap(validValues());
+
+    test('passes when there is no native flavor (web, tests)', () {
+      expect(() => config.verifyBuildFlavor(null), returnsNormally);
+    });
+
+    test('passes when the native flavor matches', () {
+      expect(() => config.verifyBuildFlavor('prod'), returnsNormally);
+    });
+
+    test('fails when the native flavor and config differ', () {
+      final devConfig = AppConfig.fromMap(
+        validValues(flavor: 'dev', url: '', key: ''),
+      );
+
+      expect(
+        () => devConfig.verifyBuildFlavor('prod'),
+        throwsConfigProblem(
+          'Built with --flavor prod but the config is for dev. '
+          'Use --dart-define-from-file=env/prod.json.',
+        ),
+      );
     });
   });
 

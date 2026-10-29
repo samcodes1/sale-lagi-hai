@@ -1,6 +1,6 @@
 {
-    "name": "sale_lagi_hai",
-    "short_name": "sale_lagi_hai",
+    "name": "Sale Lagi Hai!",
+    "short_name": "Sale Lagi Hai",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

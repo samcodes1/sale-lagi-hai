@@ -28,6 +28,7 @@ class ConfigErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'App configuration error',
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: SafeArea(

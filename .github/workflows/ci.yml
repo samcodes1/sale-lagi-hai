@@ -6,6 +6,8 @@ on:
   pull_request:
 
 # Least privilege: CI only needs to read the repository.
+# Actions are pinned to full commit SHAs (tags can be moved); the comment
+# gives the version for updates.
 permissions:
   contents: read
 
@@ -19,19 +21,23 @@ env:
 jobs:
   secret-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # gitleaks reads the PR's commits when scanning pull requests.
+      pull-requests: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
@@ -43,7 +49,15 @@ jobs:
         run: flutter analyze
       - name: Test
         run: flutter test --coverage
-      - uses: actions/upload-artifact@v4
+      - name: Coverage threshold
+        run: dart run tool/check_coverage.dart coverage/lcov.info --min 80
+      - name: Env templates are valid
+        run: |
+          for flavor in dev staging prod; do
+            dart run tool/check_env.dart env/$flavor.example.json \
+              --flavor $flavor --allow-placeholders
+          done
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage
           path: coverage/lcov.info
@@ -55,19 +69,23 @@ jobs:
       matrix:
         flavor: [dev, staging, prod]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: "17"
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
       # CI builds with the public example configs; real env files never
-      # live in the repository.
+      # live in the repository. Release builds must not pass
+      # --allow-placeholders.
       - run: cp env/${{ matrix.flavor }}.example.json env/${{ matrix.flavor }}.json
+      - run: >-
+          dart run tool/check_env.dart env/${{ matrix.flavor }}.json
+          --flavor ${{ matrix.flavor }} --allow-placeholders
       - run: >-
           flutter build apk --debug
           --flavor ${{ matrix.flavor }}
@@ -77,8 +95,8 @@ jobs:
     needs: quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable

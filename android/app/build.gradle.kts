@@ -30,23 +30,25 @@ android {
 
     // One flavor per backend environment. Each installs side by side and
     // reads its Dart config from env/<flavor>.json (--dart-define-from-file).
+    // The launcher label uses a manifest placeholder: AGP 9 disables
+    // resValue by default.
     flavorDimensions += "env"
     productFlavors {
         create("dev") {
             dimension = "env"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            resValue("string", "app_name", "SLH Dev")
+            manifestPlaceholders["appLabel"] = "SLH Dev"
         }
         create("staging") {
             dimension = "env"
             applicationIdSuffix = ".stg"
             versionNameSuffix = "-stg"
-            resValue("string", "app_name", "SLH Staging")
+            manifestPlaceholders["appLabel"] = "SLH Staging"
         }
         create("prod") {
             dimension = "env"
-            resValue("string", "app_name", "Sale Lagi Hai!")
+            manifestPlaceholders["appLabel"] = "Sale Lagi Hai!"
         }
     }
 

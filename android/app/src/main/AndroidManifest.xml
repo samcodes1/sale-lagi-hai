@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Needed in release builds to reach the backend. The debug and
+         profile manifests add it too, which is why it is easy to miss. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
-        android:label="@string/app_name"
+        android:label="${appLabel}"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
