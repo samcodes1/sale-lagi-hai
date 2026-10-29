@@ -13,7 +13,7 @@ select ok((select count(*) from public.cities) >= 1, 'anon reads cities');
 select is((select count(*)::int from public.categories where slug = 'hidden'), 0,
   'anon does not see inactive categories');
 select throws_ok($$ insert into public.cities (slug, name_en, name_ur, province, center)
-  values ('quetta', 'Quetta', 'کوئٹہ', 'balochistan', 'SRID=4326;POINT(66.99 30.18)') $$,
+  values ('test-quetta', 'Quetta', 'کوئٹہ', 'balochistan', 'SRID=4326;POINT(66.99 30.18)') $$,
   '42501', null, 'anon cannot add cities');
 select throws_ok('select * from public.profiles', '42501', null, 'anon cannot read profiles');
 
@@ -30,7 +30,7 @@ select throws_ok($$ update public.profiles set created_at = now() where id = (se
 select throws_ok($$ insert into public.user_roles (user_id, role) values ((select shopper from w), 'admin') $$,
   '42501', null, 'a shopper cannot make themselves admin');
 select throws_ok($$ insert into public.cities (slug, name_en, name_ur, province, center)
-  values ('quetta', 'Quetta', 'کوئٹہ', 'balochistan', 'SRID=4326;POINT(66.99 30.18)') $$,
+  values ('test-quetta', 'Quetta', 'کوئٹہ', 'balochistan', 'SRID=4326;POINT(66.99 30.18)') $$,
   '42501', null, 'a shopper cannot add cities');
 
 -- moderator: staff powers only with MFA
@@ -45,11 +45,11 @@ select ok((select count(*) from public.categories where slug = 'hidden') = 1,
 -- admin
 select tests.authenticate_as((select admin from w));
 select throws_ok($$ insert into public.cities (slug, name_en, name_ur, province, center)
-  values ('quetta', 'Quetta', 'کوئٹہ', 'balochistan', 'SRID=4326;POINT(66.99 30.18)') $$,
+  values ('test-quetta', 'Quetta', 'کوئٹہ', 'balochistan', 'SRID=4326;POINT(66.99 30.18)') $$,
   '42501', null, 'without MFA an admin cannot add cities');
 select tests.staff((select admin from w));
 select lives_ok($$ insert into public.cities (slug, name_en, name_ur, province, center)
-  values ('quetta', 'Quetta', 'کوئٹہ', 'balochistan', 'SRID=4326;POINT(66.99 30.18)') $$,
+  values ('test-quetta', 'Quetta', 'کوئٹہ', 'balochistan', 'SRID=4326;POINT(66.99 30.18)') $$,
   'an admin adds a city');
 select lives_ok($$ insert into public.user_roles (user_id, role) values ((select shopper from w), 'moderator') $$,
   'an admin grants a role');

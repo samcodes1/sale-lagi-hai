@@ -52,7 +52,7 @@ select throws_ok($$ insert into public.outlets (brand_id, city_id, name, address
 -- Brands
 select tests.authenticate_as((select owner from w));
 select throws_ok($$ insert into public.brands (slug, name, business_id, category_id)
-  values ('khaadi', 'Khaadi', (select biz_a from w), (select category_id from public.brands where slug = 'kolachi')) $$,
+  values ('test-khaadi', 'Khaadi', (select biz_a from w), (select category_id from public.brands where slug = 'kolachi')) $$,
   '42501', null, 'a business cannot add a brand that goes live immediately');
 select lives_ok($$ insert into public.brands (slug, name, business_id, category_id, is_active)
   values ('kolachi-express', 'Kolachi Express', (select biz_a from w),

@@ -30,7 +30,7 @@ $$, '23514', null, 'phone numbers are stored in +92 format');
 
 -- An outlet's area must belong to the outlet's city.
 create temp table places as
-  select tests.make_city('karachi') as karachi, tests.make_city('lahore') as lahore;
+  select tests.make_city('test-karachi') as karachi, tests.make_city('test-lahore') as lahore;
 create temp table b as select tests.make_brand() as id;
 select throws_ok($$
   insert into public.outlets (brand_id, city_id, area_id, name, address, location)

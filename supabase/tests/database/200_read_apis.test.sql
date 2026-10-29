@@ -4,11 +4,11 @@ select plan(34);
 
 -- Fixture: one live city, one not yet live, and deals in every state.
 create temp table x as select
-  tests.make_city('karachi', true) as karachi,
-  tests.make_city('lahore', false) as lahore,
+  tests.make_city('test-karachi', true) as karachi,
+  tests.make_city('test-lahore', false) as lahore,
   tests.make_category('food') as food,
-  tests.make_bank('hbl') as hbl,
-  tests.make_bank('ubl') as ubl,
+  tests.make_bank('test-hbl') as hbl,
+  tests.make_bank('test-ubl') as ubl,
   tests.create_user() as shopper,
   tests.create_user() as other;
 alter table x add column bbq uuid, add column brand uuid, add column brand2 uuid;

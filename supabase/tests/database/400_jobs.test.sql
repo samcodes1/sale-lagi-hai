@@ -83,7 +83,7 @@ select tests.clear_authentication();
 -- ---------------------------------------------------------------------------
 -- Five followers of a new brand: awake, in quiet hours, push off, topic
 -- off, and an Urdu speaker.
-create temp table f as select tests.make_brand(slug => 'alkaram') as brand,
+create temp table f as select tests.make_brand(slug => 'test-alkaram') as brand,
   tests.create_user() as awake, tests.create_user() as asleep, tests.create_user() as push_off,
   tests.create_user() as topic_off, tests.create_user() as urdu;
 update public.brands set name_ur = 'الکرم' where id = (select brand from f);
@@ -138,7 +138,7 @@ select ok(exists (select 1 from public.notifications where deal_id = (select id 
 
 -- Daily cap: "low" allows one push a day across brands.
 update public.alert_prefs set frequency = 'low' where user_id = (select awake from f);
-create temp table other_brand as select tests.make_brand(slug => 'gul-ahmed') as id;
+create temp table other_brand as select tests.make_brand(slug => 'test-gul-ahmed') as id;
 insert into public.follows (user_id, brand_id) select awake, (select id from other_brand) from f;
 select tests.make_deal((select id from other_brand), 'published');
 select is(private.plan_alerts(), 0, 'a "low" user gets one push a day, across brands');

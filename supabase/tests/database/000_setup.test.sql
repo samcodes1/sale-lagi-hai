@@ -140,7 +140,7 @@ begin
   draft_a := tests.make_deal(brand_a, 'draft');
   review_a := tests.make_deal(brand_a, 'pending_review');
   live_b := tests.make_deal(brand_b, 'published');
-  city := tests.make_city('karachi');
+  city := tests.make_city('test-karachi');
   return next;
 end $$;
 

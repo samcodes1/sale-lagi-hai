@@ -3,7 +3,7 @@ begin;
 select plan(6);
 
 -- 20,000 deals across 200 brands and 2 cities, 5,000 outlets, 20,000 saves.
-create temp table x as select tests.make_city('karachi') as karachi, tests.make_category('food') as food;
+create temp table x as select tests.make_city('test-karachi') as karachi, tests.make_category('food') as food;
 insert into public.brands (slug, name, category_id)
   select 'brand-' || i, 'Brand ' || i, (select food from x) from generate_series(1, 200) i;
 insert into public.deals (brand_id, category_id, kind, scope, status, source, title_en,

@@ -2,25 +2,25 @@ begin;
 select plan(12);
 
 -- Slugs follow the app's route rule.
-select lives_ok($$ select tests.make_city('karachi') $$, 'a valid slug is accepted');
+select lives_ok($$ select tests.make_city('test-karachi') $$, 'a valid slug is accepted');
 select throws_ok($$ select tests.make_city('Karachi') $$, '23514', null, 'upper-case slugs are rejected');
 select throws_ok($$ select tests.make_city('new--york') $$, '23514', null, 'double hyphens are rejected');
 select throws_ok($$ select tests.make_city('-lahore') $$, '23514', null, 'leading hyphens are rejected');
 select throws_ok($$ select tests.make_city(repeat('a', 65)) $$, '23514', null, 'slugs over 64 characters are rejected');
-select throws_ok($$ select tests.make_city('karachi') $$, '23505', null, 'city slugs are unique');
+select throws_ok($$ select tests.make_city('test-karachi') $$, '23505', null, 'city slugs are unique');
 
 select throws_ok($$
   insert into public.cities (slug, name_en, name_ur, province, center)
-  values ('lahore', '  ', 'لاہور', 'punjab', 'SRID=4326;POINT(74.35 31.52)')
+  values ('test-lahore', '  ', 'لاہور', 'punjab', 'SRID=4326;POINT(74.35 31.52)')
 $$, '23514', null, 'blank names are rejected');
 
 -- Areas: slugs unique per city, not across cities.
 select lives_ok($$
-  select tests.make_area((select id from public.cities where slug = 'karachi'), 'clifton');
-  select tests.make_area(tests.make_city('hyderabad'), 'clifton');
+  select tests.make_area((select id from public.cities where slug = 'test-karachi'), 'clifton');
+  select tests.make_area(tests.make_city('test-hyderabad'), 'clifton');
 $$, 'two cities may each have an area with the same slug');
 select throws_ok($$
-  select tests.make_area((select id from public.cities where slug = 'karachi'), 'clifton')
+  select tests.make_area((select id from public.cities where slug = 'test-karachi'), 'clifton')
 $$, '23505', null, 'area slugs are unique within a city');
 
 -- Categories are at most two levels deep.
@@ -37,7 +37,7 @@ $$, '23514', null, 'a category with subcategories cannot become one');
 -- Bank links are https only.
 select throws_ok($$
   insert into public.banks (slug, name_en, name_ur, short_name, website)
-  values ('ubl', 'UBL', 'یو بی ایل', 'UBL', 'http://ubl.com.pk')
+  values ('test-ubl', 'UBL', 'یو بی ایل', 'UBL', 'http://ubl.com.pk')
 $$, '23514', null, 'http links are rejected');
 
 select * from finish();
