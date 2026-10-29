@@ -59,11 +59,21 @@ Future<void> _reauth(WidgetTester tester, Harness h) async {
   await tester.pumpAndSettle();
 }
 
+/// Round 2: the fresh sign-in refusing someone else's number.
+Future<void> _reauthOtherNumber(WidgetTester tester, Harness h) async {
+  await _reauth(tester, h);
+  await tester.enterText(find.byType(TextField), '0333 7654321');
+  await tester.testTextInput.receiveAction(TextInputAction.send);
+  await tester.pumpAndSettle();
+  expect(find.text('Enter the code'), findsNothing);
+}
+
 void main() {
   final states = {
     'code step with an error': _codeStepWithError,
     'delete confirmation': _deleteDialog,
     'fresh sign-in before deletion': _reauth,
+    'fresh sign-in refusing another number': _reauthOtherNumber,
   };
 
   for (final (name, locale, brightness) in const [

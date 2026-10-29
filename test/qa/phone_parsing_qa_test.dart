@@ -33,6 +33,11 @@ void main() {
       '+92+3001234567',
       '300123456',
       '0800 1234567', // toll-free, not mobile
+      // Round 2: dropping the trunk 0 after +92 must not open these up.
+      '00300 1234567',
+      '+92 00300 1234567',
+      '0923001234567',
+      '920300 1234567',
       '+92 300 12345x7',
       '٣٠٠١٢٣٤٥٦٧٨٩', // 12 Arabic-Indic digits
       '1' * 10000,

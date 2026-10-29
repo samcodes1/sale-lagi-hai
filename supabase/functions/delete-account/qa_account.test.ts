@@ -242,3 +242,75 @@ test('failure logs hold no token, user id or phone number', async () => {
     assert.ok(!line.includes(TOKEN.split('.')[1]), line);
   }
 });
+
+// ---------------------------------------------------------------------------
+// Round 2 (b280677): the amr-based freshness check.
+// ---------------------------------------------------------------------------
+const tokenWith = (amr: unknown) => jwt({ sub: USER, role: 'authenticated', amr });
+const ago = (seconds: number) => NOW / 1000 - seconds;
+
+test('R2: Google (oauth, as Supabase records signInWithIdToken) and phone codes both count', async () => {
+  for (const method of ['otp', 'oauth']) {
+    const { deps, calls } = recordingDeps();
+    assert.deepEqual(await deleteAccount(tokenWith([{ method, timestamp: ago(60) }]), deps), { kind: 'deleted', files: 0 }, method);
+    assert.deepEqual(calls, [`delete ${USER}`]);
+  }
+});
+
+test('R2: refreshes, anonymous sessions, MFA steps and recovery links are not a sign-in', async () => {
+  for (const method of ['token_refresh', 'anonymous', 'totp', 'mfa/phone', 'recovery', 'invite', 'email_change', 'OTP', '']) {
+    const { deps, calls } = recordingDeps();
+    assert.deepEqual(await deleteAccount(tokenWith([{ method, timestamp: ago(10) }]), deps), { kind: 'reauth-required' }, method);
+    assert.deepEqual(calls, []);
+  }
+});
+
+test('R2: the newest real sign-in wins; the 5-minute edge holds', async () => {
+  const run = async (amr: unknown) => (await deleteAccount(tokenWith(amr), recordingDeps().deps)).kind;
+  assert.equal(await run([{ method: 'otp', timestamp: ago(7200) }, { method: 'oauth', timestamp: ago(30) }]), 'deleted');
+  assert.equal(await run([{ method: 'oauth', timestamp: ago(30) }, { method: 'otp', timestamp: ago(7200) }]), 'deleted');
+  // A fresh refresh entry next to an old sign-in changes nothing.
+  assert.equal(await run([{ method: 'otp', timestamp: ago(7200) }, { method: 'token_refresh', timestamp: ago(5) }]), 'reauth-required');
+  assert.equal(await run([{ method: 'otp', timestamp: ago(299) }]), 'deleted');
+  assert.equal(await run([{ method: 'otp', timestamp: ago(301) }]), 'reauth-required');
+});
+
+test('R2: a missing or garbled amr claim is stale, never an error or a pass', async () => {
+  const garbled = [
+    'no-dots-at-all-but-long-enough',
+    'header..signature',
+    `${b64url({ alg: 'ES256' })}.%%%not-base64%%%.sig`,
+    `${b64url({ alg: 'ES256' })}.${Buffer.from('not json').toString('base64url')}.sig`,
+    `${b64url({ alg: 'ES256' })}.${Buffer.from('null').toString('base64url')}.sig`,
+    jwt({ sub: USER }),
+    tokenWith('otp'),
+    tokenWith({ method: 'otp', timestamp: ago(10) }),
+    tokenWith([null, 42, 'otp']),
+    tokenWith([{ method: 'otp', timestamp: String(ago(10)) }]),
+    tokenWith([{ method: 'otp', timestamp: null }]),
+    tokenWith([{ method: 'otp' }]),
+    tokenWith([{ method: 'otp', timestamp: Number.NaN }]),
+  ];
+  for (const token of garbled) {
+    const { deps, calls } = recordingDeps();
+    assert.deepEqual(await deleteAccount(token, deps), { kind: 'reauth-required' }, token.slice(0, 40));
+    assert.deepEqual(calls, []);
+  }
+});
+
+test('R2: the token is still checked by Auth first; a forged fresh amr on a rejected token deletes nothing', async () => {
+  const { deps, calls } = recordingDeps({ verifyUser: async () => null });
+  assert.deepEqual(await deleteAccount(tokenWith([{ method: 'otp', timestamp: ago(1) }]), deps), { kind: 'unauthorized' });
+  assert.deepEqual(calls, []);
+});
+
+test('R2: through the HTTP handler, a refreshed old session gets 403 reauth_required', async () => {
+  const token = jwt({ sub: USER, role: 'authenticated', iat: ago(5), amr: [{ method: 'otp', timestamp: ago(86_400) }] });
+  const response = await handle(
+    new Request('https://p.supabase.co/functions/v1/delete-account', { method: 'POST', headers: { authorization: `Bearer ${token}` } }),
+    configured,
+    () => recordingDeps().deps,
+  );
+  assert.equal(response.status, 403);
+  assert.deepEqual(await response.json(), { error: 'reauth_required' });
+});

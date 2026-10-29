@@ -6,6 +6,7 @@ import 'package:sale_lagi_hai/core/backend/demo/demo_data.dart';
 import 'package:sale_lagi_hai/core/backend/demo/demo_gateway.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
+import 'package:sale_lagi_hai/core/logging/log_sinks.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
@@ -14,6 +15,7 @@ import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_providers.dart';
 import 'package:sale_lagi_hai/features/follows/application/follow_providers.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
+import 'package:sale_lagi_hai/features/saved/application/saved_providers.dart';
 
 import '../../helpers/fakes.dart';
 import '../home/fake_deals.dart';
@@ -22,13 +24,15 @@ void main() {
   late DemoGateway backend;
   late DemoAuthRepository auth;
 
-  ProviderContainer container({List<Object> extra = const []}) {
+  late MemoryLogSink logs;
+
+  ProviderContainer container({BackendGateway? gateway}) {
     final c = ProviderContainer(
       overrides: [
-        backendGatewayProvider.overrideWithValue(backend),
+        backendGatewayProvider.overrideWithValue(gateway ?? backend),
         authRepositoryProvider.overrideWithValue(auth),
         keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),
-        loggerProvider.overrideWithValue(AppLogger(sinks: [])),
+        loggerProvider.overrideWithValue(AppLogger(sinks: [logs])),
       ],
       retry: (_, _) => null,
     );
@@ -39,6 +43,7 @@ void main() {
   setUp(() {
     backend = DemoGateway();
     auth = DemoAuthRepository();
+    logs = MemoryLogSink();
   });
 
   final threads = brandBySlug('demo-threads')['id']! as String;
@@ -81,6 +86,24 @@ void main() {
         contains(food),
       );
     });
+  });
+
+  test('a failed guest sync keeps the phone copy, logs only the failure '
+      'code, and still moves saved deals', () async {
+    final c = container(gateway: _SyncFails(backend));
+    await c.read(followsProvider).toggleBrand(threads);
+    await c.read(savedDealsProvider.notifier).toggle(demoDeals.first.id);
+    await c.read(guestSyncProvider)();
+    expect(c.read(preferencesProvider).brandIds, [threads]);
+    final warning = logs.records.singleWhere(
+      (r) => r.message == 'Could not sync guest choices',
+    );
+    expect(warning.context, {'code': 'offline'});
+    expect(
+      (await backend.select(const TableQuery('saves')))
+          .map((s) => s['deal_id']),
+      [demoDeals.first.id],
+    );
   });
 
   group('brand lookup', () {
@@ -129,4 +152,32 @@ void main() {
       expect(const BrandDeals('x'), const BrandDeals('x'));
     });
   });
+}
+
+/// The demo backend, except that the guest sync fails (offline).
+final class _SyncFails implements BackendGateway {
+  new(this._demo);
+
+  final DemoGateway _demo;
+
+  @override
+  Future<List<Map<String, Object?>>> select(TableQuery query) =>
+      _demo.select(query);
+
+  @override
+  Future<List<Map<String, Object?>>> rpc(
+    String function, [
+    Map<String, Object?> params = const {},
+  ]) async {
+    if (function == 'sync_guest_preferences') throw const OfflineFailure();
+    return await _demo.rpc(function, params);
+  }
+
+  @override
+  Future<void> insert(String table, Map<String, Object?> row) =>
+      _demo.insert(table, row);
+
+  @override
+  Future<void> delete(String table, Map<String, Object?> match) =>
+      _demo.delete(table, match);
 }

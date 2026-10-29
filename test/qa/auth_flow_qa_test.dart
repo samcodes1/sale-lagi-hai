@@ -414,6 +414,10 @@ void main() {
       isTrue,
       reason: 'deleted ${s.auth.deletedIds} but the request was for $original',
     );
+    // Round 2: not only nothing wrong was deleted; nothing was, and the
+    // shopper is still themselves.
+    expect(s.auth.deletedIds, isEmpty);
+    expect(s.auth.currentUser?.id, original);
   });
 
   // QA BUG 4.2-A3 (S3): leaving the sign-in page while the code is being
@@ -491,5 +495,144 @@ void main() {
     await _toCodeStep(tester, s.h, '03001234567');
     final code = tester.widget<TextField>(find.byType(TextField));
     expect(code.enableIMEPersonalizedLearning, isFalse);
+  });
+
+  // -------------------------------------------------------------------------
+  // Round 2 (b280677): the same-account re-sign-in.
+  // -------------------------------------------------------------------------
+  const other = AppUser(
+    id: '00000000-0000-4000-9000-0000000000bb',
+    method: SignInMethod.google,
+    email: 'someone.else@example.com',
+  );
+
+  Future<String> googleSignIn(WidgetTester tester, QaHarness h) async {
+    h.router.go('/profile');
+    await tester.pumpAndSettle();
+    await _tap(tester, 'Sign in');
+    await _tap(tester, 'Continue with Google');
+    return h.auth.currentUser!.id;
+  }
+
+  testWidgets('R2: a Google user who picks the wrong Google account, then '
+      'the right one, deletes only their own', (tester) async {
+    var now = DateTime.utc(2026, 10, 29, 12);
+    final s = _setUp(clock: () => now);
+    await _pump(tester, s.h, s.auth);
+    final me = await googleSignIn(tester, s.h);
+    now = now.add(const Duration(minutes: 10));
+    await _confirmDelete(tester);
+    expect(find.text("Confirm it's you"), findsOneWidget);
+    expect(find.byType(TextField), findsNothing, reason: 'Google only');
+
+    s.auth.inner.googleAccount = other;
+    await _tap(tester, 'Continue with Google');
+    expect(s.auth.deletedIds, isEmpty);
+    expect(
+      s.auth.currentUser,
+      isNull,
+      reason: 'the other account is signed out',
+    );
+    expect(
+      find.text(
+        "That's a different account, so nothing was deleted. "
+        "You've been signed out.",
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(SignInScreen), findsOneWidget);
+
+    s.auth.inner.googleAccount = AppUser(
+      id: me,
+      method: SignInMethod.google,
+      email: 'demo.shopper@example.com',
+    );
+    await _tap(tester, 'Continue with Google');
+    expect(s.auth.deletedIds, [me]);
+    expect(s.h.preferences, const ShopperPreferences());
+  });
+
+  testWidgets('R2: after a wrong-account re-sign-in and Back, the delete page '
+      'deletes nothing and does not crash', (tester) async {
+    var now = DateTime.utc(2026, 10, 29, 12);
+    final s = _setUp(clock: () => now);
+    await _pump(tester, s.h, s.auth);
+    await googleSignIn(tester, s.h);
+    now = now.add(const Duration(minutes: 10));
+    await _confirmDelete(tester);
+    s.auth.inner.googleAccount = other;
+    await _tap(tester, 'Continue with Google');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(DeleteAccountScreen), findsOneWidget);
+    // Signed out now: deleting again fails cleanly.
+    await _confirmDelete2(tester);
+    expect(tester.takeException(), isNull);
+    expect(s.auth.deletedIds, isEmpty);
+    expect(find.byType(DeleteAccountScreen), findsOneWidget);
+  });
+
+  testWidgets('R2: the own number typed with Urdu digits is accepted for the '
+      're-sign-in', (tester) async {
+    var now = DateTime.utc(2026, 10, 29, 12);
+    final s = _setUp(clock: () => now);
+    await _pump(tester, s.h, s.auth);
+    await _toCodeStep(tester, s.h, '03001234567');
+    await tester.enterText(find.byType(TextField), DemoAuthRepository.code);
+    await tester.pumpAndSettle();
+    final me = s.auth.currentUser!.id;
+    now = now.add(const Duration(minutes: 10));
+    await _confirmDelete(tester);
+    await tester.enterText(find.byType(TextField), '۰۳۰۰ ۱۲۳۴۵۶۷');
+    await _tap(tester, 'Send code');
+    expect(find.text('Enter the code'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), DemoAuthRepository.code);
+    await tester.pumpAndSettle();
+    expect(s.auth.deletedIds, [me]);
+  });
+
+  testWidgets('R2: Back while the re-sign-in code is checked deletes '
+      'nothing', (tester) async {
+    var now = DateTime.utc(2026, 10, 29, 12);
+    final s = _setUp(clock: () => now);
+    await _pump(tester, s.h, s.auth);
+    await _toCodeStep(tester, s.h, '03001234567');
+    await tester.enterText(find.byType(TextField), DemoAuthRepository.code);
+    await tester.pumpAndSettle();
+    final me = s.auth.currentUser!.id;
+    now = now.add(const Duration(minutes: 10));
+    await _confirmDelete(tester);
+    await _tap(tester, 'Send code');
+    s.auth.holdVerify = Completer<void>();
+    await tester.enterText(find.byType(TextField), DemoAuthRepository.code);
+    await tester.pump();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    s.auth.holdVerify!.complete();
+    await tester.pumpAndSettle();
+    expect(s.auth.deletedIds, isEmpty, reason: 'no confirmation, no delete');
+    expect(s.auth.currentUser?.id, me);
+    expect(s.backend.syncCalls, 1, reason: 'no guest sync on a re-sign-in');
+    expect(find.byType(DeleteAccountScreen), findsOneWidget);
+  });
+
+  testWidgets('R2: Back on the re-sign-in code step returns to the own '
+      'number, still prefilled', (tester) async {
+    var now = DateTime.utc(2026, 10, 29, 12);
+    final s = _setUp(clock: () => now);
+    await _pump(tester, s.h, s.auth);
+    await _toCodeStep(tester, s.h, '03001234567');
+    await tester.enterText(find.byType(TextField), DemoAuthRepository.code);
+    await tester.pumpAndSettle();
+    now = now.add(const Duration(minutes: 10));
+    await _confirmDelete(tester);
+    await _tap(tester, 'Send code');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text("Confirm it's you"), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller?.text,
+      '300 1234567',
+    );
   });
 }

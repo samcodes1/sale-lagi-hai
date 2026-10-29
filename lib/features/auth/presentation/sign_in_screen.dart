@@ -312,6 +312,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         enabled: !_busy,
         keyboardType: TextInputType.phone,
         textInputAction: TextInputAction.send,
+        enableIMEPersonalizedLearning: false,
         autofillHints: const [AutofillHints.telephoneNumberNational],
         // Numbers read left to right in both languages.
         textDirection: TextDirection.ltr,
