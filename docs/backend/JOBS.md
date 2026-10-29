@@ -43,3 +43,22 @@ The service role (ingestion, staff tools) is not limited.
 4. Enable the `pg_net` extension, then re-run the last block of the jobs migration (or `select cron.schedule('push-dispatcher', …)` as written there).
 
 The function connects with `SUPABASE_DB_URL`, which the platform provides, so the `private` dispatcher functions are never exposed through the Data API.
+
+## Ingestion (sub-phase 3.1)
+- **Sources** (`public.ingest_sources`) are added by admins, disabled.
+  - Enable one only after checking the site's robots.txt and terms.
+  - `review_mode` decides whether its deals go live straight away (`auto`) or wait for a moderator (`review`).
+- **The `ingest` Edge Function** runs due sources within a 2-minute budget. It shares the dispatcher secret and the `verify_jwt = false` set-up; schedule it like `push-dispatcher`, e.g. every 15 minutes.
+- **Polite fetching** (`_shared/ingest/fetcher.ts`):
+  - the user agent is `SaleLagiHaiBot/1.0 (+https://salelagihai.pk/bot)`;
+  - robots.txt is obeyed, including Crawl-delay; a robots.txt we can't read means don't crawl;
+  - at least 2 s between requests per host;
+  - HTTPS only, including redirects, and no redirects to another host;
+  - 20 s timeout and 5 MB cap per response;
+  - 429/5xx are retried with Retry-After honoured, up to 5 minutes.
+- **Validation and de-duplication:**
+  - every scraped deal is validated twice: in the runner (`normalize.ts`, including the real-discount rule) and by the database's constraints;
+  - fingerprints are sha256(source, external id), so a deal that comes back is updated, not duplicated.
+- **Ending and protecting deals:**
+  - deals a source stops listing are expired, but only after a successful, non-empty run;
+  - deals staff removed or rejected are never revived.

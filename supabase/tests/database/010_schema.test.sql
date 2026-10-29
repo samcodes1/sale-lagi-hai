@@ -7,7 +7,8 @@ select tables_are('public', array[
   'profiles', 'user_roles', 'businesses', 'business_members', 'brands', 'outlets',
   'deals', 'deal_targets', 'card_offers',
   'follows', 'saves', 'user_cards', 'alert_prefs', 'notifications',
-  'reports', 'submissions', 'placements', 'payments', 'audit_log', 'push_tokens'
+  'reports', 'submissions', 'placements', 'payments', 'audit_log', 'push_tokens',
+  'ingest_sources', 'ingest_runs'
 ], 'public has exactly the planned tables');
 
 select is_empty($$
