@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HTTPS only, system CAs only. Explicit because Android 7-8.1 (API 24-27,
+     inside our minSdk 24) allow cleartext by default.
+     No certificate pinning in v1: see the flutter-secure-dev skill §5. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <!-- Debuggable builds only: also trust user-installed CAs, so a local
+         proxy can inspect traffic during development. -->
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ backup and device-transfer rules.
+     Restored: preferences (language, city, cached public deals).
+     Never restored: secure storage. Its Keystore keys do not travel, so
+     restored ciphertext would be useless; the user signs in again. -->
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapabilities="true">
+        <include domain="sharedpref" path="." />
+        <exclude domain="sharedpref" path="FlutterSecureStorage.xml" />
+        <exclude domain="sharedpref" path="FlutterSecureKeyStorage.xml" />
+        <!-- shared_preferences' async API stores in DataStore. -->
+        <include domain="file" path="datastore/" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="sharedpref" path="." />
+        <exclude domain="sharedpref" path="FlutterSecureStorage.xml" />
+        <exclude domain="sharedpref" path="FlutterSecureKeyStorage.xml" />
+        <include domain="file" path="datastore/" />
+    </device-transfer>
+</data-extraction-rules>

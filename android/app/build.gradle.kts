@@ -4,6 +4,11 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keystoreProperties = java.util.Properties().apply {
+    val file = rootProject.file("key.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
 android {
     namespace = "pk.salelagihai.app"
     compileSdk = flutter.compileSdkVersion
@@ -52,11 +57,36 @@ android {
         }
     }
 
+    // Release signing: the upload key comes from android/key.properties
+    // (gitignored; written from CI secrets). Without it, local release
+    // builds fall back to the debug key, and CI release builds fail.
+    signingConfigs {
+        if (keystoreProperties.isNotEmpty()) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+            signingConfig = when {
+                keystoreProperties.isNotEmpty() -> signingConfigs.getByName("release")
+                System.getenv("REQUIRE_RELEASE_SIGNING") == "true" ->
+                    throw GradleException(
+                        "Release signing required but android/key.properties is missing.",
+                    )
+                else -> signingConfigs.getByName("debug")
+            }
         }
     }
 }
