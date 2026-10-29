@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
+import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
+import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 
 /// Following brands and categories. Guest-first: the phone keeps what is
@@ -56,3 +58,10 @@ final class Follows {
     }
   }
 }
+
+/// The brands the shopper follows, by name (hidden ones left out).
+final followedBrandsProvider = FutureProvider<List<Brand>>((ref) async {
+  final ids = ref.watch(preferencesProvider.select((p) => p.brandIds));
+  if (ids.isEmpty) return const [];
+  return await ref.watch(catalogRepositoryProvider).brandsByIds(ids);
+});

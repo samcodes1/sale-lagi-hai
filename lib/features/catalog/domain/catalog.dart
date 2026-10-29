@@ -262,6 +262,9 @@ abstract interface class CatalogRepository {
   /// An active brand by its slug, or `null`.
   Future<Brand?> brandBySlug(String slug);
 
+  /// These active brands, by name (missing or hidden ones are left out).
+  Future<List<Brand>> brandsByIds(List<String> ids);
+
   /// The areas of a city, by English name.
   Future<List<Area>> areas(String cityId);
 

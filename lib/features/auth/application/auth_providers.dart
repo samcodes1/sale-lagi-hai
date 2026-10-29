@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/core/backend/backend_errors.dart';
+import 'package:sale_lagi_hai/core/backend/backend_gateway.dart';
 import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
@@ -89,6 +90,58 @@ final guestSyncProvider = Provider<Future<void> Function()>(
           .info(
             'Some cards were already synced',
             context: {'count': cardsFailed},
+          );
+    }
+    // And the other way: what the account holds from another phone comes
+    // onto this one. A failure leaves the phone as it was.
+    try {
+      final (saves, cards, follows) = await (
+        backend.select(
+          const TableQuery(
+            'saves',
+            columns: 'deal_id',
+            orderBy: 'created_at',
+            ascending: false,
+            limit: SavedDeals.max,
+          ),
+        ),
+        backend.select(
+          const TableQuery('user_cards', columns: 'card_product_id', limit: 20),
+        ),
+        backend.select(
+          const TableQuery(
+            'follows',
+            columns: 'brand_id,category_id',
+            limit: 500,
+          ),
+        ),
+      ).wait;
+      await ref.read(savedDealsProvider.notifier).addFromAccount([
+        for (final r in saves)
+          if (r['deal_id'] case final String id) id,
+      ]);
+      await ref.read(myCardsProvider.notifier).addFromAccount([
+        for (final r in cards)
+          if (r['card_product_id'] case final String id) id,
+      ]);
+      await ref
+          .read(preferencesProvider.notifier)
+          .addFollows(
+            brandIds: [
+              for (final r in follows)
+                if (r['brand_id'] case final String id) id,
+            ],
+            categoryIds: [
+              for (final r in follows)
+                if (r['category_id'] case final String id) id,
+            ],
+          );
+    } on Object catch (error) {
+      ref
+          .read(loggerProvider)
+          .warning(
+            'Could not read the account',
+            context: {'error': error.runtimeType.toString()},
           );
     }
   },

@@ -73,6 +73,10 @@ abstract interface class DealRepository {
   /// A missing or hidden deal is a NotFoundFailure.
   Future<Result<Deal>> byId(String id);
 
+  /// These deals, live or ended, in no particular order. Deals that are
+  /// gone (removed, or no longer visible) are simply missing.
+  Future<Result<List<Deal>>> byIds(List<String> ids);
+
   /// The deal page: [byId] plus its text, source and outlets.
   Future<Result<DealDetail>> detail(String id);
 }

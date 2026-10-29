@@ -1,6 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
+import 'package:sale_lagi_hai/features/alerts/application/alerts_providers.dart';
 
 /// One bottom-navigation destination.
 typedef _Destination = ({IconData icon, IconData selectedIcon, String label});
@@ -12,7 +14,7 @@ typedef _Destination = ({IconData icon, IconData selectedIcon, String label});
 ///   [NavigationRail], per the Material window classes.
 /// - Re-selecting the current tab returns it to its first screen.
 /// - System back on any other tab goes to Home first, then leaves the app.
-class AppShell extends StatelessWidget {
+class AppShell extends ConsumerWidget {
   const new({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
@@ -48,9 +50,22 @@ class AppShell extends StatelessWidget {
     ),
   ];
 
+  /// The Alerts tab's icon, with a badge for alerts not yet seen.
+  static Widget _icon(
+    _Destination d,
+    int index,
+    int badge, {
+    bool selected = false,
+  }) {
+    final icon = Icon(selected ? d.selectedIcon : d.icon);
+    if (index != 2 || badge == 0) return icon;
+    return Badge(label: Text(badge > 99 ? '99+' : '$badge'), child: icon);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final destinations = _destinations(context.l10n);
+    final badge = ref.watch(alertsBadgeProvider).value ?? 0;
     final index = navigationShell.currentIndex;
     final wide = MediaQuery.sizeOf(context).width >= railBreakpoint;
 
@@ -65,10 +80,10 @@ class AppShell extends StatelessWidget {
                 onDestinationSelected: _select,
                 labelType: NavigationRailLabelType.all,
                 destinations: [
-                  for (final d in destinations)
+                  for (final (i, d) in destinations.indexed)
                     NavigationRailDestination(
-                      icon: Icon(d.icon),
-                      selectedIcon: Icon(d.selectedIcon),
+                      icon: _icon(d, i, badge),
+                      selectedIcon: _icon(d, i, badge, selected: true),
                       label: Text(d.label),
                     ),
                 ],
@@ -86,11 +101,15 @@ class AppShell extends StatelessWidget {
           selectedIndex: index,
           onDestinationSelected: _select,
           destinations: [
-            for (final d in destinations)
+            for (final (i, d) in destinations.indexed)
               NavigationDestination(
-                icon: Icon(d.icon),
-                selectedIcon: Icon(d.selectedIcon),
+                icon: _icon(d, i, badge),
+                selectedIcon: _icon(d, i, badge, selected: true),
                 label: d.label,
+                // The count is read with the tab: "Alerts, 3 new alerts".
+                tooltip: i == 2 && badge > 0
+                    ? '${d.label}, ${context.l10n.alertsBadge(badge)}'
+                    : null,
               ),
           ],
         ),

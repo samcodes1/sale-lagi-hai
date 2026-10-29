@@ -37,6 +37,10 @@ final class MyCards extends StoredStringList {
 
   bool has(String cardProductId) => state.contains(cardProductId);
 
+  /// Adds cards kept in the account (added on another phone).
+  Future<void> addFromAccount(Iterable<String> cardProductIds) =>
+      update((current) => {...current, ...cardProductIds}.toList());
+
   /// Adds a card; false when there are already [max].
   Future<bool> add(String cardProductId) async {
     var added = false;

@@ -138,6 +138,10 @@ final class FakeDeals implements DealRepository {
       throw UnimplementedError();
 
   @override
+  Future<Result<List<Deal>>> byIds(List<String> ids) =>
+      throw UnimplementedError();
+
+  @override
   Future<Result<DealPage>> forCards(
     List<String> cardProductIds, {
     String? cityId,

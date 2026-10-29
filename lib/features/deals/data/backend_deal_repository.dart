@@ -180,6 +180,27 @@ final class BackendDealRepository implements DealRepository {
   @override
   Future<Result<Deal>> byId(String id) => _guard(() => _card(id));
 
+  @override
+  Future<Result<List<Deal>>> byIds(List<String> ids) => _guard(() async {
+    final unique = ids.toSet().toList();
+    // In chunks, so the request URL stays short.
+    final pages = await [
+      for (var i = 0; i < unique.length; i += 100)
+        _backend.select(
+          TableQuery(
+            'deal_cards',
+            inList: {
+              'id': unique.sublist(i, (i + 100).clamp(0, unique.length)),
+            },
+          ),
+        ),
+    ].wait;
+    return [
+      for (final page in pages)
+        for (final row in page) dealFromRow(row),
+    ];
+  });
+
   Future<Deal> _card(String id) async {
     final rows = await _backend.select(
       TableQuery('deal_cards', equals: {'id': id}, limit: 1),

@@ -60,6 +60,21 @@ final class DealTimeLabels {
     return _l10n.updatedDaysAgo(age.inDays);
   }
 
+  /// When an alert came: "Just now", "5 min ago", "3 h ago", "Yesterday",
+  /// then the date.
+  String received(DateTime at, {required DateTime now}) {
+    final age = now.difference(at);
+    if (age < const Duration(minutes: 1)) return _l10n.alertJustNow;
+    if (age < const Duration(hours: 1)) {
+      return _l10n.alertMinutesAgo(age.inMinutes);
+    }
+    if (age < const Duration(hours: 24)) {
+      return _l10n.alertHoursAgo(age.inHours);
+    }
+    if (_calendarDaysBetween(at, now) == 1) return _l10n.alertYesterday;
+    return _format.shortDate(at.toLocal());
+  }
+
   static int _calendarDaysBetween(DateTime from, DateTime to) {
     final a = from.toLocal();
     final b = to.toLocal();

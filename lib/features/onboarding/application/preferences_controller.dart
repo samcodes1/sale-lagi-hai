@@ -129,6 +129,18 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
     ),
   );
 
+  /// Adds follows kept in the account (signed in on another phone): the
+  /// phone keeps its own, and gains these.
+  Future<void> addFollows({
+    Iterable<String> brandIds = const [],
+    Iterable<String> categoryIds = const [],
+  }) => _update(
+    state.copyWith(
+      brandIds: {...state.brandIds, ...brandIds}.toList(),
+      categoryFollowIds: {...state.categoryFollowIds, ...categoryIds}.toList(),
+    ),
+  );
+
   Future<void> markAlertsAsked(DateTime at) =>
       _update(state.copyWith(alertsAskedAt: at));
 

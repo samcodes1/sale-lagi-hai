@@ -62,6 +62,7 @@ The function fails closed. Without `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY
 - `supabase/functions/delete-account/account.test.ts`: the steps, batching, re-auth, failure order and the HTTP API calls.
 
 ## Sign-in details
+- **Both ways at sign-in:** after the guest's choices go up, what the account already holds comes down. That is saves (newest 500), cards and followed brands and categories made on another phone. The phone keeps its own and gains these. A failure leaves the phone as it was.
 - Back on the code step returns to the number. While a code is being checked, Back leaves the page; the sign-in still finishes and the guest choices still sync.
 - "Send code" works once per tap. Going back to the same number keeps the 60-second wait and the code already sent.
 - The code field turns off suggestions, autocorrect and keyboard learning.

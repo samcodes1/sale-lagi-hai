@@ -23,6 +23,7 @@ DealCardData dealCardData(
   required AppFormatters format,
   required String? Function(String? path) imageUrl,
   String? cityName,
+  bool saved = false,
 }) {
   final hasPricePair =
       deal.pricePkr != null &&
@@ -46,5 +47,6 @@ DealCardData dealCardData(
     imageUrl: imageUrl(deal.imagePath),
     featured: deal.isFeatured,
     cardNames: deal.cardBanks,
+    saved: saved,
   );
 }

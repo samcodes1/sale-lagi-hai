@@ -17,6 +17,7 @@ import 'package:sale_lagi_hai/features/cards/presentation/my_cards_screen.dart';
 import 'package:sale_lagi_hai/features/categories/presentation/category_screen.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_detail_screen.dart';
 import 'package:sale_lagi_hai/features/explore/presentation/explore_screen.dart';
+import 'package:sale_lagi_hai/features/follows/presentation/following_screen.dart';
 import 'package:sale_lagi_hai/features/home/presentation/home_screen.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/alerts_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/brands_step.dart';
@@ -48,6 +49,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
             TypedGoRoute<CategoryRoute>(path: 'category/:slug'),
             TypedGoRoute<SearchRoute>(path: 'search'),
             TypedGoRoute<MyCardsRoute>(path: 'cards'),
+            TypedGoRoute<FollowingRoute>(path: 'following'),
           ],
         ),
       ],
@@ -227,6 +229,17 @@ final class MyCardsRoute extends GoRouteData with $MyCardsRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const MyCardsScreen();
+}
+
+/// `/following`: the brands and categories followed.
+final class FollowingRoute extends GoRouteData with $FollowingRoute {
+  const new();
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const FollowingScreen();
 }
 
 // ------------------------------------------------------------- account ---

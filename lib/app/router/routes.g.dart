@@ -48,6 +48,12 @@ RouteBase get $appShellRoute => StatefulShellRouteData.$route(
               parentNavigatorKey: MyCardsRoute.$parentNavigatorKey,
               factory: $MyCardsRoute._fromState,
             ),
+            GoRouteData.$route(
+              path: 'following',
+              hasOverriddenOnExit: false,
+              parentNavigatorKey: FollowingRoute.$parentNavigatorKey,
+              factory: $FollowingRoute._fromState,
+            ),
           ],
         ),
       ],
@@ -236,6 +242,27 @@ mixin $MyCardsRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/cards');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $FollowingRoute on GoRouteData {
+  static FollowingRoute _fromState(GoRouterState state) =>
+      const FollowingRoute();
+
+  @override
+  String get location => GoRouteData.$location('/following');
 
   @override
   void go(BuildContext context) => context.go(location);

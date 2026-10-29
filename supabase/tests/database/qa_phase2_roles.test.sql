@@ -19,11 +19,13 @@ select is(
   -- 4.6 added brand_suggestions and replaced search_deals' signature
   -- (830_search.test.sql).
   -- 4.7 added deals_for_cards, open to guests (840_my_cards.test.sql).
+  -- 4.8 added mark_alerts_read and unread_alert_count, signed-in only
+  -- (850_inbox.test.sql).
   array['approve_submission', 'brand_deals', 'brand_suggestions', 'custom_access_token_hook', 'deals_for_cards', 'deals_for_my_cards',
-        'ending_soon_deals', 'featured_deals', 'feed', 'mark_submission_duplicate', 'nearby_deals',
+        'ending_soon_deals', 'featured_deals', 'feed', 'mark_alerts_read', 'mark_submission_duplicate', 'nearby_deals',
         'prepare_account_deletion', 'register_push_token',
         'reject_submission', 'search_deals', 'submission_duplicates', 'sync_guest_preferences',
-        'trending_deals'],
+        'trending_deals', 'unread_alert_count'],
   'the public RPC surface is exactly the reviewed set');
 
 -- One pending submission per staff action, so each call has work to do.
@@ -54,6 +56,8 @@ begin
     ('brand_deals', 'select count(*) from public.brand_deals(''kolachi'')'),
     ('deals_for_my_cards', 'select count(*) from public.deals_for_my_cards()'),
     ('deals_for_cards', 'select count(*) from public.deals_for_cards(array[gen_random_uuid()])'),
+    ('mark_alerts_read', 'select public.mark_alerts_read()'),
+    ('unread_alert_count', 'select public.unread_alert_count()'),
     ('register_push_token', format('select public.register_push_token(%L, ''android'')', who || '-device-0000000000000000')),
     ('custom_access_token_hook', 'select public.custom_access_token_hook(''{"user_id": null}'')'),
     ('submission_duplicates', format('select count(*) from public.submission_duplicates(%L)', sub)),
@@ -94,6 +98,7 @@ insert into expected
 select who, rpc, case
     when rpc = 'custom_access_token_hook' then '42501'
     when who = 'anon' and rpc in ('deals_for_my_cards', 'register_push_token', 'submission_duplicates',
+                                  'mark_alerts_read', 'unread_alert_count',
                                   'approve_submission', 'reject_submission', 'moderation_queue', 'stale_deals') then '42501'
     when rpc in ('approve_submission', 'reject_submission')
          and who not in ('moderator_aal2', 'admin_aal2') then '42501'
@@ -105,7 +110,7 @@ select is(
   (select string_agg(format('%s/%s: %s (want %s)', c.who, c.rpc, c.code, e.code), '; ' order by c.who, c.rpc)
    from calls c join expected e using (who, rpc) where c.code <> e.code),
   null, 'every role gets exactly the expected answer from every RPC and view');
-select is((select count(*) from calls), 114::bigint, 'six roles called nineteen RPCs and views');
+select is((select count(*) from calls), 126::bigint, 'six roles called twenty-one RPCs and views');
 
 -- What non-staff see in the staff views.
 select tests.authenticate_as((select shopper from w));

@@ -1657,6 +1657,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No deals for “⁨{query}⁩”. Try another word.'**
   String emptySearchNoFilters(String query);
+
+  /// No description provided for @savedActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active ({count})'**
+  String savedActive(int count);
+
+  /// No description provided for @savedEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended ({count})'**
+  String savedEnded(int count);
+
+  /// No description provided for @savedNoEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'None of your saved deals has ended.'**
+  String get savedNoEnded;
+
+  /// No description provided for @savedNoActive.
+  ///
+  /// In en, this message translates to:
+  /// **'None of your saved deals is on right now.'**
+  String get savedNoActive;
+
+  /// No description provided for @savedGone.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 saved deal is no longer available.} other{{count} saved deals are no longer available.}}'**
+  String savedGone(int count);
+
+  /// No description provided for @actionRemoveThem.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove them'**
+  String get actionRemoveThem;
+
+  /// No description provided for @actionRemoveEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove ended deals'**
+  String get actionRemoveEnded;
+
+  /// No description provided for @actionUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get actionUndo;
+
+  /// No description provided for @alertJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get alertJustNow;
+
+  /// No description provided for @alertMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String alertMinutesAgo(int count);
+
+  /// No description provided for @alertHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h ago'**
+  String alertHoursAgo(int count);
+
+  /// No description provided for @alertYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get alertYesterday;
+
+  /// No description provided for @alertUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get alertUnread;
+
+  /// No description provided for @alertsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get alertsToday;
+
+  /// No description provided for @alertsEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get alertsEarlier;
+
+  /// No description provided for @actionMarkAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get actionMarkAllRead;
+
+  /// No description provided for @alertsGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to get alerts here, on every phone you use. Follows work without an account too.'**
+  String get alertsGuest;
+
+  /// No description provided for @followingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get followingTitle;
+
+  /// No description provided for @followingSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{brands, plural, =0{No brands} =1{1 brand} other{{brands} brands}} · {categories, plural, =0{no categories} =1{1 category} other{{categories} categories}}'**
+  String followingSummary(int brands, int categories);
+
+  /// No description provided for @followingBrands.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands'**
+  String get followingBrands;
+
+  /// No description provided for @followingCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get followingCategories;
+
+  /// No description provided for @followingEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not following anything yet. Follow brands and categories to hear about their deals.'**
+  String get followingEmpty;
+
+  /// No description provided for @actionExplore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore brands'**
+  String get actionExplore;
+
+  /// No description provided for @alertsBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 new alert} other{{count} new alerts}}'**
+  String alertsBadge(int count);
 }
 
 class _AppLocalizationsDelegate

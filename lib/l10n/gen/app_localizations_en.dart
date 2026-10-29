@@ -981,4 +981,118 @@ class AppLocalizationsEn extends AppLocalizations {
   String emptySearchNoFilters(String query) {
     return 'No deals for “⁨$query⁩”. Try another word.';
   }
+
+  @override
+  String savedActive(int count) {
+    return 'Active ($count)';
+  }
+
+  @override
+  String savedEnded(int count) {
+    return 'Ended ($count)';
+  }
+
+  @override
+  String get savedNoEnded => 'None of your saved deals has ended.';
+
+  @override
+  String get savedNoActive => 'None of your saved deals is on right now.';
+
+  @override
+  String savedGone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count saved deals are no longer available.',
+      one: '1 saved deal is no longer available.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get actionRemoveThem => 'Remove them';
+
+  @override
+  String get actionRemoveEnded => 'Remove ended deals';
+
+  @override
+  String get actionUndo => 'Undo';
+
+  @override
+  String get alertJustNow => 'Just now';
+
+  @override
+  String alertMinutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String alertHoursAgo(int count) {
+    return '$count h ago';
+  }
+
+  @override
+  String get alertYesterday => 'Yesterday';
+
+  @override
+  String get alertUnread => 'Unread';
+
+  @override
+  String get alertsToday => 'Today';
+
+  @override
+  String get alertsEarlier => 'Earlier';
+
+  @override
+  String get actionMarkAllRead => 'Mark all as read';
+
+  @override
+  String get alertsGuest =>
+      'Sign in to get alerts here, on every phone you use. Follows work without an account too.';
+
+  @override
+  String get followingTitle => 'Following';
+
+  @override
+  String followingSummary(int brands, int categories) {
+    String _temp0 = intl.Intl.pluralLogic(
+      brands,
+      locale: localeName,
+      other: '$brands brands',
+      one: '1 brand',
+      zero: 'No brands',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      categories,
+      locale: localeName,
+      other: '$categories categories',
+      one: '1 category',
+      zero: 'no categories',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String get followingBrands => 'Brands';
+
+  @override
+  String get followingCategories => 'Categories';
+
+  @override
+  String get followingEmpty =>
+      'You\'re not following anything yet. Follow brands and categories to hear about their deals.';
+
+  @override
+  String get actionExplore => 'Explore brands';
+
+  @override
+  String alertsBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new alerts',
+      one: '1 new alert',
+    );
+    return '$_temp0';
+  }
 }

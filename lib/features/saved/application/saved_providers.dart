@@ -38,6 +38,11 @@ final class SavedDeals extends StoredStringList {
 
   bool isSaved(String dealId) => state.contains(dealId);
 
+  /// Adds saves kept in the account (made on another phone), after the
+  /// phone's own.
+  Future<void> addFromAccount(Iterable<String> dealIds) =>
+      update((current) => {...current, ...dealIds}.toList());
+
   Future<void> toggle(String dealId) async {
     var saving = false;
     final next = await update((current) {

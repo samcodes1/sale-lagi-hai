@@ -189,6 +189,28 @@ final class BackendCatalogRepository implements CatalogRepository {
   }
 
   @override
+  Future<List<Brand>> brandsByIds(List<String> ids) async {
+    final unique = ids.toSet().toList();
+    final pages = await [
+      for (var i = 0; i < unique.length; i += 100)
+        _backend.select(
+          TableQuery(
+            'brands',
+            columns: _brandColumns,
+            equals: const {'is_active': true},
+            inList: {
+              'id': unique.sublist(i, (i + 100).clamp(0, unique.length)),
+            },
+          ),
+        ),
+    ].wait;
+    return [
+      for (final page in pages)
+        for (final row in page) _brand(row),
+    ]..sort((a, b) => a.name.compareTo(b.name));
+  }
+
+  @override
   Future<Brand?> brandBySlug(String slug) async {
     final rows = await _backend.select(
       TableQuery(

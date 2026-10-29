@@ -17,7 +17,15 @@ import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart'
 const _prefetchFromEnd = 5;
 
 /// A standard deal card that opens its deal page.
-Widget dealCardFor(BuildContext context, WidgetRef ref, Deal deal) {
+/// With [onSaveToggle], the card has its own save button ([saved] says
+/// which way it is).
+Widget dealCardFor(
+  BuildContext context,
+  WidgetRef ref,
+  Deal deal, {
+  VoidCallback? onSaveToggle,
+  bool saved = false,
+}) {
   final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
   return DealCard(
     key: ValueKey(deal.id),
@@ -27,8 +35,10 @@ Widget dealCardFor(BuildContext context, WidgetRef ref, Deal deal) {
       l10n: context.l10n,
       format: AppFormatters.of(context),
       imageUrl: ref.watch(dealImageUrlProvider),
+      saved: saved,
     ),
     onTap: () => DealRoute(dealId: deal.id).push<void>(context),
+    onSaveToggle: onSaveToggle,
   );
 }
 

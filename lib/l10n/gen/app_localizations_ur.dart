@@ -985,4 +985,118 @@ class AppLocalizationsUr extends AppLocalizations {
   String emptySearchNoFilters(String query) {
     return '“⁨$query⁩” کے لیے کوئی ڈیل نہیں ملی۔ کوئی اور لفظ آزمائیں۔';
   }
+
+  @override
+  String savedActive(int count) {
+    return 'جاری (⁦$count⁩)';
+  }
+
+  @override
+  String savedEnded(int count) {
+    return 'ختم (⁦$count⁩)';
+  }
+
+  @override
+  String get savedNoEnded => 'آپ کی محفوظ کردہ کوئی ڈیل ختم نہیں ہوئی۔';
+
+  @override
+  String get savedNoActive => 'آپ کی محفوظ کردہ کوئی ڈیل اس وقت جاری نہیں۔';
+
+  @override
+  String savedGone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '⁦$count⁩ محفوظ ڈیلز اب دستیاب نہیں۔',
+      one: 'ایک محفوظ ڈیل اب دستیاب نہیں۔',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get actionRemoveThem => 'انہیں ہٹائیں';
+
+  @override
+  String get actionRemoveEnded => 'ختم شدہ ڈیلز ہٹائیں';
+
+  @override
+  String get actionUndo => 'واپس لیں';
+
+  @override
+  String get alertJustNow => 'ابھی ابھی';
+
+  @override
+  String alertMinutesAgo(int count) {
+    return '⁦$count⁩ منٹ پہلے';
+  }
+
+  @override
+  String alertHoursAgo(int count) {
+    return '⁦$count⁩ گھنٹے پہلے';
+  }
+
+  @override
+  String get alertYesterday => 'کل';
+
+  @override
+  String get alertUnread => 'نہیں پڑھا';
+
+  @override
+  String get alertsToday => 'آج';
+
+  @override
+  String get alertsEarlier => 'پہلے';
+
+  @override
+  String get actionMarkAllRead => 'سب کو پڑھا ہوا کریں';
+
+  @override
+  String get alertsGuest =>
+      'یہاں الرٹس پانے کے لیے سائن اِن کریں، ہر اُس فون پر جو آپ استعمال کرتے ہیں۔ فالو کرنا اکاؤنٹ کے بغیر بھی ہوتا ہے۔';
+
+  @override
+  String get followingTitle => 'فالو کیے ہوئے';
+
+  @override
+  String followingSummary(int brands, int categories) {
+    String _temp0 = intl.Intl.pluralLogic(
+      brands,
+      locale: localeName,
+      other: '⁦$brands⁩ برانڈز',
+      one: 'ایک برانڈ',
+      zero: 'کوئی برانڈ نہیں',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      categories,
+      locale: localeName,
+      other: '⁦$categories⁩ زمرے',
+      one: 'ایک زمرہ',
+      zero: 'کوئی زمرہ نہیں',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String get followingBrands => 'برانڈز';
+
+  @override
+  String get followingCategories => 'زمرے';
+
+  @override
+  String get followingEmpty =>
+      'آپ ابھی کچھ فالو نہیں کر رہے۔ برانڈز اور زمرے فالو کریں تاکہ ان کی ڈیلز کی خبر ملے۔';
+
+  @override
+  String get actionExplore => 'برانڈز دیکھیں';
+
+  @override
+  String alertsBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '⁦$count⁩ نئے الرٹس',
+      one: 'ایک نیا الرٹ',
+    );
+    return '$_temp0';
+  }
 }

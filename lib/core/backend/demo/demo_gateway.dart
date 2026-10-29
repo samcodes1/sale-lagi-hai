@@ -318,6 +318,31 @@ final class DemoGateway implements BackendGateway {
           }
         }
         return const [];
+      case 'mark_alerts_read':
+        final ids = params['ids'] as List<Object?>?;
+        var changed = 0;
+        for (final n in _notifications) {
+          if (n['read_at'] == null && (ids == null || ids.contains(n['id']))) {
+            n['read_at'] = _clock().toUtc().toIso8601String();
+            changed++;
+          }
+        }
+        return [
+          {'value': changed},
+        ];
+      case 'unread_alert_count':
+        final since = params['since'] as String?;
+        return [
+          {
+            'value': [
+              for (final n in _notifications)
+                if (n['read_at'] == null &&
+                    (since == null ||
+                        (n['created_at']! as String).compareTo(since) > 0))
+                  n,
+            ].length,
+          },
+        ];
       case 'brand_suggestions':
         final words = (params['query'] as String? ?? '').trim().toLowerCase();
         if (words.isEmpty || words.length > 60) return const [];
@@ -489,6 +514,40 @@ final class DemoGateway implements BackendGateway {
       }(),
   ];
 
+  /// The demo inbox: three alerts about demo deals, newest first.
+  late final List<Map<String, Object?>> _notifications = [
+    for (final (i, (n, kind, en, minutesAgo, read)) in const [
+      (1, 'deal_alert', 'Karahi House (Demo): Family karahi for 4', 20, false),
+      (
+        9,
+        'deal_alert',
+        'Burger Point (Demo): Meezan debit card 15% off',
+        300,
+        false,
+      ),
+      (
+        4,
+        'expiring_saved',
+        'Threads (Demo): a saved deal ends soon',
+        1800,
+        true,
+      ),
+    ].indexed)
+      {
+        'id': '00000000-0000-4000-0008-${(i + 1).toString().padLeft(12, '0')}',
+        'user_id': userId,
+        'kind': kind,
+        'title': en,
+        'body': demoDeals.firstWhere((d) => d.n == n).titleEn,
+        'deal_id': demoDeals.firstWhere((d) => d.n == n).id,
+        'created_at': _clock()
+            .toUtc()
+            .subtract(Duration(minutes: minutesAgo))
+            .toIso8601String(),
+        'read_at': read ? _clock().toUtc().toIso8601String() : null,
+      },
+  ];
+
   static final List<Map<String, Object?>> _dealTargets = [
     for (final d in demoDeals)
       if (d.scope == 'local')
@@ -518,6 +577,7 @@ final class DemoGateway implements BackendGateway {
     'deals' => _dealTexts,
     'outlets' => _outlets,
     'deal_targets' => _dealTargets,
+    'notifications' => _notifications,
     final other =>
       _tables[other] ??
           (throw UnsupportedError('demo backend has no table $other')),
