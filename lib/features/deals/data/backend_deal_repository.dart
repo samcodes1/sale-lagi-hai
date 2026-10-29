@@ -111,6 +111,26 @@ final class BackendDealRepository implements DealRepository {
       });
 
   @override
+  Future<Result<DealPage>> forCards(
+    List<String> cardProductIds, {
+    String? cityId,
+    FeedCursor? after,
+  }) {
+    if (cardProductIds.isEmpty) {
+      return Future.value(const Success(DealPage([])));
+    }
+    return _guard(() async {
+      final deals = await _rpc('deals_for_cards', {
+        'card_product_ids': cardProductIds.take(20).toList(),
+        'city_id': ?cityId,
+        ..._cursor(after),
+        'page_size': 20,
+      });
+      return DealPage.of(deals, pageSize: 20);
+    });
+  }
+
+  @override
   Future<Result<DealPage>> search(
     String query, {
     String? cityId,
@@ -172,7 +192,8 @@ final class BackendDealRepository implements DealRepository {
   @override
   Future<Result<DealDetail>> detail(String id) => _guard(() async {
     final deal = await _card(id);
-    final (text, outletRows, targets) = await (
+    final local = deal.scope == DealScope.local;
+    final (text, targets) = await (
       _backend.select(
         TableQuery(
           'deals',
@@ -181,16 +202,7 @@ final class BackendDealRepository implements DealRepository {
           limit: 1,
         ),
       ),
-      _backend.select(
-        TableQuery(
-          'outlets',
-          columns: 'id,name,address,phone,city_id,area_id,latitude,longitude',
-          equals: {'brand_id': deal.brandId, 'is_active': true},
-          orderBy: 'name',
-          limit: 100,
-        ),
-      ),
-      deal.scope == DealScope.local
+      local
           ? _backend.select(
               TableQuery(
                 'deal_targets',
@@ -200,6 +212,36 @@ final class BackendDealRepository implements DealRepository {
             )
           : Future.value(const <Map<String, Object?>>[]),
     ).wait;
+    // A local deal's outlets are read where it runs: its areas, or its
+    // cities when one is city-wide. Otherwise a chain's first 100 outlets
+    // by name could all be elsewhere (QA 4.4 BUG-4).
+    final areaIds = [
+      for (final t in targets)
+        if (t['area_id'] case final String area) area,
+    ];
+    final cityIds = {
+      for (final t in targets)
+        if (t['city_id'] case final String city) city,
+    }.toList();
+    final outletRows =
+        deal.scope == DealScope.online || (local && cityIds.isEmpty)
+        ? const <Map<String, Object?>>[]
+        : await _backend.select(
+            TableQuery(
+              'outlets',
+              columns:
+                  'id,name,address,phone,city_id,area_id,latitude,longitude',
+              equals: {'brand_id': deal.brandId, 'is_active': true},
+              inList: {
+                if (local && areaIds.length == targets.length)
+                  'area_id': areaIds
+                else if (local)
+                  'city_id': cityIds,
+              },
+              orderBy: 'name',
+              limit: 100,
+            ),
+          );
     final outlets = [for (final row in outletRows) outletFromRow(row)];
     final extra = text.isEmpty ? const <String, Object?>{} : text.single;
     String? opt(String key) => switch (extra[key]) {

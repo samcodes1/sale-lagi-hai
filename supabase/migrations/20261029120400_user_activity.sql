@@ -5,7 +5,7 @@
 -- Follow exactly one brand, category, bank or city.
 create table public.follows (
   id bigint generated always as identity primary key,
-  user_id uuid not null references auth.users on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
   brand_id uuid references public.brands on delete cascade,
   category_id uuid references public.categories on delete cascade,
   bank_id uuid references public.banks on delete cascade,
@@ -22,7 +22,7 @@ create index follows_bank_idx on public.follows (bank_id) where bank_id is not n
 create index follows_city_idx on public.follows (city_id) where city_id is not null;
 
 create table public.saves (
-  user_id uuid not null references auth.users on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
   deal_id uuid not null references public.deals on delete cascade,
   created_at timestamptz not null default now(),
   primary key (user_id, deal_id)
@@ -31,7 +31,7 @@ create index saves_deal_idx on public.saves (deal_id);
 
 -- "My cards": card products only. Never a card number, expiry or name.
 create table public.user_cards (
-  user_id uuid not null references auth.users on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
   card_product_id uuid not null references public.card_products on delete cascade,
   created_at timestamptz not null default now(),
   primary key (user_id, card_product_id)

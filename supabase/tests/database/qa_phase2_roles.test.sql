@@ -18,7 +18,8 @@ select is(
   -- 4.3 added ending_soon_deals (810_home.test.sql).
   -- 4.6 added brand_suggestions and replaced search_deals' signature
   -- (830_search.test.sql).
-  array['approve_submission', 'brand_deals', 'brand_suggestions', 'custom_access_token_hook', 'deals_for_my_cards',
+  -- 4.7 added deals_for_cards, open to guests (840_my_cards.test.sql).
+  array['approve_submission', 'brand_deals', 'brand_suggestions', 'custom_access_token_hook', 'deals_for_cards', 'deals_for_my_cards',
         'ending_soon_deals', 'featured_deals', 'feed', 'mark_submission_duplicate', 'nearby_deals',
         'prepare_account_deletion', 'register_push_token',
         'reject_submission', 'search_deals', 'submission_duplicates', 'sync_guest_preferences',
@@ -52,6 +53,7 @@ begin
     ('brand_suggestions', 'select count(*) from public.brand_suggestions(''kol'')'),
     ('brand_deals', 'select count(*) from public.brand_deals(''kolachi'')'),
     ('deals_for_my_cards', 'select count(*) from public.deals_for_my_cards()'),
+    ('deals_for_cards', 'select count(*) from public.deals_for_cards(array[gen_random_uuid()])'),
     ('register_push_token', format('select public.register_push_token(%L, ''android'')', who || '-device-0000000000000000')),
     ('custom_access_token_hook', 'select public.custom_access_token_hook(''{"user_id": null}'')'),
     ('submission_duplicates', format('select count(*) from public.submission_duplicates(%L)', sub)),
@@ -103,7 +105,7 @@ select is(
   (select string_agg(format('%s/%s: %s (want %s)', c.who, c.rpc, c.code, e.code), '; ' order by c.who, c.rpc)
    from calls c join expected e using (who, rpc) where c.code <> e.code),
   null, 'every role gets exactly the expected answer from every RPC and view');
-select is((select count(*) from calls), 108::bigint, 'six roles called eighteen RPCs and views');
+select is((select count(*) from calls), 114::bigint, 'six roles called nineteen RPCs and views');
 
 -- What non-staff see in the staff views.
 select tests.authenticate_as((select shopper from w));

@@ -9,6 +9,7 @@ import 'package:sale_lagi_hai/core/l10n/failure_messages.dart';
 import 'package:sale_lagi_hai/core/l10n/formatters.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
+import 'package:sale_lagi_hai/core/links/open_link.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
@@ -224,7 +225,7 @@ class _Body extends ConsumerWidget {
                 Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: TextButton.icon(
-                    onPressed: () => _open(
+                    onPressed: () => openLink(
                       context,
                       ref.read(linkServiceProvider).openWeb(offerUrl),
                     ),
@@ -250,17 +251,6 @@ class _Body extends ConsumerWidget {
   }
 }
 
-/// Shows "Couldn't open that" when a launch fails.
-Future<void> _open(BuildContext context, Future<bool> launch) async {
-  final messenger = ScaffoldMessenger.maybeOf(context);
-  final message = context.l10n.linkFailed;
-  if (!await launch) {
-    messenger
-      ?..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message)));
-  }
-}
-
 class _Actions extends ConsumerWidget {
   const new({required this.deal, required this.offerUrl});
 
@@ -281,25 +271,42 @@ class _Actions extends ConsumerWidget {
       children: [
         if (offerUrl != null)
           FilledButton.icon(
-            onPressed: () =>
-                _open(context, ref.read(linkServiceProvider).openWeb(offerUrl)),
+            onPressed: () => openLink(
+              context,
+              ref.read(linkServiceProvider).openWeb(offerUrl),
+            ),
             icon: const Icon(Icons.shopping_bag_outlined),
             label: Text(l10n.actionOpenOffer),
           ),
-        Semantics(
-          toggled: saved,
-          child: OutlinedButton.icon(
-            onPressed: () async {
+        Builder(
+          builder: (context) {
+            Future<void> toggle() async {
               final messenger = ScaffoldMessenger.maybeOf(context);
               final message = saved ? l10n.unsavedToast : l10n.savedToast;
               await ref.read(savedDealsProvider.notifier).toggle(deal.id);
               messenger
                 ?..hideCurrentSnackBar()
                 ..showSnackBar(SnackBar(content: Text(message)));
-            },
-            icon: Icon(saved ? Icons.bookmark : Icons.bookmark_outline),
-            label: Text(saved ? l10n.actionUnsave : l10n.actionSave),
-          ),
+            }
+
+            // One node that screen readers announce as a toggle, with the
+            // label on screen (QA 4.4 BUG-6), like the Follow button.
+            return Semantics(
+              // Its own node: with the button's excluded, it would merge
+              // into whatever is around it.
+              container: true,
+              toggled: saved,
+              label: saved ? l10n.actionUnsave : l10n.actionSave,
+              button: true,
+              excludeSemantics: true,
+              onTap: toggle,
+              child: OutlinedButton.icon(
+                onPressed: toggle,
+                icon: Icon(saved ? Icons.bookmark : Icons.bookmark_outline),
+                label: Text(saved ? l10n.actionUnsave : l10n.actionSave),
+              ),
+            );
+          },
         ),
         OutlinedButton.icon(
           onPressed: () {
@@ -311,7 +318,7 @@ class _Actions extends ConsumerWidget {
             );
             final link = this.offerUrl;
             unawaited(
-              _open(
+              openLink(
                 context,
                 ref
                     .read(linkServiceProvider)
@@ -433,7 +440,7 @@ class _Where extends ConsumerWidget {
                   spacing: BrandSpacing.s3,
                   children: [
                     TextButton.icon(
-                      onPressed: () => _open(
+                      onPressed: () => openLink(
                         context,
                         links.openMap(
                           outlet.latitude,
@@ -446,7 +453,7 @@ class _Where extends ConsumerWidget {
                     ),
                     if (outlet.phone case final phone?)
                       TextButton.icon(
-                        onPressed: () => _open(context, links.call(phone)),
+                        onPressed: () => openLink(context, links.call(phone)),
                         icon: const Icon(Icons.call_outlined),
                         label: Text(l10n.actionCall),
                       ),

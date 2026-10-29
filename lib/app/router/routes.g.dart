@@ -42,6 +42,12 @@ RouteBase get $appShellRoute => StatefulShellRouteData.$route(
               parentNavigatorKey: SearchRoute.$parentNavigatorKey,
               factory: $SearchRoute._fromState,
             ),
+            GoRouteData.$route(
+              path: 'cards',
+              hasOverriddenOnExit: false,
+              parentNavigatorKey: MyCardsRoute.$parentNavigatorKey,
+              factory: $MyCardsRoute._fromState,
+            ),
           ],
         ),
       ],
@@ -210,6 +216,26 @@ mixin $SearchRoute on GoRouteData {
     '/search',
     queryParams: {if (_self.q != null) 'q': _self.q},
   );
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $MyCardsRoute on GoRouteData {
+  static MyCardsRoute _fromState(GoRouterState state) => const MyCardsRoute();
+
+  @override
+  String get location => GoRouteData.$location('/cards');
 
   @override
   void go(BuildContext context) => context.go(location);

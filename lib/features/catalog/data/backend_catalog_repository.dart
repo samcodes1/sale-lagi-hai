@@ -77,6 +77,7 @@ final class BackendCatalogRepository implements CatalogRepository {
   Future<List<Brand>> brands({
     List<String>? categoryIds,
     int limit = 60,
+    int offset = 0,
   }) async {
     final rows = await _backend.select(
       TableQuery(
@@ -86,6 +87,7 @@ final class BackendCatalogRepository implements CatalogRepository {
         inList: {'category_id': ?categoryIds},
         orderBy: 'name',
         limit: limit.clamp(1, 100),
+        offset: offset < 0 ? 0 : offset,
       ),
     );
     return [for (final row in rows) _brand(row)];
@@ -156,6 +158,32 @@ final class BackendCatalogRepository implements CatalogRepository {
           nameEn: _req<String>(row, 'banks', 'name_en'),
           nameUr: _req<String>(row, 'banks', 'name_ur'),
           shortName: _req<String>(row, 'banks', 'short_name'),
+        ),
+    ];
+  }
+
+  @override
+  Future<List<CardProduct>> cardProducts() async {
+    final rows = await _backend.select(
+      const TableQuery(
+        'card_products',
+        columns: 'id,bank_id,name,network,kind',
+        equals: {'is_active': true},
+        orderBy: 'name',
+      ),
+    );
+    return [
+      for (final row in rows)
+        CardProduct(
+          id: _req<String>(row, 'card_products', 'id'),
+          bankId: _req<String>(row, 'card_products', 'bank_id'),
+          name: _req<String>(row, 'card_products', 'name'),
+          network:
+              CardNetwork.fromWire(row['network']) ??
+              (throw const FormatException('card_products.network is unknown')),
+          kind:
+              CardKind.fromWire(row['kind']) ??
+              (throw const FormatException('card_products.kind is unknown')),
         ),
     ];
   }

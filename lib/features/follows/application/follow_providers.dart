@@ -45,7 +45,7 @@ final class Follows {
     try {
       final backend = _ref.read(backendGatewayProvider);
       if (following) {
-        await backend.insert('follows', {column: id});
+        await backend.insert('follows', {'user_id': user.id, column: id});
       } else {
         await backend.delete('follows', {'user_id': user.id, column: id});
       }

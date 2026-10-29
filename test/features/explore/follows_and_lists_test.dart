@@ -79,6 +79,9 @@ void main() {
     test('category follows made as a guest move in at sign-in', () async {
       final c = container();
       await c.read(followsProvider).toggleCategory(food);
+      // The sync runs right after sign-in.
+      await auth.sendPhoneCode('+923001234567');
+      await auth.verifyPhoneCode('+923001234567', DemoAuthRepository.code);
       await c.read(guestSyncProvider)();
       expect(
         (await backend.select(const TableQuery('follows')))
@@ -93,6 +96,9 @@ void main() {
     final c = container(gateway: _SyncFails(backend));
     await c.read(followsProvider).toggleBrand(threads);
     await c.read(savedDealsProvider.notifier).toggle(demoDeals.first.id);
+    // The sync runs right after sign-in.
+    await auth.sendPhoneCode('+923001234567');
+    await auth.verifyPhoneCode('+923001234567', DemoAuthRepository.code);
     await c.read(guestSyncProvider)();
     expect(c.read(preferencesProvider).brandIds, [threads]);
     final warning = logs.records.singleWhere(

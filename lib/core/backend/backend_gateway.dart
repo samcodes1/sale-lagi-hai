@@ -24,7 +24,8 @@ abstract interface class BackendGateway {
   Future<void> delete(String table, Map<String, Object?> match);
 }
 
-/// A read: equality and `in` filters, one ordering, a row limit.
+/// A read: equality and `in` filters, one ordering, a row limit, and how
+/// many rows to skip first.
 @immutable
 final class TableQuery {
   const new(
@@ -35,6 +36,7 @@ final class TableQuery {
     this.orderBy,
     this.ascending = true,
     this.limit,
+    this.offset = 0,
   });
 
   final String table;
@@ -44,4 +46,5 @@ final class TableQuery {
   final String? orderBy;
   final bool ascending;
   final int? limit;
+  final int offset;
 }

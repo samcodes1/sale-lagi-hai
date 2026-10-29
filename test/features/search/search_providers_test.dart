@@ -59,7 +59,7 @@ void main() {
       for (var i = 0; i < 10; i++) {
         await recent.add('query $i');
       }
-      expect(c.read(recentSearchesProvider), hasLength(RecentSearches.limit));
+      expect(c.read(recentSearchesProvider), hasLength(RecentSearches.max));
       expect(c.read(recentSearchesProvider).first, 'query 9');
     });
 

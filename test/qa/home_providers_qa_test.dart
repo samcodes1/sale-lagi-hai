@@ -223,8 +223,15 @@ void main() {
     ]) {
       test('a corrupt For you copy ($name) is the offline error, not a '
           'crash', () async {
+        // Save a real copy first, then spoil it under whatever key the app
+        // uses (QA round 2: the key format changed with BUG-4).
+        await container().read(forYouProvider.future);
+        final key = store.values.keys.singleWhere(
+          (k) => k.startsWith('cache.home.foryou.'),
+        );
+        final at = qaNow.toUtc().toIso8601String();
+        await store.setString(key, raw.replaceAll('2026-10-29T12:00:00Z', at));
         deals.offline = true;
-        await store.setString('cache.home.foryou.karachi.${''.hashCode}', raw);
         await expectLater(
           container().read(forYouProvider.future),
           throwsA(isA<OfflineFailure>()),
@@ -235,21 +242,22 @@ void main() {
 
   group('cache growth', () {
     test('the same interests picked in another order share one copy', () async {
+      // No listener: the feed is built only when read, so no copy is saved
+      // for the in-between interests. (QA round 2: counts copies instead of
+      // naming keys, so it holds whatever the key format.)
       final c = container();
-      final sub = c.listen(forYouProvider, (_, _) {});
-      addTearDown(sub.close);
       final prefs = c.read(preferencesProvider.notifier);
       await prefs.toggleInterest('food');
       await prefs.toggleInterest('fashion');
       await c.read(forYouProvider.future);
+      Iterable<String> copies() =>
+          store.values.keys.where((k) => k.startsWith('cache.home.foryou.'));
+      expect(copies(), hasLength(1));
       await prefs.toggleInterest('food');
       await prefs.toggleInterest('food'); // now [fashion, food]
       await c.read(forYouProvider.future);
       expect(c.read(preferencesProvider).interestIds, ['fashion', 'food']);
-      final keys = store.values.keys.toSet();
-      final a = 'cache.home.foryou.karachi.${'food,fashion'.hashCode}';
-      final b = 'cache.home.foryou.karachi.${'fashion,food'.hashCode}';
-      expect(keys.contains(a) && keys.contains(b), isFalse, reason: '$keys');
+      expect(copies(), hasLength(1), reason: '${copies()}');
     });
 
     test(

@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show FutureProviderFamily;
 import 'package:meta/meta.dart';
-import 'package:sale_lagi_hai/core/core_providers.dart';
+import 'package:sale_lagi_hai/core/storage/stored_string_list.dart';
 import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
 import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
 import 'package:sale_lagi_hai/features/deals/domain/search_filters.dart';
 import 'package:sale_lagi_hai/features/home/application/home_providers.dart';
+import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 
 // ----------------------------------------------------------- the search ---
 
@@ -113,75 +113,51 @@ final recentSearchesProvider = NotifierProvider<RecentSearches, List<String>>(
   RecentSearches.new,
 );
 
-final class RecentSearches extends Notifier<List<String>> {
-  static const limit = 8;
+final class RecentSearches extends StoredStringList {
+  static const max = 8;
+
+  @override
+  String get storageKey => recentSearchesKey;
+
+  @override
+  int get limit => max;
+
+  @override
+  String get what => 'recent searches';
+
+  @override
+  String? decode(String value) {
+    final words = value.trim();
+    return words.length >= 2 ? words : null;
+  }
 
   @override
   List<String> build() {
-    unawaited(_load());
-    return const [];
+    // A fresh start (account deleted) forgets them.
+    ref.watch(onboardedProvider);
+    return super.build();
   }
 
-  Future<void> _load() async {
-    try {
-      final raw = await ref
-          .read(keyValueStoreProvider)
-          .getString(recentSearchesKey);
-      if (raw == null || !ref.mounted) return;
-      final decoded = jsonDecode(raw);
-      if (decoded is! List) return;
-      // Searches made before the file was read come first.
-      state = _unique([
-        ...state,
-        for (final q in decoded)
-          if (q is String && q.trim().length >= 2) q.trim(),
-      ]);
-    } on Object catch (error) {
-      if (!ref.mounted) return;
-      // Only the kind of error: a FormatException's text quotes the
-      // file, and searches can be personal.
-      ref
-          .read(loggerProvider)
-          .warning(
-            'Could not read recent searches',
-            context: {'error': error.runtimeType.toString()},
-          );
-    }
-  }
-
-  /// One entry per search, whatever the letter case; at most [limit].
+  /// One entry per search, whatever the letter case.
   static List<String> _unique(List<String> searches) {
     final seen = <String>{};
     return [
       for (final q in searches)
         if (seen.add(q.toLowerCase())) q,
-    ].take(limit).toList();
+    ];
   }
 
-  Future<void> add(String query) => _save(_unique([query.trim(), ...state]));
+  Future<void> add(String query) =>
+      update((current) => _unique([query.trim(), ...current]));
 
-  Future<void> remove(String query) => _save([
-    for (final q in state)
-      if (q != query) q,
-  ]);
+  Future<void> remove(String query) => update(
+    (current) => [
+      for (final q in current)
+        if (q != query) q,
+    ],
+  );
 
-  Future<void> clear() => _save(const []);
-
-  Future<void> _save(List<String> searches) async {
-    state = searches;
-    try {
-      await ref
-          .read(keyValueStoreProvider)
-          .setString(recentSearchesKey, jsonEncode(searches));
-    } on Object catch (error) {
-      ref
-          .read(loggerProvider)
-          .warning(
-            'Could not save recent searches',
-            context: {'error': error.runtimeType.toString()},
-          );
-    }
-  }
+  Future<void> clear() => update((_) => const []);
 }
 
 // ---------------------------------------------------------- suggestions ---

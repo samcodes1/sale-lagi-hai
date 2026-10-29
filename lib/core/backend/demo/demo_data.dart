@@ -252,8 +252,10 @@ final demoCardProducts = <Map<String, Object?>>[
         },
 ];
 
+/// Unique per bank and product: the bank's own number, then the product's.
 String _productId(String bankId, int k) =>
-    '${bankId.substring(0, 30)}${k.toString().padLeft(6, '0')}';
+    '00000000-0000-4000-0005-'
+    '${bankId.substring(30)}${k.toString().padLeft(6, '0')}';
 
 final demoBrands = <Map<String, Object?>>[
   for (final (n, slug, name, ur, category) in const [

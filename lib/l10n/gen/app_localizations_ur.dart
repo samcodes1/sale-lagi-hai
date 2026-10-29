@@ -908,4 +908,76 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get actionShowDeals => 'ڈیلز دکھائیں';
+
+  @override
+  String get myCardsTitle => 'میرے کارڈز';
+
+  @override
+  String get myCardsPrivacy =>
+      'ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قسم۔ آپ کے کارڈز اسی فون پر رہتے ہیں، اور سائن اِن کریں تو آپ کے اکاؤنٹ میں بھی۔';
+
+  @override
+  String get myCardsYours => 'آپ کے کارڈز';
+
+  @override
+  String get myCardsEmpty =>
+      'اپنے کارڈز شامل کریں اور دیکھیں ان پر کون سی رعایتیں ملتی ہیں۔';
+
+  @override
+  String get myCardsDeals => 'آپ کے کارڈز کی آفرز';
+
+  @override
+  String get myCardsNoDeals =>
+      'ابھی آپ کے کارڈز کی کوئی آفر نہیں۔ شروع ہوتے ہی یہاں نظر آئیں گی۔';
+
+  @override
+  String myCardsFull(int count) {
+    return 'آپ زیادہ سے زیادہ ⁦$count⁩ کارڈز شامل کر سکتے ہیں۔ نیا شامل کرنے کے لیے کوئی ایک ہٹائیں۔';
+  }
+
+  @override
+  String get myCardsEntry => 'میرے کارڈز: اپنے کارڈز کی رعایتیں دیکھیں';
+
+  @override
+  String get actionAddCard => 'کارڈ شامل کریں';
+
+  @override
+  String actionRemoveCard(String card) {
+    return '⁨$card⁩ ہٹائیں';
+  }
+
+  @override
+  String get addCardPickBank => 'کون سا بینک؟';
+
+  @override
+  String addCardPickType(String bank) {
+    return '⁨$bank⁩ کا کون سا کارڈ؟';
+  }
+
+  @override
+  String get cardAlreadyAdded => 'پہلے سے شامل ہے';
+
+  @override
+  String cardAddedToast(String card) {
+    return '⁨$card⁩ شامل ہو گیا';
+  }
+
+  @override
+  String cardRemovedToast(String card) {
+    return '⁨$card⁩ ہٹا دیا گیا';
+  }
+
+  @override
+  String cardName(String bank, String product, String kind) {
+    return '⁨$bank⁩ کا ⁨$product⁩ (⁨$kind⁩)';
+  }
+
+  @override
+  String get cardKindCredit => 'کریڈٹ';
+
+  @override
+  String get cardKindDebit => 'ڈیبٹ';
+
+  @override
+  String get cardKindPrepaid => 'پری پیڈ';
 }

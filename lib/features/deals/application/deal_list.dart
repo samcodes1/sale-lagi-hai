@@ -100,6 +100,26 @@ final class BrandDeals extends DealListQuery {
   int get hashCode => Object.hash(cityId, brandSlug);
 }
 
+/// Card offers for the shopper's cards (My Cards).
+final class CardDeals extends DealListQuery {
+  const new(this.cardProductIds, {super.cityId});
+
+  final List<String> cardProductIds;
+
+  @override
+  Future<Result<DealPage>> fetch(DealRepository deals, FeedCursor? after) =>
+      deals.forCards(cardProductIds, cityId: cityId, after: after);
+
+  String get _key => (cardProductIds.toList()..sort()).join(',');
+
+  @override
+  bool operator ==(Object other) =>
+      other is CardDeals && other.cityId == cityId && other._key == _key;
+
+  @override
+  int get hashCode => Object.hash(cityId, _key);
+}
+
 /// Search results: the words (best first) and filters; with no words,
 /// the newest deals that pass the filters.
 final class SearchDeals extends DealListQuery {

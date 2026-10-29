@@ -38,6 +38,13 @@ class ProfileScreen extends ConsumerWidget {
           const _AccountSection(),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.credit_card),
+            title: Text(l10n.myCardsTitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => const MyCardsRoute().push<void>(context),
+          ),
+          const Divider(),
+          ListTile(
             title: Semantics(
               header: true,
               child: Text(

@@ -904,4 +904,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionShowDeals => 'Show deals';
+
+  @override
+  String get myCardsTitle => 'My cards';
+
+  @override
+  String get myCardsPrivacy =>
+      'We never ask for card numbers: only your bank and card type. Your cards stay on this phone, and in your account if you sign in.';
+
+  @override
+  String get myCardsYours => 'Your cards';
+
+  @override
+  String get myCardsEmpty =>
+      'Add your cards to see the discounts they get you.';
+
+  @override
+  String get myCardsDeals => 'Offers for your cards';
+
+  @override
+  String get myCardsNoDeals =>
+      'No live offers for your cards right now. We\'ll show them here when they start.';
+
+  @override
+  String myCardsFull(int count) {
+    return 'You can add up to $count cards. Remove one to add another.';
+  }
+
+  @override
+  String get myCardsEntry => 'My cards: see your card discounts';
+
+  @override
+  String get actionAddCard => 'Add a card';
+
+  @override
+  String actionRemoveCard(String card) {
+    return 'Remove $card';
+  }
+
+  @override
+  String get addCardPickBank => 'Which bank?';
+
+  @override
+  String addCardPickType(String bank) {
+    return 'Which $bank card?';
+  }
+
+  @override
+  String get cardAlreadyAdded => 'Already added';
+
+  @override
+  String cardAddedToast(String card) {
+    return 'Added $card';
+  }
+
+  @override
+  String cardRemovedToast(String card) {
+    return 'Removed $card';
+  }
+
+  @override
+  String cardName(String bank, String product, String kind) {
+    return '$bank $product ($kind)';
+  }
+
+  @override
+  String get cardKindCredit => 'Credit';
+
+  @override
+  String get cardKindDebit => 'Debit';
+
+  @override
+  String get cardKindPrepaid => 'Prepaid';
 }

@@ -1537,6 +1537,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show deals'**
   String get actionShowDeals;
+
+  /// No description provided for @myCardsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My cards'**
+  String get myCardsTitle;
+
+  /// No description provided for @myCardsPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'We never ask for card numbers: only your bank and card type. Your cards stay on this phone, and in your account if you sign in.'**
+  String get myCardsPrivacy;
+
+  /// No description provided for @myCardsYours.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cards'**
+  String get myCardsYours;
+
+  /// No description provided for @myCardsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your cards to see the discounts they get you.'**
+  String get myCardsEmpty;
+
+  /// No description provided for @myCardsDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers for your cards'**
+  String get myCardsDeals;
+
+  /// No description provided for @myCardsNoDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'No live offers for your cards right now. We\'ll show them here when they start.'**
+  String get myCardsNoDeals;
+
+  /// No description provided for @myCardsFull.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add up to {count} cards. Remove one to add another.'**
+  String myCardsFull(int count);
+
+  /// No description provided for @myCardsEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'My cards: see your card discounts'**
+  String get myCardsEntry;
+
+  /// No description provided for @actionAddCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a card'**
+  String get actionAddCard;
+
+  /// No description provided for @actionRemoveCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {card}'**
+  String actionRemoveCard(String card);
+
+  /// No description provided for @addCardPickBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Which bank?'**
+  String get addCardPickBank;
+
+  /// No description provided for @addCardPickType.
+  ///
+  /// In en, this message translates to:
+  /// **'Which {bank} card?'**
+  String addCardPickType(String bank);
+
+  /// No description provided for @cardAlreadyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Already added'**
+  String get cardAlreadyAdded;
+
+  /// No description provided for @cardAddedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {card}'**
+  String cardAddedToast(String card);
+
+  /// No description provided for @cardRemovedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed {card}'**
+  String cardRemovedToast(String card);
+
+  /// A card as the shopper picked it: bank short name, product name, and Credit/Debit/Prepaid.
+  ///
+  /// In en, this message translates to:
+  /// **'{bank} {product} ({kind})'**
+  String cardName(String bank, String product, String kind);
+
+  /// No description provided for @cardKindCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit'**
+  String get cardKindCredit;
+
+  /// No description provided for @cardKindDebit.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit'**
+  String get cardKindDebit;
+
+  /// No description provided for @cardKindPrepaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepaid'**
+  String get cardKindPrepaid;
 }
 
 class _AppLocalizationsDelegate

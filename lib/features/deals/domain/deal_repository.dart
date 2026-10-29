@@ -45,6 +45,14 @@ abstract interface class DealRepository {
 
   Future<Result<DealPage>> forMyCards({String? cityId, FeedCursor? after});
 
+  /// Live card offers that one of these card products gets (at most 20
+  /// count). Guests too: the cards are only products, never numbers.
+  Future<Result<DealPage>> forCards(
+    List<String> cardProductIds, {
+    String? cityId,
+    FeedCursor? after,
+  });
+
   /// Deals matching [query] (best first) and [filters]; with no words,
   /// the newest deals that pass the filters. Nothing when there are
   /// neither, or the words are 1 or over 100 characters. Keyset-paged.

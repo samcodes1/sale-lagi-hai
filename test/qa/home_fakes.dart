@@ -120,6 +120,13 @@ final class GatedDeals implements DealRepository {
       throw UnimplementedError();
 
   @override
+  Future<Result<DealPage>> forCards(
+    List<String> cardProductIds, {
+    String? cityId,
+    FeedCursor? after,
+  }) => throw UnimplementedError();
+
+  @override
   Future<Result<DealPage>> search(
     String query, {
     String? cityId,

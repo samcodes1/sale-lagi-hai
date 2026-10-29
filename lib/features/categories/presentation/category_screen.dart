@@ -79,17 +79,9 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
       cityId: ref.watch(homeCityProvider),
     );
     return Scaffold(
-      appBar: AppBar(
-        title: Text(name),
-        actions: [
-          FollowButton(
-            target: FollowTarget.category,
-            id: category.id,
-            name: name,
-          ),
-          const SizedBox(width: BrandSpacing.s3),
-        ],
-      ),
+      // The name alone: with Follow beside it, large text cut it off
+      // (QA 4.5 BUG-3).
+      appBar: AppBar(title: Text(name)),
       body: AppRefreshIndicator(
         onRefresh: () async {
           ref.invalidate(dealListProvider(query));
@@ -100,6 +92,24 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  BrandSpacing.s5,
+                  BrandSpacing.s4,
+                  BrandSpacing.s5,
+                  0,
+                ),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FollowButton(
+                    target: FollowTarget.category,
+                    id: category.id,
+                    name: name,
+                  ),
+                ),
+              ),
+            ),
             if (subs.isNotEmpty)
               SliverToBoxAdapter(
                 child: SingleChildScrollView(

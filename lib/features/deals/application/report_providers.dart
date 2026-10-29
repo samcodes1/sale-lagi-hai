@@ -51,7 +51,9 @@ final reportDealProvider =
                   'deal_id': dealId,
                   'reason': reason.wire,
                   if (text != null && text.isNotEmpty)
-                    'note': text.length > 500 ? text.substring(0, 500) : text,
+                    // 500 characters as Postgres counts them (code
+                    // points), never splitting an emoji (QA 4.4 BUG-5).
+                    'note': String.fromCharCodes(text.runes.take(500)),
                 });
               } on PostgrestException catch (e) {
                 // unique (deal_id, reporter_id)

@@ -137,6 +137,9 @@ void main() {
     test('deals saved as a guest move into the account at sign-in', () async {
       final c = container();
       await c.read(savedDealsProvider.notifier).toggle(_deal(4));
+      // The sync runs right after sign-in.
+      await auth.sendPhoneCode('+923001234567');
+      await auth.verifyPhoneCode('+923001234567', DemoAuthRepository.code);
       await c.read(guestSyncProvider)();
       expect(
         (await backend.select(const TableQuery('saves')))

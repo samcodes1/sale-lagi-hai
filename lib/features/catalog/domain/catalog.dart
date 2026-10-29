@@ -188,7 +188,61 @@ final class Bank {
   int get hashCode => id.hashCode;
 }
 
-/// Reference data: cities, areas, categories, banks and brands.
+/// Card networks (public.card_network). Their names are brands, the same
+/// in every language.
+enum CardNetwork {
+  visa('Visa'),
+  mastercard('Mastercard'),
+  unionpay('UnionPay'),
+  paypak('PayPak'),
+  amex('Amex'),
+  jcb('JCB');
+
+  new(this.label);
+
+  final String label;
+
+  static CardNetwork? fromWire(Object? value) =>
+      values.where((n) => n.name == value).firstOrNull;
+}
+
+/// public.card_kind.
+enum CardKind {
+  credit,
+  debit,
+  prepaid;
+
+  static CardKind? fromWire(Object? value) =>
+      values.where((k) => k.name == value).firstOrNull;
+}
+
+/// A kind of card a bank issues ("Visa Platinum Credit"). This is all My
+/// Cards ever knows about a shopper's card: never a number.
+@immutable
+final class CardProduct {
+  const new({
+    required this.id,
+    required this.bankId,
+    required this.name,
+    required this.network,
+    required this.kind,
+  });
+
+  final String id;
+  final String bankId;
+  final String name;
+  final CardNetwork network;
+  final CardKind kind;
+
+  @override
+  bool operator ==(Object other) => other is CardProduct && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// Reference data: cities, areas, categories, banks, card products and
+/// brands.
 abstract interface class CatalogRepository {
   /// Every city, live ones first, then in the backend's order.
   Future<List<City>> cities();
@@ -197,8 +251,13 @@ abstract interface class CatalogRepository {
   Future<List<Category>> categories();
 
   /// Active brands, by name. [categoryIds] limits them to those categories
-  /// (pass subcategories too: a brand belongs to one subcategory).
-  Future<List<Brand>> brands({List<String>? categoryIds, int limit = 60});
+  /// (pass subcategories too: a brand belongs to one subcategory). Pages
+  /// with [offset].
+  Future<List<Brand>> brands({
+    List<String>? categoryIds,
+    int limit = 60,
+    int offset = 0,
+  });
 
   /// An active brand by its slug, or `null`.
   Future<Brand?> brandBySlug(String slug);
@@ -208,6 +267,9 @@ abstract interface class CatalogRepository {
 
   /// Active banks, by English name.
   Future<List<Bank>> banks();
+
+  /// Active card products of every bank, by name.
+  Future<List<CardProduct>> cardProducts();
 
   /// Brands for what is being typed (1 to 60 characters): names that start
   /// with it first, then close spellings. At most [limit] (up to 10).

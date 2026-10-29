@@ -23,7 +23,7 @@ class ExploreScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
     final interests = ref.watch(interestsProvider);
-    final brands = ref.watch(brandsForInterestsProvider(''));
+    final brands = ref.watch(exploreBrandsProvider);
 
     Widget heading(String text) => Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(
@@ -43,6 +43,24 @@ class ExploreScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           const SliverToBoxAdapter(child: _SearchEntry()),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                BrandSpacing.s5,
+                BrandSpacing.s3,
+                BrandSpacing.s5,
+                0,
+              ),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: ActionChip(
+                  avatar: const Icon(Icons.credit_card),
+                  label: Text(l10n.myCardsEntry),
+                  onPressed: () => const MyCardsRoute().push<void>(context),
+                ),
+              ),
+            ),
+          ),
           SliverToBoxAdapter(child: heading(l10n.exploreCategories)),
           switch (interests) {
             AsyncData(:final value) => SliverPadding(
@@ -83,16 +101,53 @@ class ExploreScreen extends ConsumerWidget {
           },
           SliverToBoxAdapter(child: heading(l10n.exploreBrands)),
           switch (brands) {
-            AsyncData(:final value) => SliverList.builder(
-              itemCount: value.length,
-              itemBuilder: (context, i) => _BrandRow(value[i], urdu: urdu),
+            AsyncData(:final value) => SliverMainAxisGroup(
+              slivers: [
+                SliverList.builder(
+                  itemCount: value.brands.length,
+                  itemBuilder: (context, i) {
+                    // The next 60 load about 10 rows before the end; never
+                    // after a failure (the retry row asks instead).
+                    if (i >= value.brands.length - 10 &&
+                        value.hasMore &&
+                        !value.loadingMore &&
+                        value.moreFailure == null) {
+                      WidgetsBinding.instance.addPostFrameCallback(
+                        (_) =>
+                            ref.read(exploreBrandsProvider.notifier).loadMore(),
+                      );
+                    }
+                    return _BrandRow(value.brands[i], urdu: urdu);
+                  },
+                ),
+                if (value.hasMore)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
+                      child: switch (value) {
+                        BrandPages(loadingMore: true) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        BrandPages(moreFailure: final failure?) =>
+                          InlineErrorBanner(
+                            failure: failure,
+                            onRetry: () => ref
+                                .read(exploreBrandsProvider.notifier)
+                                .loadMore(),
+                          ),
+                        // Waiting to be scrolled to: nothing to show.
+                        _ => const SizedBox.shrink(),
+                      },
+                    ),
+                  ),
+              ],
             ),
             AsyncError(:final error) => SliverToBoxAdapter(
               child: InlineErrorBanner(
                 failure: error is AppFailure
                     ? error
                     : const UnexpectedFailure(),
-                onRetry: () => ref.invalidate(brandsForInterestsProvider('')),
+                onRetry: () => ref.invalidate(exploreBrandsProvider),
               ),
             ),
             _ => const SliverToBoxAdapter(

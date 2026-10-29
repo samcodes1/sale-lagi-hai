@@ -15,6 +15,13 @@
   - Signed in, each change is mirrored to the `follows` table under the shopper's RLS. A failed mirror keeps the local change, and the guest sync copies it next time.
   - The button is a toggle in semantics ("Follow Threads (Demo)", checked when following) and confirms with a toast.
 
+## Fixed in the 4.5 QA gate
+- **BUG-1:** follows send `user_id` (and the column defaults to `auth.uid()`).
+- **BUG-2:** Explore lists every brand, 60 at a time (`exploreBrandsProvider`, `TableQuery.offset`). The next page loads about 10 rows before the end; a failed page shows a retry row.
+- **BUG-3:** a category page's Follow button sits under the app bar, so the name keeps the whole bar at large text.
+- **BUG-4:** "Visit website" says so when the link can't open.
+- **BUG-5:** after quick taps, the Follow note matches the final state.
+
 ## Code
 - `lib/features/deals/application/deal_list.dart`: `FeedState`, `DealListQuery`, `dealListProvider`.
 - `lib/features/deals/presentation/paged_deal_list.dart`: `PagedDealSlivers`, `dealCardFor`.

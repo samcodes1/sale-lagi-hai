@@ -13,6 +13,7 @@ import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/presentation/delete_account_screen.dart';
 import 'package:sale_lagi_hai/features/auth/presentation/sign_in_screen.dart';
 import 'package:sale_lagi_hai/features/brands/presentation/brand_screen.dart';
+import 'package:sale_lagi_hai/features/cards/presentation/my_cards_screen.dart';
 import 'package:sale_lagi_hai/features/categories/presentation/category_screen.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_detail_screen.dart';
 import 'package:sale_lagi_hai/features/explore/presentation/explore_screen.dart';
@@ -46,6 +47,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
             TypedGoRoute<BrandRoute>(path: 'brand/:slug'),
             TypedGoRoute<CategoryRoute>(path: 'category/:slug'),
             TypedGoRoute<SearchRoute>(path: 'search'),
+            TypedGoRoute<MyCardsRoute>(path: 'cards'),
           ],
         ),
       ],
@@ -213,6 +215,17 @@ final class SearchRoute extends GoRouteData with $SearchRoute {
       initialQuery: words.length > 100 ? words.substring(0, 100) : words,
     );
   }
+}
+
+/// `/cards`: My Cards.
+final class MyCardsRoute extends GoRouteData with $MyCardsRoute {
+  const new();
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const MyCardsScreen();
 }
 
 // ------------------------------------------------------------- account ---

@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
+import 'package:sale_lagi_hai/core/links/open_link.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_refresh_indicator.dart';
@@ -145,8 +146,10 @@ class _Page extends ConsumerWidget {
                         ),
                         if (website != null)
                           TextButton.icon(
-                            onPressed: () =>
-                                ref.read(linkServiceProvider).openWeb(website),
+                            onPressed: () => openLink(
+                              context,
+                              ref.read(linkServiceProvider).openWeb(website),
+                            ),
                             icon: const Icon(Icons.open_in_new),
                             label: Text(l10n.actionVisitWebsite),
                           ),

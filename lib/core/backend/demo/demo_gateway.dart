@@ -221,6 +221,28 @@ final class DemoGateway implements BackendGateway {
           ),
           params,
         );
+      case 'deals_for_cards':
+        final ids = [
+          ...((params['card_product_ids'] as List<Object?>?) ?? const []),
+        ].take(20).toSet();
+        final cards = [
+          for (final p in demoCardProducts)
+            if (ids.contains(p['id']) && p['is_active'] == true) p,
+        ];
+        return _page(
+          live.where((d) {
+            if (d['kind'] != 'card_offer' || !_shownInCity(d, cityId)) {
+              return false;
+            }
+            final bank = _demo(d['id']! as String).cardBank;
+            return cards.any(
+              (c) => demoBanks.any(
+                (b) => b['id'] == c['bank_id'] && b['slug'] == bank,
+              ),
+            );
+          }),
+          params,
+        );
       case 'search_deals':
         final query = (params['query'] as String? ?? '').trim().toLowerCase();
         if (query.length == 1 || query.length > 100) return const [];
@@ -512,6 +534,7 @@ final class DemoGateway implements BackendGateway {
         return query.ascending ? order : -order;
       });
     }
+    rows = rows.skip(query.offset).toList();
     if (query.limit case final limit?) rows = rows.take(limit).toList();
     return [for (final row in rows) Map.of(row)];
   }

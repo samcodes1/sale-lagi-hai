@@ -31,20 +31,34 @@ class FollowButton extends ConsumerWidget {
     );
     Future<void> toggle() async {
       final messenger = ScaffoldMessenger.maybeOf(context);
-      final note = following
-          ? l10n.unfollowedToast(name)
-          : l10n.followedToast(name);
       final follows = ref.read(followsProvider);
       await (target == FollowTarget.brand
           ? follows.toggleBrand(id)
           : follows.toggleCategory(id));
+      // The state after the tap, not before: two quick taps must not say
+      // "Following" when the second one unfollowed (QA 4.5 BUG-5).
+      final preferences = ref.read(preferencesProvider);
+      final now =
+          (target == FollowTarget.brand
+                  ? preferences.brandIds
+                  : preferences.categoryFollowIds)
+              .contains(id);
       messenger
         ?..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(note)));
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              now ? l10n.followedToast(name) : l10n.unfollowedToast(name),
+            ),
+          ),
+        );
     }
 
     final label = Text(following ? l10n.actionFollowing : l10n.actionFollow);
     return Semantics(
+      // Its own node: with the button's excluded, it would merge
+      // into whatever is around it.
+      container: true,
       toggled: following,
       label: l10n.followLabel(name),
       excludeSemantics: true,

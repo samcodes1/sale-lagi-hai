@@ -6,6 +6,7 @@ import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/result/guard.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/features/auth/domain/auth_repository.dart';
+import 'package:sale_lagi_hai/features/cards/application/my_cards_providers.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 import 'package:sale_lagi_hai/features/saved/application/saved_providers.dart';
 
@@ -30,6 +31,10 @@ final guestSyncProvider = Provider<Future<void> Function()>(
   (ref) => () async {
     final preferences = ref.read(preferencesProvider);
     final backend = ref.read(backendGatewayProvider);
+    // Rows name their owner: the insert policies check user_id = auth.uid()
+    // (QA 4.4 BUG-1, 4.5 BUG-1).
+    final userId = ref.read(authRepositoryProvider).currentUser?.id;
+    if (userId == null) return;
     final result = await guard(
       () => backend.rpc('sync_guest_preferences', {
         'city': preferences.cityId,
@@ -53,7 +58,7 @@ final guestSyncProvider = Provider<Future<void> Function()>(
     var failed = 0;
     for (final dealId in ref.read(savedDealsProvider)) {
       try {
-        await backend.insert('saves', {'deal_id': dealId});
+        await backend.insert('saves', {'user_id': userId, 'deal_id': dealId});
       } on Object {
         failed++;
       }
@@ -64,6 +69,26 @@ final guestSyncProvider = Provider<Future<void> Function()>(
           .info(
             'Some saved deals were already synced',
             context: {'count': failed},
+          );
+    }
+    // Cards added as a guest too (card products only, never numbers).
+    var cardsFailed = 0;
+    for (final cardProductId in ref.read(myCardsProvider)) {
+      try {
+        await backend.insert('user_cards', {
+          'user_id': userId,
+          'card_product_id': cardProductId,
+        });
+      } on Object {
+        cardsFailed++;
+      }
+    }
+    if (cardsFailed > 0) {
+      ref
+          .read(loggerProvider)
+          .info(
+            'Some cards were already synced',
+            context: {'count': cardsFailed},
           );
     }
   },

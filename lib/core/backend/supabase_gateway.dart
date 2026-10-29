@@ -43,7 +43,9 @@ final class SupabaseGateway implements BackendGateway {
       transform = transform.order(column, ascending: query.ascending);
     }
     if (query.limit case final limit?) {
-      transform = transform.limit(limit);
+      transform = query.offset > 0
+          ? transform.range(query.offset, query.offset + limit - 1)
+          : transform.limit(limit);
     }
     final rows = await transform.timeout(_timeout);
     return [for (final row in rows) Map<String, Object?>.from(row)];
