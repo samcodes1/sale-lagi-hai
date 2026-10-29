@@ -655,4 +655,116 @@ class AppLocalizationsEn extends AppLocalizations {
   String distanceKm(String km) {
     return '$km km';
   }
+
+  @override
+  String get dealEndedBanner =>
+      'This deal has ended. It\'s kept here so links to it still work.';
+
+  @override
+  String dealStartsOn(String date) {
+    return 'Starts $date';
+  }
+
+  @override
+  String get dealPromoCode => 'Promo code';
+
+  @override
+  String get actionCopyCode => 'Copy code';
+
+  @override
+  String get codeCopiedToast => 'Code copied.';
+
+  @override
+  String get dealAbout => 'About this deal';
+
+  @override
+  String get dealTerms => 'Terms';
+
+  @override
+  String get dealWhere => 'Where to use it';
+
+  @override
+  String get dealOnlineOnly =>
+      'Online only: use it on the brand\'s website or app.';
+
+  @override
+  String get dealEverywhere => 'At the brand\'s outlets across Pakistan.';
+
+  @override
+  String get dealNoOutlets => 'Ask at your nearest outlet.';
+
+  @override
+  String get actionDirections => 'Directions';
+
+  @override
+  String get actionCall => 'Call';
+
+  @override
+  String get actionSeeSource => 'See the source';
+
+  @override
+  String get actionOpenOffer => 'Open the offer';
+
+  @override
+  String get dealCards => 'With these cards';
+
+  @override
+  String get actionReportProblem => 'Report a problem';
+
+  @override
+  String get reportTitle => 'What\'s wrong with this deal?';
+
+  @override
+  String get reportExpired => 'It has ended';
+
+  @override
+  String get reportWrongPrice => 'The price or discount is wrong';
+
+  @override
+  String get reportWrongPlace => 'It isn\'t at this place';
+
+  @override
+  String get reportClosed => 'The shop is closed';
+
+  @override
+  String get reportSpam => 'It\'s spam or fake';
+
+  @override
+  String get reportOffensive => 'It\'s offensive';
+
+  @override
+  String get reportOther => 'Something else';
+
+  @override
+  String get reportNoteLabel => 'Tell us more (optional)';
+
+  @override
+  String get reportNoteRequired => 'Please say what\'s wrong.';
+
+  @override
+  String get actionSend => 'Send';
+
+  @override
+  String get reportThanks => 'Thanks. We\'ll check it.';
+
+  @override
+  String get reportAlready => 'You\'ve already reported this deal. Thanks!';
+
+  @override
+  String get reportSignIn =>
+      'Sign in to report a deal, so we can stop fake reports.';
+
+  @override
+  String shareDealText(String brand, String offer, String title) {
+    return '$brand: $offer. $title. Found on Sale Lagi Hai!';
+  }
+
+  @override
+  String get savedToast => 'Saved.';
+
+  @override
+  String get unsavedToast => 'Removed from saved.';
+
+  @override
+  String get linkFailed => 'Couldn\'t open that. Try again later.';
 }

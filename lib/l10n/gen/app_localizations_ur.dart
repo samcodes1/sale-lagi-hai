@@ -658,4 +658,116 @@ class AppLocalizationsUr extends AppLocalizations {
   String distanceKm(String km) {
     return '⁦$km⁩ کلومیٹر';
   }
+
+  @override
+  String get dealEndedBanner =>
+      'یہ ڈیل ختم ہو چکی ہے۔ اسے یہاں رکھا گیا ہے تاکہ اس کے لنک کام کرتے رہیں۔';
+
+  @override
+  String dealStartsOn(String date) {
+    return '⁨$date⁩ سے شروع';
+  }
+
+  @override
+  String get dealPromoCode => 'پرومو کوڈ';
+
+  @override
+  String get actionCopyCode => 'کوڈ کاپی کریں';
+
+  @override
+  String get codeCopiedToast => 'کوڈ کاپی ہو گیا۔';
+
+  @override
+  String get dealAbout => 'اس ڈیل کے بارے میں';
+
+  @override
+  String get dealTerms => 'شرائط';
+
+  @override
+  String get dealWhere => 'کہاں استعمال کریں';
+
+  @override
+  String get dealOnlineOnly =>
+      'صرف آن لائن: برانڈ کی ویب سائٹ یا ایپ پر استعمال کریں۔';
+
+  @override
+  String get dealEverywhere => 'پورے پاکستان میں برانڈ کی دکانوں پر۔';
+
+  @override
+  String get dealNoOutlets => 'اپنی قریبی دکان پر پوچھیں۔';
+
+  @override
+  String get actionDirections => 'راستہ';
+
+  @override
+  String get actionCall => 'کال کریں';
+
+  @override
+  String get actionSeeSource => 'ماخذ دیکھیں';
+
+  @override
+  String get actionOpenOffer => 'آفر کھولیں';
+
+  @override
+  String get dealCards => 'ان کارڈز کے ساتھ';
+
+  @override
+  String get actionReportProblem => 'مسئلہ بتائیں';
+
+  @override
+  String get reportTitle => 'اس ڈیل میں کیا غلط ہے؟';
+
+  @override
+  String get reportExpired => 'یہ ختم ہو گئی ہے';
+
+  @override
+  String get reportWrongPrice => 'قیمت یا رعایت غلط ہے';
+
+  @override
+  String get reportWrongPlace => 'یہ اس جگہ پر نہیں ہے';
+
+  @override
+  String get reportClosed => 'دکان بند ہے';
+
+  @override
+  String get reportSpam => 'یہ اسپام یا جعلی ہے';
+
+  @override
+  String get reportOffensive => 'یہ نامناسب ہے';
+
+  @override
+  String get reportOther => 'کچھ اور';
+
+  @override
+  String get reportNoteLabel => 'مزید بتائیں (اختیاری)';
+
+  @override
+  String get reportNoteRequired => 'براہ کرم بتائیں کہ کیا غلط ہے۔';
+
+  @override
+  String get actionSend => 'بھیجیں';
+
+  @override
+  String get reportThanks => 'شکریہ۔ ہم اسے دیکھیں گے۔';
+
+  @override
+  String get reportAlready => 'آپ یہ ڈیل پہلے ہی رپورٹ کر چکے ہیں۔ شکریہ!';
+
+  @override
+  String get reportSignIn =>
+      'ڈیل رپورٹ کرنے کے لیے سائن اِن کریں، تاکہ جعلی رپورٹس روکی جا سکیں۔';
+
+  @override
+  String shareDealText(String brand, String offer, String title) {
+    return '⁨$brand⁩: ⁨$offer⁩۔ ⁨$title⁩۔ سیل لگی ہے! پر ملی';
+  }
+
+  @override
+  String get savedToast => 'محفوظ ہو گئی۔';
+
+  @override
+  String get unsavedToast => 'محفوظ سے ہٹا دی گئی۔';
+
+  @override
+  String get linkFailed => 'یہ نہیں کھل سکا۔ بعد میں دوبارہ کوشش کریں۔';
 }

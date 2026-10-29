@@ -1,5 +1,6 @@
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
+import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
 
 /// Featured slots (public.placement_slot).
@@ -59,4 +60,7 @@ abstract interface class DealRepository {
   /// One deal, live or expired (expired deals still open, marked Expired).
   /// A missing or hidden deal is a NotFoundFailure.
   Future<Result<Deal>> byId(String id);
+
+  /// The deal page: [byId] plus its text, source and outlets.
+  Future<Result<DealDetail>> detail(String id);
 }

@@ -6,6 +6,7 @@ import 'package:sale_lagi_hai/core/result/guard.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/features/deals/data/deal_row.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
+import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_repository.dart';
 
@@ -146,11 +147,73 @@ final class BackendDealRepository implements DealRepository {
   });
 
   @override
-  Future<Result<Deal>> byId(String id) => _guard(() async {
+  Future<Result<Deal>> byId(String id) => _guard(() => _card(id));
+
+  Future<Deal> _card(String id) async {
     final rows = await _backend.select(
       TableQuery('deal_cards', equals: {'id': id}, limit: 1),
     );
     if (rows.isEmpty) throw const NotFoundFailure();
     return dealFromRow(rows.single);
+  }
+
+  @override
+  Future<Result<DealDetail>> detail(String id) => _guard(() async {
+    final deal = await _card(id);
+    final (text, outletRows, targets) = await (
+      _backend.select(
+        TableQuery(
+          'deals',
+          columns: 'description_en,description_ur,terms_en,terms_ur,source_url',
+          equals: {'id': id},
+          limit: 1,
+        ),
+      ),
+      _backend.select(
+        TableQuery(
+          'outlets',
+          columns: 'id,name,address,phone,city_id,area_id,latitude,longitude',
+          equals: {'brand_id': deal.brandId, 'is_active': true},
+          orderBy: 'name',
+          limit: 100,
+        ),
+      ),
+      deal.scope == DealScope.local
+          ? _backend.select(
+              TableQuery(
+                'deal_targets',
+                columns: 'city_id,area_id',
+                equals: {'deal_id': id},
+              ),
+            )
+          : Future.value(const <Map<String, Object?>>[]),
+    ).wait;
+    final outlets = [for (final row in outletRows) outletFromRow(row)];
+    final extra = text.isEmpty ? const <String, Object?>{} : text.single;
+    String? opt(String key) => switch (extra[key]) {
+      final String s when s.trim().isNotEmpty => s,
+      _ => null,
+    };
+    return DealDetail(
+      deal: deal,
+      descriptionEn: opt('description_en'),
+      descriptionUr: opt('description_ur'),
+      termsEn: opt('terms_en'),
+      termsUr: opt('terms_ur'),
+      sourceUrl: opt('source_url'),
+      outlets: deal.scope == DealScope.local
+          ? [
+              for (final o in outlets)
+                if (targets.any(
+                  (t) =>
+                      t['city_id'] == o.cityId &&
+                      (t['area_id'] == null || t['area_id'] == o.areaId),
+                ))
+                  o,
+            ]
+          : deal.scope == DealScope.online
+          ? const []
+          : outlets,
+    );
   });
 }

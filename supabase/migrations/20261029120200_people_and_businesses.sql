@@ -110,6 +110,9 @@ create table public.outlets (
   name public.short_name not null,
   address text not null check (length(btrim(address)) between 5 and 300),
   location extensions.geography(point, 4326) not null,
+  -- As plain numbers, for the app's "Open in Maps" (deal detail, 4.4).
+  latitude double precision generated always as (extensions.st_y(location::extensions.geometry)) stored,
+  longitude double precision generated always as (extensions.st_x(location::extensions.geometry)) stored,
   phone text check (phone ~ '^\+92[0-9]{9,10}$'),
   -- {"mon": [["11:00","23:00"]], ...}; validated by the portal.
   opening_hours jsonb check (jsonb_typeof(opening_hours) = 'object'),

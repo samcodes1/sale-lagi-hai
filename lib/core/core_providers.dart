@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/core/errors/crash_reporter.dart';
+import 'package:sale_lagi_hai/core/links/link_service.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/core/network/connectivity_service.dart';
 import 'package:sale_lagi_hai/core/storage/json_cache.dart';
@@ -41,4 +42,9 @@ final connectivityServiceProvider = Provider<ConnectivityService>(
 /// The current network status, for UI hints such as the offline banner.
 final networkStatusProvider = StreamProvider<NetworkStatus>(
   (ref) => ref.watch(connectivityServiceProvider).watch(),
+);
+
+/// Opens web pages, maps, WhatsApp and the dialler. Overridden in tests.
+final linkServiceProvider = Provider<LinkService>(
+  (ref) => const UrlLauncherLinkService(),
 );

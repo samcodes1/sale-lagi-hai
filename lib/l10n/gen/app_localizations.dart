@@ -1087,6 +1087,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{km} km'**
   String distanceKm(String km);
+
+  /// No description provided for @dealEndedBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This deal has ended. It\'s kept here so links to it still work.'**
+  String get dealEndedBanner;
+
+  /// No description provided for @dealStartsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {date}'**
+  String dealStartsOn(String date);
+
+  /// No description provided for @dealPromoCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo code'**
+  String get dealPromoCode;
+
+  /// No description provided for @actionCopyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy code'**
+  String get actionCopyCode;
+
+  /// No description provided for @codeCopiedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied.'**
+  String get codeCopiedToast;
+
+  /// No description provided for @dealAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About this deal'**
+  String get dealAbout;
+
+  /// No description provided for @dealTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get dealTerms;
+
+  /// No description provided for @dealWhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Where to use it'**
+  String get dealWhere;
+
+  /// No description provided for @dealOnlineOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Online only: use it on the brand\'s website or app.'**
+  String get dealOnlineOnly;
+
+  /// No description provided for @dealEverywhere.
+  ///
+  /// In en, this message translates to:
+  /// **'At the brand\'s outlets across Pakistan.'**
+  String get dealEverywhere;
+
+  /// No description provided for @dealNoOutlets.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask at your nearest outlet.'**
+  String get dealNoOutlets;
+
+  /// No description provided for @actionDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get actionDirections;
+
+  /// No description provided for @actionCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get actionCall;
+
+  /// No description provided for @actionSeeSource.
+  ///
+  /// In en, this message translates to:
+  /// **'See the source'**
+  String get actionSeeSource;
+
+  /// No description provided for @actionOpenOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the offer'**
+  String get actionOpenOffer;
+
+  /// No description provided for @dealCards.
+  ///
+  /// In en, this message translates to:
+  /// **'With these cards'**
+  String get dealCards;
+
+  /// No description provided for @actionReportProblem.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a problem'**
+  String get actionReportProblem;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s wrong with this deal?'**
+  String get reportTitle;
+
+  /// No description provided for @reportExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'It has ended'**
+  String get reportExpired;
+
+  /// No description provided for @reportWrongPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'The price or discount is wrong'**
+  String get reportWrongPrice;
+
+  /// No description provided for @reportWrongPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'It isn\'t at this place'**
+  String get reportWrongPlace;
+
+  /// No description provided for @reportClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'The shop is closed'**
+  String get reportClosed;
+
+  /// No description provided for @reportSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s spam or fake'**
+  String get reportSpam;
+
+  /// No description provided for @reportOffensive.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s offensive'**
+  String get reportOffensive;
+
+  /// No description provided for @reportOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get reportOther;
+
+  /// No description provided for @reportNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us more (optional)'**
+  String get reportNoteLabel;
+
+  /// No description provided for @reportNoteRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please say what\'s wrong.'**
+  String get reportNoteRequired;
+
+  /// No description provided for @actionSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get actionSend;
+
+  /// No description provided for @reportThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks. We\'ll check it.'**
+  String get reportThanks;
+
+  /// No description provided for @reportAlready.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve already reported this deal. Thanks!'**
+  String get reportAlready;
+
+  /// No description provided for @reportSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to report a deal, so we can stop fake reports.'**
+  String get reportSignIn;
+
+  /// WhatsApp share text. Brand, offer and title are already localized.
+  ///
+  /// In en, this message translates to:
+  /// **'{brand}: {offer}. {title}. Found on Sale Lagi Hai!'**
+  String shareDealText(String brand, String offer, String title);
+
+  /// No description provided for @savedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved.'**
+  String get savedToast;
+
+  /// No description provided for @unsavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved.'**
+  String get unsavedToast;
+
+  /// No description provided for @linkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open that. Try again later.'**
+  String get linkFailed;
 }
 
 class _AppLocalizationsDelegate

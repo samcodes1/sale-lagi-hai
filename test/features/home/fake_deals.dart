@@ -1,6 +1,7 @@
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
+import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_repository.dart';
 
@@ -152,4 +153,7 @@ final class FakeDeals implements DealRepository {
 
   @override
   Future<Result<Deal>> byId(String id) => throw UnimplementedError();
+
+  @override
+  Future<Result<DealDetail>> detail(String id) => throw UnimplementedError();
 }

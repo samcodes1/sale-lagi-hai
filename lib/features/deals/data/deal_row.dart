@@ -1,4 +1,5 @@
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
+import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 
 /// Parses a `deal_card` row. Throws [FormatException] on a shape we don't
 /// expect (the repository maps it to a server failure): a malformed row is
@@ -111,3 +112,21 @@ Map<String, Object?> dealToRow(Deal deal) => {
   'is_featured': deal.isFeatured,
   'distance_m': deal.distanceMeters,
 };
+
+/// Parses an `outlets` row (the columns the deal page reads).
+Outlet outletFromRow(Map<String, Object?> row) {
+  T req<T>(String key) => switch (row[key]) {
+    final T value => value,
+    _ => throw FormatException('outlets.$key is missing or not $T'),
+  };
+  return Outlet(
+    id: req<String>('id'),
+    name: req<String>('name'),
+    address: req<String>('address'),
+    cityId: req<String>('city_id'),
+    areaId: row['area_id'] as String?,
+    phone: row['phone'] as String?,
+    latitude: req<num>('latitude').toDouble(),
+    longitude: req<num>('longitude').toDouble(),
+  );
+}

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:sale_lagi_hai/core/backend/backend_gateway.dart';
 import 'package:sale_lagi_hai/core/backend/demo/demo_data.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 
 /// An in-memory backend with the demo data, for builds without Supabase
 /// (dev, tests, web QA). It answers the same tables, view and RPCs as the
@@ -21,6 +22,7 @@ final class DemoGateway implements BackendGateway {
     'follows': [],
     'saves': [],
     'user_cards': [],
+    'reports': [],
   };
 
   static const List<({int deal, String? city, int priority})> _placements = [
@@ -338,6 +340,62 @@ final class DemoGateway implements BackendGateway {
     return 2 * r * math.asin(math.sqrt(h));
   }
 
+  /// The deal page's long text, as the deals table has it.
+  static final List<Map<String, Object?>> _dealTexts = [
+    for (final d in demoDeals)
+      <String, Object?>{
+        'id': d.id,
+        'description_en':
+            'A made-up deal for trying the app: ${d.titleEn}. Real deals '
+            "show the brand's own description here.",
+        'description_ur':
+            'ایپ آزمانے کے لیے ایک فرضی ڈیل: ${d.titleUr}۔ اصل ڈیلز میں یہاں '
+            'برانڈ کی اپنی تفصیل ہوتی ہے۔',
+        'terms_en': 'Demo terms: while stocks last. One per customer.',
+        'terms_ur': 'ڈیمو شرائط: اسٹاک رہنے تک۔ فی گاہک ایک۔',
+        'source_url': d.url,
+      },
+  ];
+
+  static final List<Map<String, Object?>> _outlets = [
+    for (final (i, (brand, area, lat, lng)) in demoOutlets.indexed)
+      () {
+        final b = brandBySlug(brand);
+        final a = demoAreas.firstWhere((x) => x['slug'] == area);
+        return <String, Object?>{
+          'id':
+              '00000000-0000-4000-0007-${(i + 1).toString().padLeft(12, '0')}',
+          'brand_id': b['id'],
+          'city_id': karachiId,
+          'area_id': a['id'],
+          'name': '${b['name']} · ${a['name_en']}',
+          'address': '${a['name_en']}, Karachi',
+          'phone': null,
+          'latitude': lat,
+          'longitude': lng,
+          'is_active': true,
+        };
+      }(),
+  ];
+
+  static final List<Map<String, Object?>> _dealTargets = [
+    for (final d in demoDeals)
+      if (d.scope == 'local')
+        if (d.areas.isEmpty)
+          <String, Object?>{
+            'deal_id': d.id,
+            'city_id': karachiId,
+            'area_id': null,
+          }
+        else
+          for (final area in d.areas)
+            <String, Object?>{
+              'deal_id': d.id,
+              'city_id': karachiId,
+              'area_id': demoAreas.firstWhere((x) => x['slug'] == area)['id'],
+            },
+  ];
+
   List<Map<String, Object?>> _rows(String table) => switch (table) {
     'cities' => demoCities,
     'areas' => demoAreas,
@@ -346,6 +404,9 @@ final class DemoGateway implements BackendGateway {
     'card_products' => demoCardProducts,
     'brands' => demoBrands,
     'deal_cards' => _dealCards(),
+    'deals' => _dealTexts,
+    'outlets' => _outlets,
+    'deal_targets' => _dealTargets,
     final other =>
       _tables[other] ??
           (throw UnsupportedError('demo backend has no table $other')),
@@ -379,6 +440,13 @@ final class DemoGateway implements BackendGateway {
     final rows = _tables[table];
     if (rows == null) {
       throw UnsupportedError('demo backend cannot write $table');
+    }
+    // public.reports: unique (deal_id, reporter_id), as on the server.
+    if (table == 'reports' && rows.any((r) => r['deal_id'] == row['deal_id'])) {
+      throw const PostgrestException(
+        message: 'duplicate key value violates unique constraint',
+        code: '23505',
+      );
     }
     rows.add({'user_id': userId, ...row});
   }
