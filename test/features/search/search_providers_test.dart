@@ -184,8 +184,11 @@ void main() {
         allOf(contains(_title(2)), isNot(contains(_title(3)))),
       );
       expect(await titles(c, '', SearchFilters(bankIds: [_hbl])), [_title(7)]);
-      expect(await titles(c, '', const SearchFilters(minPercent: 50)), [
-        _title(4),
+      // "Up to 50% off" (deal 4) is not at least 50% off (QA 4.6-S3).
+      expect(await titles(c, '', const SearchFilters(minPercent: 50)), isEmpty);
+      expect(await titles(c, '', const SearchFilters(minPercent: 25)), [
+        _title(5),
+        _title(6),
       ]);
       expect(
         await titles(c, '', const SearchFilters(endingSoon: true)),
@@ -205,7 +208,7 @@ void main() {
       final c = container();
       final all = await titles(c, '', const SearchFilters(minPercent: 10));
       expect(all.toSet(), hasLength(all.length));
-      expect(all.first, _title(4), reason: 'published 4 hours ago');
+      expect(all.first, _title(5), reason: 'published 8 hours ago');
     });
   });
 

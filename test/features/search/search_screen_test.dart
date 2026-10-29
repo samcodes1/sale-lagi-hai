@@ -180,7 +180,8 @@ void main() {
     await _app(tester);
     await _tap(tester, find.widgetWithText(FilterChip, '50%+ off'));
     expect(_listOnScreen(tester).filters, const SearchFilters(minPercent: 50));
-    expect(find.text('Winter collection sale'), findsOneWidget);
+    // The demo's only 50% deal is "up to 50%", which doesn't count.
+    expect(find.textContaining('No deals match these filters'), findsOneWidget);
     await _tap(tester, find.widgetWithText(FilterChip, 'Ending soon'));
     expect(_listOnScreen(tester).filters.count, 2);
     await _tap(tester, find.widgetWithText(ActionChip, 'Clear filters'));

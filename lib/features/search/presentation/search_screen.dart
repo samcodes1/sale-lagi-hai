@@ -273,6 +273,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           query: query,
           emptyMessage: query.query.isEmpty
               ? l10n.searchNoFilterResults
+              : search.filters.isEmpty
+              ? l10n.emptySearchNoFilters(query.query)
               : l10n.emptySearch(query.query),
           emptyActionLabel: search.filters.isEmpty
               ? null
@@ -368,42 +370,45 @@ class _Row extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: InkWell(
-            onTap: onTap,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48),
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  BrandSpacing.s5,
-                  BrandSpacing.s3,
-                  BrandSpacing.s3,
-                  BrandSpacing.s3,
-                ),
-                child: Row(
-                  children: [
-                    ExcludeSemantics(
-                      child: Icon(
-                        icon,
-                        color: theme.colorScheme.onSurfaceVariant,
+          child: Semantics(
+            button: true,
+            child: InkWell(
+              onTap: onTap,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    BrandSpacing.s5,
+                    BrandSpacing.s3,
+                    BrandSpacing.s3,
+                    BrandSpacing.s3,
+                  ),
+                  child: Row(
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(
+                          icon,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: BrandSpacing.s4),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(title, style: theme.textTheme.bodyLarge),
-                          if (subtitle case final subtitle?)
-                            Text(
-                              subtitle,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
+                      const SizedBox(width: BrandSpacing.s4),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(title, style: theme.textTheme.bodyLarge),
+                            if (subtitle case final subtitle?)
+                              Text(
+                                subtitle,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

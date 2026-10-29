@@ -11,12 +11,13 @@ drop function private.search_hits(text, uuid, uuid[]);
 -- - area: local deals for that area or for its whole city. Nationwide and
 --   online deals are available in every area, so they stay.
 -- - banks: card offers of one of these banks.
--- - min_percent: a percentage off of at least this (1 to 99); other kinds
---   of offer are left out.
+-- - min_percent: a percentage off of at least this (1 to 99): "-40%" and
+--   "Flat 40% off". "Up to 50% off" is not at least 50% off (QA 4.6-S3),
+--   and other kinds of offer are left out.
 -- - ending_within_hours: ends within this many hours (1 to 336).
 create function private.matches_search_filters(
-  deal uuid, scope public.deal_scope, percent smallint, ends_at timestamptz,
-  area uuid, banks uuid[], min_percent integer, ending_within_hours integer
+  deal uuid, scope public.deal_scope, offer_kind public.offer_kind, percent smallint,
+  ends_at timestamptz, area uuid, banks uuid[], min_percent integer, ending_within_hours integer
 ) returns boolean language sql stable as $$
   select (area is null or scope <> 'local' or exists (
             select 1 from public.deal_targets t
@@ -25,9 +26,30 @@ create function private.matches_search_filters(
      and (banks is null or cardinality(banks) = 0 or exists (
             select 1 from public.card_offers co
             where co.deal_id = deal and co.bank_id = any(banks)))
-     and (min_percent is null or percent >= least(greatest(min_percent, 1), 99))
+     and (min_percent is null or (offer_kind in ('percent_off', 'flat_percent_off')
+                                  and percent >= least(greatest(min_percent, 1), 99)))
      and (ending_within_hours is null or ends_at <= now()
             + make_interval(hours => least(greatest(ending_within_hours, 1), 336)));
+$$;
+
+-- How well a deal matches a query: the best of full text, fuzzy title and
+-- fuzzy brand name (each 0 to 1), plus 10 for a local deal of the chosen
+-- area itself, so with an area filter the area's own deals come first
+-- (QA 4.6-S2). search_hits computes the same inline, through its indexes;
+-- this is for one deal, the page cursor, even after it left the results.
+create function private.search_rank(query text, deal uuid, area uuid default null)
+returns real
+language sql stable security definer
+set search_path = ''
+as $$
+  select (greatest(ts_rank(d.search_vector, websearch_to_tsquery('simple', btrim(query))),
+                   extensions.word_similarity(btrim(query), d.title_en),
+                   extensions.word_similarity(btrim(query), b.name))
+          + case when area is not null and d.scope = 'local' and exists (
+                   select 1 from public.deal_targets t where t.deal_id = d.id and t.area_id = area)
+                 then 10 else 0 end)::real
+  from public.deals d join public.brands b on b.id = d.brand_id
+  where d.id = deal;
 $$;
 
 -- Live deals matching a query, ranked: full text, fuzzy title and fuzzy
@@ -73,9 +95,13 @@ begin
       where raw.brand_id in (
         select b.id from public.brands b where b.name operator(extensions.%%>) %1$L)
     )
-    select d.id, greatest(ts_rank(d.search_vector, websearch_to_tsquery('simple', %1$L)),
-                          extensions.word_similarity(%1$L, d.title_en),
-                          extensions.word_similarity(%1$L, b.name))::real
+    select d.id, (greatest(ts_rank(d.search_vector, websearch_to_tsquery('simple', %1$L)),
+                           extensions.word_similarity(%1$L, d.title_en),
+                           extensions.word_similarity(%1$L, b.name))
+                  + case when %4$L::uuid is not null and d.scope = 'local' and exists (
+                           select 1 from public.deal_targets t
+                           where t.deal_id = d.id and t.area_id = %4$L::uuid)
+                         then 10 else 0 end)::real
     from hits h
     join public.deals d on d.id = h.id
     join public.brands b on b.id = d.brand_id
@@ -83,7 +109,7 @@ begin
     where b.is_active and c.is_active and private.is_live(d.status, d.starts_at, d.ends_at)
       and private.shown_in_city(d.id, d.scope, %2$L::uuid)
       and private.in_categories(d.category_id, %3$L::uuid[])
-      and private.matches_search_filters(d.id, d.scope, d.percent, d.ends_at,
+      and private.matches_search_filters(d.id, d.scope, d.offer_kind, d.percent, d.ends_at,
             %4$L::uuid, %5$L::uuid[], %6$L::integer, %7$L::integer)
     -- The best 250: search shows at most 5 pages of 50.
     order by 2 desc, d.id
@@ -131,9 +157,15 @@ begin
       r.offer_text_ur, r.promo_code, r.url, r.image_path, r.starts_at, r.ends_at,
       r.verified_at, r.published_at, r.card_banks, false, null::integer
     from ranked r
+    -- The cursor deal's place, also when it has left the results (ended
+    -- or hidden since the last page; QA 4.6-S1): its rank recomputed.
     where search_deals.after_id is null
        or (r.rank, r.published_at, r.id) < (
-            select k.rank, k.published_at, k.id from ranked k where k.id = search_deals.after_id)
+            select coalesce(
+              (select k.rank from ranked k where k.id = search_deals.after_id),
+              private.search_rank(words, search_deals.after_id, search_deals.area_id)),
+              a.published_at, a.id
+            from public.deals a where a.id = search_deals.after_id)
     order by r.rank desc, r.published_at desc, r.id desc
     limit private.page_size(search_deals.page_size);
   else
@@ -143,7 +175,7 @@ begin
     where private.is_live(d.status, d.starts_at, d.ends_at)
       and private.shown_in_city(d.id, d.scope, search_deals.city_id)
       and private.in_categories(d.category_id, search_deals.category_ids)
-      and private.matches_search_filters(d.id, d.scope, d.percent, d.ends_at,
+      and private.matches_search_filters(d.id, d.scope, d.offer_kind, d.percent, d.ends_at,
             search_deals.area_id, search_deals.bank_ids, search_deals.min_percent,
             search_deals.ending_within_hours)
       and (search_deals.after_id is null or (d.published_at, d.id) < (
@@ -154,10 +186,11 @@ begin
 end $$;
 
 grant execute on function
-  private.matches_search_filters(uuid, public.deal_scope, smallint, timestamptz, uuid, uuid[], integer, integer)
+  private.matches_search_filters(uuid, public.deal_scope, public.offer_kind, smallint, timestamptz, uuid, uuid[], integer, integer)
   to anon, authenticated, service_role;
 grant execute on function
-  private.search_hits(text, uuid, uuid[], uuid, uuid[], integer, integer)
+  private.search_hits(text, uuid, uuid[], uuid, uuid[], integer, integer),
+  private.search_rank(text, uuid, uuid)
   to anon, authenticated, service_role;
 revoke execute on function
   public.search_deals(text, uuid, uuid[], uuid, uuid[], integer, integer, uuid, integer)

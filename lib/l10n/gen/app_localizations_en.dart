@@ -976,4 +976,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cardKindPrepaid => 'Prepaid';
+
+  @override
+  String emptySearchNoFilters(String query) {
+    return 'No deals for “⁨$query⁩”. Try another word.';
+  }
 }

@@ -1651,6 +1651,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Prepaid'**
   String get cardKindPrepaid;
+
+  /// No description provided for @emptySearchNoFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No deals for “⁨{query}⁩”. Try another word.'**
+  String emptySearchNoFilters(String query);
 }
 
 class _AppLocalizationsDelegate

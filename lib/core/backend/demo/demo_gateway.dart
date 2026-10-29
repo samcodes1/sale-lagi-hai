@@ -376,8 +376,16 @@ final class DemoGateway implements BackendGateway {
       if (!(deal['card_banks']! as List).any(names.contains)) return false;
     }
     if (p['min_percent'] case final int min) {
+      // "Up to 50% off" is not at least 50% off.
       final percent = deal['percent'] as int?;
-      if (percent == null || percent < min.clamp(1, 99)) return false;
+      if (!const {
+            'percent_off',
+            'flat_percent_off',
+          }.contains(deal['offer_kind']) ||
+          percent == null ||
+          percent < min.clamp(1, 99)) {
+        return false;
+      }
     }
     if (p['ending_within_hours'] case final int hours) {
       final ends = deal['ends_at'] as String?;

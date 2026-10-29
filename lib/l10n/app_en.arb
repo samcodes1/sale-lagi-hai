@@ -321,5 +321,7 @@
   "@cardName": {"description": "A card as the shopper picked it: bank short name, product name, and Credit/Debit/Prepaid.", "placeholders": {"bank": {"type": "String"}, "product": {"type": "String"}, "kind": {"type": "String"}}},
   "cardKindCredit": "Credit",
   "cardKindDebit": "Debit",
-  "cardKindPrepaid": "Prepaid"
+  "cardKindPrepaid": "Prepaid",
+  "emptySearchNoFilters": "No deals for “⁨{query}⁩”. Try another word.",
+  "@emptySearchNoFilters": {"placeholders": {"query": {"type": "String"}}}
 }

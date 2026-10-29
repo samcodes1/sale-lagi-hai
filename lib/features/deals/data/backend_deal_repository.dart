@@ -140,9 +140,8 @@ final class BackendDealRepository implements DealRepository {
     final words = query.trim();
     // The server returns nothing for 1 or over 100 characters, or for no
     // words and no filters: don't ask.
-    if (words.length == 1 ||
-        words.length > 100 ||
-        (words.isEmpty && filters.isEmpty)) {
+    final length = words.runes.length;
+    if (length == 1 || length > 100 || (words.isEmpty && filters.isEmpty)) {
       return Future.value(const Success(DealPage([])));
     }
     return _guard(() async {

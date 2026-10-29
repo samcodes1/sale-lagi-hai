@@ -145,9 +145,12 @@ final class SearchDeals extends DealListQuery {
 
 final AsyncNotifierProviderFamily<DealListController, FeedState, DealListQuery>
 dealListProvider =
-    AsyncNotifierProvider.family<DealListController, FeedState, DealListQuery>(
-      DealListController.new,
-    );
+    // Kept only while shown: an old query's pages (and their ended deals)
+    // don't linger for the session (QA 4.6-A6).
+    AsyncNotifierProvider.autoDispose
+        .family<DealListController, FeedState, DealListQuery>(
+          DealListController.new,
+        );
 
 /// Pages through a [DealListQuery]: the first page on build, the next on
 /// [loadMore] (one at a time; a failed page becomes a retry row).

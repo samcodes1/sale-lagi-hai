@@ -274,5 +274,6 @@
   "cardName": "⁨{bank}⁩ کا ⁨{product}⁩ (⁨{kind}⁩)",
   "cardKindCredit": "کریڈٹ",
   "cardKindDebit": "ڈیبٹ",
-  "cardKindPrepaid": "پری پیڈ"
+  "cardKindPrepaid": "پری پیڈ",
+  "emptySearchNoFilters": "“⁨{query}⁩” کے لیے کوئی ڈیل نہیں ملی۔ کوئی اور لفظ آزمائیں۔"
 }

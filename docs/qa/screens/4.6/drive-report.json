@@ -1,0 +1,334 @@
+[
+ {
+  "tag": "360x800_light_en",
+  "semanticsResults": [
+   "button:Back:48x48",
+   "button:Clear search:48x48",
+   "checkbox:Filters:103x48",
+   "checkbox:Ending soon:107x48",
+   "checkbox:50%+ off:85x48",
+   "button:Karahi House (Demo)\nBrand:360x57",
+   "button:BBQ & Karahi\nCategory:360x57",
+   "button:Karahi House (Demo). Family karahi for 4. -24%. wa:328x316",
+   "button:Karahi House (Demo). 20% off with HBL credit cards:328x109"
+  ]
+ },
+ {
+  "tag": "360x800_light_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "semanticsResults": [
+   "button:Back:48x48",
+   "button:Clear search:48x48",
+   "checkbox:Filters:131x48",
+   "checkbox:Ending soon:170x48",
+   "checkbox:50%+ off:27x48",
+   "button:Karahi House (Demo)\nBrand:360x146",
+   "button:BBQ & Karahi\nCategory:360x98",
+   "button:Karahi House (Demo). Family karahi for 4. -24%. wa:328x236",
+   "button:Karahi House (Demo). 20% off with HBL credit cards:328x4"
+  ]
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur",
+  "semanticsResults": [
+   "button:پیچھے:48x48",
+   "button:تلاش صاف کریں:48x48",
+   "checkbox:فلٹرز:90x48",
+   "checkbox:جلد ختم ہونے والی:129x48",
+   "checkbox:⁦50%+⁩ رعایت:105x48",
+   "button:کڑاہی ہاؤس (ڈیمو)\nبرانڈ:360x69",
+   "button:باربی کیو اور کڑاہی\nزمرہ:360x69",
+   "button:کڑاہی ہاؤس (ڈیمو). چار افراد کی فیملی کڑاہی. ⁦-24%:328x357",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رع:328x25"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "semanticsResults": [
+   "button:پیچھے:48x48",
+   "button:تلاش صاف کریں:48x48",
+   "checkbox:فلٹرز:122x48",
+   "checkbox:جلد ختم ہونے والی:214x48",
+   "checkbox:⁦50%+⁩ رعایت:171x51",
+   "button:کڑاہی ہاؤس (ڈیمو)\nبرانڈ:360x122",
+   "button:باربی کیو اور کڑاہی\nزمرہ:360x122",
+   "button:کڑاہی ہاؤس (ڈیمو). چار افراد کی فیملی کڑاہی. ⁦-24%:328x193"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en",
+  "semanticsResults": [
+   "button:Back:48x48",
+   "button:Clear search:48x48",
+   "checkbox:Filters:103x48",
+   "checkbox:Ending soon:107x48",
+   "checkbox:50%+ off:85x48",
+   "button:Karahi House (Demo)\nBrand:360x57",
+   "button:BBQ & Karahi\nCategory:360x57",
+   "button:Karahi House (Demo). Family karahi for 4. -24%. wa:328x316",
+   "button:Karahi House (Demo). 20% off with HBL credit cards:328x109"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "semanticsResults": [
+   "button:Back:48x48",
+   "button:Clear search:48x48",
+   "checkbox:Filters:131x48",
+   "checkbox:Ending soon:170x48",
+   "checkbox:50%+ off:27x48",
+   "button:Karahi House (Demo)\nBrand:360x146",
+   "button:BBQ & Karahi\nCategory:360x98",
+   "button:Karahi House (Demo). Family karahi for 4. -24%. wa:328x236",
+   "button:Karahi House (Demo). 20% off with HBL credit cards:328x4"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "semanticsResults": [
+   "button:پیچھے:48x48",
+   "button:تلاش صاف کریں:48x48",
+   "checkbox:فلٹرز:90x48",
+   "checkbox:جلد ختم ہونے والی:129x48",
+   "checkbox:⁦50%+⁩ رعایت:105x48",
+   "button:کڑاہی ہاؤس (ڈیمو)\nبرانڈ:360x69",
+   "button:باربی کیو اور کڑاہی\nزمرہ:360x69",
+   "button:کڑاہی ہاؤس (ڈیمو). چار افراد کی فیملی کڑاہی. ⁦-24%:328x357",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رع:328x25"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "semanticsResults": [
+   "button:پیچھے:48x48",
+   "button:تلاش صاف کریں:48x48",
+   "checkbox:فلٹرز:122x48",
+   "checkbox:جلد ختم ہونے والی:214x48",
+   "checkbox:⁦50%+⁩ رعایت:171x51",
+   "button:کڑاہی ہاؤس (ڈیمو)\nبرانڈ:360x122",
+   "button:باربی کیو اور کڑاہی\nزمرہ:360x122",
+   "button:کڑاہی ہاؤس (ڈیمو). چار افراد کی فیملی کڑاہی. ⁦-24%:328x193"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_en",
+  "semanticsResults": [
+   "button:Back:48x48",
+   "button:Clear search:48x48",
+   "checkbox:Filters:103x48",
+   "checkbox:Ending soon:107x48",
+   "checkbox:50%+ off:85x48",
+   "button:Karahi House (Demo)\nBrand:412x57",
+   "button:BBQ & Karahi\nCategory:412x57",
+   "button:Karahi House (Demo). Family karahi for 4. -24%. wa:380x345",
+   "button:Karahi House (Demo). 20% off with HBL credit cards:380x194"
+  ]
+ },
+ {
+  "tag": "412x915_light_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_en_ts2",
+  "semanticsResults": [
+   "button:Back:48x48",
+   "button:Clear search:48x48",
+   "checkbox:Filters:131x48",
+   "checkbox:Ending soon:170x48",
+   "checkbox:50%+ off:79x48",
+   "button:Karahi House (Demo)\nBrand:412x98",
+   "button:BBQ & Karahi\nCategory:412x98",
+   "button:Karahi House (Demo). Family karahi for 4. -24%. wa:380x399",
+   "button:Karahi House (Demo). 20% off with HBL credit cards:380x173"
+  ]
+ },
+ {
+  "tag": "412x915_light_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur",
+  "semanticsResults": [
+   "button:پیچھے:48x48",
+   "button:تلاش صاف کریں:48x48",
+   "checkbox:فلٹرز:90x48",
+   "checkbox:جلد ختم ہونے والی:129x48",
+   "checkbox:⁦50%+⁩ رعایت:105x48",
+   "button:کڑاہی ہاؤس (ڈیمو)\nبرانڈ:412x69",
+   "button:باربی کیو اور کڑاہی\nزمرہ:412x69",
+   "button:کڑاہی ہاؤس (ڈیمو). چار افراد کی فیملی کڑاہی. ⁦-24%:380x386",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رع:380x110"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur_ts2",
+  "semanticsResults": [
+   "button:پیچھے:48x48",
+   "button:تلاش صاف کریں:48x48",
+   "checkbox:فلٹرز:122x48",
+   "checkbox:جلد ختم ہونے والی:219x48",
+   "checkbox:⁦50%+⁩ رعایت:39x51",
+   "button:کڑاہی ہاؤس (ڈیمو)\nبرانڈ:412x122",
+   "button:باربی کیو اور کڑاہی\nزمرہ:412x122",
+   "button:کڑاہی ہاؤس (ڈیمو). چار افراد کی فیملی کڑاہی. ⁦-24%:380x308"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en",
+  "semanticsResults": [
+   "button:Back:48x48",
+   "button:Clear search:48x48",
+   "checkbox:Filters:103x48",
+   "checkbox:Ending soon:107x48",
+   "checkbox:50%+ off:85x48",
+   "button:Karahi House (Demo)\nBrand:412x57",
+   "button:BBQ & Karahi\nCategory:412x57",
+   "button:Karahi House (Demo). Family karahi for 4. -24%. wa:380x345",
+   "button:Karahi House (Demo). 20% off with HBL credit cards:380x194"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en_ts2",
+  "semanticsResults": [
+   "button:Back:48x48",
+   "button:Clear search:48x48",
+   "checkbox:Filters:131x48",
+   "checkbox:Ending soon:170x48",
+   "checkbox:50%+ off:79x48",
+   "button:Karahi House (Demo)\nBrand:412x98",
+   "button:BBQ & Karahi\nCategory:412x98",
+   "button:Karahi House (Demo). Family karahi for 4. -24%. wa:380x399",
+   "button:Karahi House (Demo). 20% off with HBL credit cards:380x173"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "semanticsResults": [
+   "button:پیچھے:48x48",
+   "button:تلاش صاف کریں:48x48",
+   "checkbox:فلٹرز:90x48",
+   "checkbox:جلد ختم ہونے والی:129x48",
+   "checkbox:⁦50%+⁩ رعایت:105x48",
+   "button:کڑاہی ہاؤس (ڈیمو)\nبرانڈ:412x69",
+   "button:باربی کیو اور کڑاہی\nزمرہ:412x69",
+   "button:کڑاہی ہاؤس (ڈیمو). چار افراد کی فیملی کڑاہی. ⁦-24%:380x386",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رع:380x110"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur_ts2",
+  "semanticsResults": [
+   "button:پیچھے:48x48",
+   "button:تلاش صاف کریں:48x48",
+   "checkbox:فلٹرز:122x48",
+   "checkbox:جلد ختم ہونے والی:219x48",
+   "checkbox:⁦50%+⁩ رعایت:39x51",
+   "button:کڑاہی ہاؤس (ڈیمو)\nبرانڈ:412x122",
+   "button:باربی کیو اور کڑاہی\nزمرہ:412x122",
+   "button:کڑاہی ہاؤس (ڈیمو). چار افراد کی فیملی کڑاہی. ⁦-24%:380x308"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ }
+]

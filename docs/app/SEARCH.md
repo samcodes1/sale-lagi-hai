@@ -19,6 +19,16 @@ Search (screens S11 and S12) opens from the search field at the top of Explore, 
   - **Filters alone search:** with no words, the newest deals that pass them are shown.
 - **Offline:** the offline banner shows. Recent searches still work. Results show the usual error with Try again.
 
+## Changed after the 4.6 QA gate (PASS)
+- **S3:** "N%+ off" counts "-40%" and "Flat 40% off" offers only. "Up to 50% off" is not at least 50% off.
+- **S1:** with words, a page's last deal ending or being hidden before the next page loads no longer ends the list. `private.search_rank` recomputes its place.
+- **S2:** with an area filter, the area's own local deals rank first (+10 on the rank), so the 250-hit cap can't push them out. Online, nationwide and city-wide deals follow.
+- **A1 and A2:** a search saved while recent searches load is replayed onto them; logs hold only error types (`StoredStringList`).
+- **A3:** suggestion and recent rows are buttons for screen readers.
+- **A4:** `?q=` and the length checks count code points, never splitting an emoji.
+- **A5:** with no filters on, the empty state doesn't mention filters.
+- **A6:** deal lists and suggestions are kept only while shown (auto-dispose).
+
 ## Not built, and why
 - **Trending searches** (in the S11 sketch) would need us to collect what people search for. We don't log searches; popular categories take that slot.
 - **Open now** (in the S12 sketch) needs outlet opening hours, which the schema doesn't hold yet.

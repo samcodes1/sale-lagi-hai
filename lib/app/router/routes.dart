@@ -212,7 +212,8 @@ final class SearchRoute extends GoRouteData with $SearchRoute {
   Widget build(BuildContext context, GoRouterState state) {
     final words = q?.trim() ?? '';
     return SearchScreen(
-      initialQuery: words.length > 100 ? words.substring(0, 100) : words,
+      // 100 characters as the server counts them, never splitting one.
+      initialQuery: String.fromCharCodes(words.runes.take(100)),
     );
   }
 }

@@ -980,4 +980,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get cardKindPrepaid => 'پری پیڈ';
+
+  @override
+  String emptySearchNoFilters(String query) {
+    return '“⁨$query⁩” کے لیے کوئی ڈیل نہیں ملی۔ کوئی اور لفظ آزمائیں۔';
+  }
 }

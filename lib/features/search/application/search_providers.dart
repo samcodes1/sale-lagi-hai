@@ -198,7 +198,11 @@ bool _nameMatches(String name, String words) =>
 /// shortcut, the results below still show.
 final FutureProviderFamily<List<SearchSuggestion>, String>
 searchSuggestionsProvider =
-    FutureProvider.family<List<SearchSuggestion>, String>((ref, query) async {
+    // Kept only while shown (QA 4.6-A6).
+    FutureProvider.autoDispose.family<List<SearchSuggestion>, String>((
+      ref,
+      query,
+    ) async {
       final words = query.trim().toLowerCase();
       if (words.isEmpty) return const [];
       final city = ref.watch(homeCityProvider);
