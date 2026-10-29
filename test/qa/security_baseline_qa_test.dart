@@ -11,8 +11,6 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xml/xml.dart';
 
-import 'known_bugs.dart';
-
 /// Split key names, so this file doesn't trip the gitleaks rule it tests.
 const _store = 'store';
 const _key = 'key';

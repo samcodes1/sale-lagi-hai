@@ -14,7 +14,6 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../tool/audit_deps.dart';
-import 'known_bugs.dart';
 
 LockedPackage _dio(String version) => LockedPackage(
   name: 'dio',
