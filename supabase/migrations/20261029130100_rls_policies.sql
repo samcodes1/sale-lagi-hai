@@ -351,7 +351,7 @@ begin
   foreach t in array array['deal_targets', 'card_offers'] loop
     execute format($p$create policy "%1$s: visible with the deal" on public.%1$I
       for select to anon, authenticated
-      using (deal_id in (select d.id from public.deals d))$p$, t);
+      using (exists (select 1 from public.deals d where d.id = deal_id))$p$, t);
     execute format($p$create policy "%1$s: members edit drafts" on public.%1$I
       for insert to authenticated
       with check (deal_id in (select d.id from public.deals d

@@ -54,7 +54,7 @@ select set_eq($$
   select table_name::text from information_schema.role_table_grants
   where table_schema = 'public' and grantee = 'anon'
 $$, array['cities', 'areas', 'categories', 'banks', 'card_products', 'brands', 'outlets',
-          'deals', 'deal_targets', 'card_offers', 'placements'],
+          'deals', 'deal_targets', 'card_offers', 'placements', 'deal_cards'],
 'anon has grants on the public-content tables only');
 
 -- The only private functions the API roles can call are the RLS helpers.
@@ -64,8 +64,9 @@ select set_eq($$
     and (has_function_privilege('anon', p.oid, 'execute')
          or has_function_privilege('authenticated', p.oid, 'execute'))
 $$, array['has_role', 'mfa_verified', 'is_moderator', 'is_admin', 'my_business_ids',
-          'my_owned_business_ids', 'my_brand_ids', 'is_trusted_caller'],
-'only the RLS helpers in private are callable by the API roles');
+          'my_owned_business_ids', 'my_brand_ids', 'is_trusted_caller',
+          'is_live', 'shown_in_city', 'in_categories', 'page_size', 'follows_deal', 'recent_save_counts', 'search_hits', 'outlets_near'],
+'only the RLS and query helpers in private are callable by the API roles');
 
 -- The app's DealOffer mirrors this enum.
 select enum_has_labels('public', 'offer_kind', array[
