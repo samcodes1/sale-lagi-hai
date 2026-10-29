@@ -60,6 +60,7 @@ Future<ThemeData> _effectiveTheme(
       overrides: [
         onboardedShopper,
         guestAuth(),
+        onlineNetwork(),
         appConfigProvider.overrideWithValue(_config),
       ],
       child: const App(),

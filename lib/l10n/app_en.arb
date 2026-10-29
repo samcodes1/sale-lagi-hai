@@ -191,5 +191,25 @@
   "actionDeleteForever": "Delete my account",
   "deleteConfirmTitle": "Delete your account?",
   "deleteConfirmBody": "You'll be signed out, and this phone starts fresh.",
-  "deletedToast": "Your account was deleted."
+  "deletedToast": "Your account was deleted.",
+
+  "homeFeaturedTitle": "Featured",
+  "homeTrendingTitle": "Trending today",
+  "homeNearTitle": "Near you",
+  "homeEndingTitle": "Ending soon",
+  "homeForYouTitle": "For you",
+  "homeNearBody": "See sales close to where you are. We use your location once and don't keep it.",
+  "actionShowNearby": "Show deals near me",
+  "homeNearLocating": "Finding deals near you…",
+  "homeNearNoLocation": "We couldn't get your location. Pick your city to see local deals.",
+  "homeNearBlocked": "Location is off for this app. Turn it on in settings, or pick your city.",
+  "homeFeedEnd": "You've seen all the new deals. Check back soon.",
+  "homeFeedEmpty": "No deals here yet. Pick more interests or another city.",
+  "actionChangeCity": "Change city",
+  "homeCityLabel": "Deals in {city}",
+  "@homeCityLabel": {"description": "Screen-reader label of the city button in the home app bar.", "placeholders": {"city": {"type": "String"}}},
+  "distanceMeters": "{meters} m",
+  "@distanceMeters": {"placeholders": {"meters": {"type": "String"}}},
+  "distanceKm": "{km} km",
+  "@distanceKm": {"placeholders": {"km": {"type": "String"}}}
 }

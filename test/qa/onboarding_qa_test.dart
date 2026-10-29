@@ -128,6 +128,9 @@ Future<ProviderContainer> _boot(
       notificationPermissionProvider.overrideWithValue(
         alerts ?? FakeAlerts(AlertPermission.denied),
       ),
+      // Added with 4.3: Home now needs a sign-in backend and network status.
+      guestAuth(),
+      onlineNetwork(),
     ],
     retry: (_, _) => null,
   );
@@ -716,12 +719,14 @@ void main() {
       for (final fragment in ['24.81', '67.03', '24,81', '67,03']) {
         expect(everything, isNot(contains(fragment)), reason: fragment);
       }
-      // Only the two documented keys are written.
+      // Only the two documented keys are written, plus (since 4.3) the
+      // home rows' offline copies: public deal data under `cache.home.`
+      // (the coordinates check above covers them too).
       expect(
-        store.values.keys.toSet().difference({
-          localeStorageKey,
-          PreferencesStore.key,
-        }),
+        store.values.keys
+            .where((k) => !k.startsWith('cache.home.'))
+            .toSet()
+            .difference({localeStorageKey, PreferencesStore.key}),
         isEmpty,
       );
       final prefs = jsonDecode(store.values[PreferencesStore.key]!) as Map;

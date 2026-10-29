@@ -49,6 +49,7 @@ Future<GoRouter> _pumpApp(
     overrides: [
       onboardedShopper,
       guestAuth(),
+      onlineNetwork(),
       appConfigProvider.overrideWithValue(
         const AppConfig(
           flavor: Flavor.dev,

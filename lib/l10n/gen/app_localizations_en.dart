@@ -597,4 +597,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deletedToast => 'Your account was deleted.';
+
+  @override
+  String get homeFeaturedTitle => 'Featured';
+
+  @override
+  String get homeTrendingTitle => 'Trending today';
+
+  @override
+  String get homeNearTitle => 'Near you';
+
+  @override
+  String get homeEndingTitle => 'Ending soon';
+
+  @override
+  String get homeForYouTitle => 'For you';
+
+  @override
+  String get homeNearBody =>
+      'See sales close to where you are. We use your location once and don\'t keep it.';
+
+  @override
+  String get actionShowNearby => 'Show deals near me';
+
+  @override
+  String get homeNearLocating => 'Finding deals near you…';
+
+  @override
+  String get homeNearNoLocation =>
+      'We couldn\'t get your location. Pick your city to see local deals.';
+
+  @override
+  String get homeNearBlocked =>
+      'Location is off for this app. Turn it on in settings, or pick your city.';
+
+  @override
+  String get homeFeedEnd => 'You\'ve seen all the new deals. Check back soon.';
+
+  @override
+  String get homeFeedEmpty =>
+      'No deals here yet. Pick more interests or another city.';
+
+  @override
+  String get actionChangeCity => 'Change city';
+
+  @override
+  String homeCityLabel(String city) {
+    return 'Deals in $city';
+  }
+
+  @override
+  String distanceMeters(String meters) {
+    return '$meters m';
+  }
+
+  @override
+  String distanceKm(String km) {
+    return '$km km';
+  }
 }

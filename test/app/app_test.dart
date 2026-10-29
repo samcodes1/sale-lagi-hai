@@ -29,6 +29,7 @@ void main() {
         overrides: [
           onboardedShopper,
           guestAuth(),
+          onlineNetwork(),
           appConfigProvider.overrideWithValue(config),
         ],
         child: const App(),
@@ -46,7 +47,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [onboardedShopper, guestAuth()],
+        overrides: [onboardedShopper, guestAuth(), onlineNetwork()],
         child: const App(),
       ),
     );
@@ -78,6 +79,7 @@ void main() {
         overrides: [
           onboardedShopper,
           guestAuth(),
+          onlineNetwork(),
           appConfigProvider.overrideWithValue(config),
         ],
         child: const App(),
@@ -108,6 +110,7 @@ void main() {
         overrides: [
           onboardedShopper,
           guestAuth(),
+          onlineNetwork(),
           appConfigProvider.overrideWithValue(config),
           deviceLocaleProvider.overrideWithValue(device),
           keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),

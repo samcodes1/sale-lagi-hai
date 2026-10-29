@@ -256,6 +256,7 @@ void main() {
         overrides: [
           onboardedShopper,
           guestAuth(),
+          onlineNetwork(),
           keyValueStoreProvider.overrideWithValue(store),
           deviceLocaleProvider.overrideWithValue(const Locale('en', 'US')),
           loggerProvider.overrideWithValue(logger),
@@ -276,6 +277,7 @@ void main() {
         overrides: [
           onboardedShopper,
           guestAuth(),
+          onlineNetwork(),
           savedLocaleProvider.overrideWithValue(settings.locale),
           deviceLocaleProvider.overrideWithValue(const Locale('en', 'US')),
         ],
@@ -292,6 +294,7 @@ void main() {
           overrides: [
             onboardedShopper,
             guestAuth(),
+            onlineNetwork(),
             keyValueStoreProvider.overrideWithValue(store),
             deviceLocaleProvider.overrideWithValue(AppLocales.english),
             loggerProvider.overrideWithValue(AppLogger(sinks: [])),
@@ -316,6 +319,7 @@ void main() {
           overrides: [
             onboardedShopper,
             guestAuth(),
+            onlineNetwork(),
             appConfigProvider.overrideWithValue(
               const AppConfig(
                 flavor: Flavor.dev,

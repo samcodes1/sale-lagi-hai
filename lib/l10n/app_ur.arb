@@ -161,5 +161,22 @@
   "actionDeleteForever": "میرا اکاؤنٹ ڈیلیٹ کریں",
   "deleteConfirmTitle": "اپنا اکاؤنٹ ڈیلیٹ کریں؟",
   "deleteConfirmBody": "آپ سائن آؤٹ ہو جائیں گے، اور یہ فون نئے سرے سے شروع ہوگا۔",
-  "deletedToast": "آپ کا اکاؤنٹ ڈیلیٹ ہو گیا۔"
+  "deletedToast": "آپ کا اکاؤنٹ ڈیلیٹ ہو گیا۔",
+
+  "homeFeaturedTitle": "نمایاں",
+  "homeTrendingTitle": "آج کی مقبول ڈیلز",
+  "homeNearTitle": "آپ کے قریب",
+  "homeEndingTitle": "جلد ختم ہونے والی",
+  "homeForYouTitle": "آپ کے لیے",
+  "homeNearBody": "اپنے قریب کی سیلز دیکھیں۔ ہم آپ کا مقام صرف ایک بار استعمال کرتے ہیں اور محفوظ نہیں رکھتے۔",
+  "actionShowNearby": "میرے قریب کی ڈیلز دکھائیں",
+  "homeNearLocating": "آپ کے قریب کی ڈیلز ڈھونڈ رہے ہیں…",
+  "homeNearNoLocation": "ہم آپ کا مقام معلوم نہیں کر سکے۔ مقامی ڈیلز کے لیے اپنا شہر چنیں۔",
+  "homeNearBlocked": "اس ایپ کے لیے لوکیشن بند ہے۔ سیٹنگز میں آن کریں یا اپنا شہر چنیں۔",
+  "homeFeedEnd": "آپ نے تمام نئی ڈیلز دیکھ لیں۔ جلد دوبارہ دیکھیں۔",
+  "homeFeedEmpty": "یہاں ابھی کوئی ڈیل نہیں۔ مزید دلچسپیاں یا کوئی اور شہر چنیں۔",
+  "actionChangeCity": "شہر بدلیں",
+  "homeCityLabel": "⁨{city}⁩ کی ڈیلز",
+  "distanceMeters": "⁦{meters}⁩ میٹر",
+  "distanceKm": "⁦{km}⁩ کلومیٹر"
 }

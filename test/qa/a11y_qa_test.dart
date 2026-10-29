@@ -21,6 +21,7 @@ Widget _app() => ProviderScope(
   overrides: [
     onboardedShopper,
     guestAuth(),
+    onlineNetwork(),
     appConfigProvider.overrideWithValue(_config),
   ],
   child: const App(),

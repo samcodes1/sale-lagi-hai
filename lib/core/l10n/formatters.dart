@@ -37,6 +37,23 @@ final class AppFormatters {
   /// `-40%` badge text.
   String discount(int percent) => _l10n.discountBadge(percent);
 
+  /// How far an outlet is: `350 m`, `1.2 km`, `14 km`. Metres are
+  /// rounded to 50, kilometres to one decimal below 10 km.
+  String distance(int meters) {
+    if (meters < 1000) {
+      final rounded = (meters / 50).round() * 50;
+      return _l10n.distanceMeters(number(rounded < 50 ? 50 : rounded));
+    }
+    final km = meters / 1000;
+    return _l10n.distanceKm(
+      _digits(
+        km < 10
+            ? NumberFormat('0.#', 'en').format(km)
+            : _grouped.format(km.round()),
+      ),
+    );
+  }
+
   /// A short date such as `3 Nov` / `3 نومبر`.
   String shortDate(DateTime date) =>
       _digits(DateFormat('d MMM', locale.toLanguageTag()).format(date));

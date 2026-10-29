@@ -240,6 +240,23 @@ final class DemoGateway implements BackendGateway {
             )
             .take(_pageSize(params['page_size']))
             .toList();
+      case 'ending_soon_deals':
+        final hours = ((params['within_hours'] as int?) ?? 72).clamp(1, 168);
+        final now = _clock().toUtc();
+        final limit = now.add(Duration(hours: hours));
+        final ending =
+            [
+              for (final d in live)
+                if (d['ends_at'] case final String ends
+                    when DateTime.parse(ends).isAfter(now) &&
+                        !DateTime.parse(ends).isAfter(limit) &&
+                        _shownInCity(d, cityId))
+                  d,
+            ]..sort(
+              (a, b) =>
+                  (a['ends_at']! as String).compareTo(b['ends_at']! as String),
+            );
+        return ending.take(_pageSize(params['page_size'])).toList();
       case 'sync_guest_preferences':
         // Follows active brands the demo user doesn't follow yet.
         for (final id in (params['brand_ids'] as List<Object?>?) ?? const []) {

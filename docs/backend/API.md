@@ -10,6 +10,7 @@ Every RPC returns `deal_card` rows: the deal-card fields (brand, category, offer
 | `featured_deals(slot, city_id, category_id, page_size)` | "Featured" slots. Active placements in their window, highest priority first, at most 10 | — |
 | `trending_deals(city_id, days, page_size)` | Trending. Saves in the last 1–30 days, weighted towards newer deals | Top 50 |
 | `nearby_deals(lat, lng, radius_m, page_size)` | Near me. Deals with an active outlet within the radius (100 m–20 km), with the distance to the nearest outlet. Local deals only in live cities (as in the feed). The location is not stored | Nearest 50 |
+| `ending_soon_deals(city_id, within_hours, page_size)` | Home's "Ending soon" (4.3). Live deals ending within the window (1–168 h, default 72), soonest first; shown in a city like the feed | One page (≤ 50) |
 | `deals_for_my_cards(city_id, after_published_at, after_id, page_size)` | Deals for my cards: card offers matching the signed-in user's card products (bank, plus product, kind or network). Signed-in users only | Keyset |
 | `search_deals(query, city_id, category_ids, page, page_size)` | Search. Full text on titles and descriptions (English, Roman Urdu, Urdu), plus fuzzy matching on titles and brand names that forgives a wrong letter or two. Queries are 2–100 characters | Pages 0–4 |
 | `brand_deals(brand_slug, city_id, after_published_at, after_id, page_size)` | Brand pages | Keyset |

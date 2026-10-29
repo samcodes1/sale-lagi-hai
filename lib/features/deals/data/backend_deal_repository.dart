@@ -74,6 +74,17 @@ final class BackendDealRepository implements DealRepository {
       _guard(() => _rpc('trending_deals', {'city_id': ?cityId}));
 
   @override
+  Future<Result<List<Deal>>> endingSoon({
+    String? cityId,
+    int withinHours = 72,
+  }) => _guard(
+    () => _rpc('ending_soon_deals', {
+      'city_id': ?cityId,
+      'within_hours': withinHours,
+    }),
+  );
+
+  @override
   Future<Result<List<Deal>>> nearby({
     required double latitude,
     required double longitude,

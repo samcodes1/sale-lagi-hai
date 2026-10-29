@@ -31,6 +31,10 @@ abstract interface class DealRepository {
 
   Future<Result<List<Deal>>> trending({String? cityId});
 
+  /// Live deals ending within [withinHours] (at most a week), soonest
+  /// first.
+  Future<Result<List<Deal>>> endingSoon({String? cityId, int withinHours = 72});
+
   Future<Result<List<Deal>>> nearby({
     required double latitude,
     required double longitude,

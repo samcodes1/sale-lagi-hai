@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -16,6 +17,7 @@ import 'package:sale_lagi_hai/core/device/location_service.dart';
 import 'package:sale_lagi_hai/core/device/notification_permission.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
+import 'package:sale_lagi_hai/core/network/connectivity_service.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
@@ -103,7 +105,11 @@ final class Harness {
     BackendGateway? backend,
     DemoAuthRepository? auth,
     this.saved = const ShopperPreferences(),
-  }) : auth = auth ?? DemoAuthRepository(),
+    this.overrides = const [],
+    InMemoryKeyValueStore? store,
+    this.network = NetworkStatus.online,
+  }) : store = store ?? InMemoryKeyValueStore(),
+       auth = auth ?? DemoAuthRepository(),
        location = FakeLocation(
          location ?? const Located(24.8138, 67.03), // Clifton, Karachi
        ),
@@ -114,7 +120,11 @@ final class Harness {
   final FakeAlerts alerts;
   final BackendGateway backend;
   final ShopperPreferences saved;
-  final store = InMemoryKeyValueStore();
+
+  /// Extra provider overrides, applied last.
+  final List<Override> overrides;
+  final InMemoryKeyValueStore store;
+  final NetworkStatus network;
   final DemoAuthRepository auth;
   late ProviderContainer container;
 
@@ -149,6 +159,8 @@ final class Harness {
         locationServiceProvider.overrideWithValue(location),
         notificationPermissionProvider.overrideWithValue(alerts),
         authRepositoryProvider.overrideWithValue(auth),
+        networkStatusProvider.overrideWith((ref) => Stream.value(network)),
+        ...overrides,
       ],
       retry: (_, _) => null,
     );

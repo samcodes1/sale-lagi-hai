@@ -15,8 +15,9 @@ select is(
   -- 4.2 added prepare_account_deletion (service role only) and
   -- sync_guest_preferences (signed-in users), reviewed in
   -- 800_accounts.test.sql; QA re-checks them in the 4.2 gate.
+  -- 4.3 added ending_soon_deals (810_home.test.sql).
   array['approve_submission', 'brand_deals', 'custom_access_token_hook', 'deals_for_my_cards',
-        'featured_deals', 'feed', 'mark_submission_duplicate', 'nearby_deals',
+        'ending_soon_deals', 'featured_deals', 'feed', 'mark_submission_duplicate', 'nearby_deals',
         'prepare_account_deletion', 'register_push_token',
         'reject_submission', 'search_deals', 'submission_duplicates', 'sync_guest_preferences',
         'trending_deals'],

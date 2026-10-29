@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/errors/crash_reporter.dart';
+import 'package:sale_lagi_hai/core/network/connectivity_service.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/storage/secure_store.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
@@ -11,6 +13,12 @@ import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dar
 /// router opens on Home instead of `/welcome`.
 final Override onboardedShopper = savedPreferencesProvider.overrideWithValue(
   const ShopperPreferences(onboarded: true),
+);
+
+/// The network as online, without the connectivity plugin (tests have
+/// none: its platform stream would report a MissingPluginException).
+Override onlineNetwork() => networkStatusProvider.overrideWith(
+  (ref) => Stream.value(NetworkStatus.online),
 );
 
 /// A signed-out shopper on the demo sign-in (code 123456).

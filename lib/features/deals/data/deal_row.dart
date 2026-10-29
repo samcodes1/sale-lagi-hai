@@ -72,3 +72,42 @@ Deal dealFromRow(Map<String, Object?> row) {
     distanceMeters: opt<int>('distance_m'),
   );
 }
+
+/// The `deal_card` row for [deal]: the inverse of [dealFromRow], used to
+/// cache what the screen showed for offline use.
+Map<String, Object?> dealToRow(Deal deal) => {
+  'id': deal.id,
+  'brand_id': deal.brandId,
+  'brand_slug': deal.brandSlug,
+  'brand_name': deal.brandName,
+  'brand_name_ur': deal.brandNameUr,
+  'brand_logo_path': deal.brandLogoPath,
+  'brand_is_verified': deal.brandVerified,
+  'category_id': deal.categoryId,
+  'category_slug': deal.categorySlug,
+  'kind': deal.kind,
+  'scope': deal.scope.name,
+  'status': switch (deal.status) {
+    DealStatus.pendingReview => 'pending_review',
+    final status => status.name,
+  },
+  'title_en': deal.titleEn,
+  'title_ur': deal.titleUr,
+  'offer_kind': deal.offerKind.wire,
+  'percent': deal.percent,
+  'amount_off_pkr': deal.amountOffPkr,
+  'price_pkr': deal.pricePkr,
+  'original_price_pkr': deal.originalPricePkr,
+  'offer_text_en': deal.offerTextEn,
+  'offer_text_ur': deal.offerTextUr,
+  'promo_code': deal.promoCode,
+  'url': deal.url,
+  'image_path': deal.imagePath,
+  'starts_at': deal.startsAt.toUtc().toIso8601String(),
+  'ends_at': deal.endsAt?.toUtc().toIso8601String(),
+  'verified_at': deal.verifiedAt?.toUtc().toIso8601String(),
+  'published_at': deal.publishedAt?.toUtc().toIso8601String(),
+  'card_banks': deal.cardBanks,
+  'is_featured': deal.isFeatured,
+  'distance_m': deal.distanceMeters,
+};

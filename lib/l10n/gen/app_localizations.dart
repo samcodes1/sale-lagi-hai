@@ -991,6 +991,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account was deleted.'**
   String get deletedToast;
+
+  /// No description provided for @homeFeaturedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured'**
+  String get homeFeaturedTitle;
+
+  /// No description provided for @homeTrendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trending today'**
+  String get homeTrendingTitle;
+
+  /// No description provided for @homeNearTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Near you'**
+  String get homeNearTitle;
+
+  /// No description provided for @homeEndingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ending soon'**
+  String get homeEndingTitle;
+
+  /// No description provided for @homeForYouTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get homeForYouTitle;
+
+  /// No description provided for @homeNearBody.
+  ///
+  /// In en, this message translates to:
+  /// **'See sales close to where you are. We use your location once and don\'t keep it.'**
+  String get homeNearBody;
+
+  /// No description provided for @actionShowNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Show deals near me'**
+  String get actionShowNearby;
+
+  /// No description provided for @homeNearLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding deals near you…'**
+  String get homeNearLocating;
+
+  /// No description provided for @homeNearNoLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t get your location. Pick your city to see local deals.'**
+  String get homeNearNoLocation;
+
+  /// No description provided for @homeNearBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is off for this app. Turn it on in settings, or pick your city.'**
+  String get homeNearBlocked;
+
+  /// No description provided for @homeFeedEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen all the new deals. Check back soon.'**
+  String get homeFeedEnd;
+
+  /// No description provided for @homeFeedEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No deals here yet. Pick more interests or another city.'**
+  String get homeFeedEmpty;
+
+  /// No description provided for @actionChangeCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Change city'**
+  String get actionChangeCity;
+
+  /// Screen-reader label of the city button in the home app bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Deals in {city}'**
+  String homeCityLabel(String city);
+
+  /// No description provided for @distanceMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'{meters} m'**
+  String distanceMeters(String meters);
+
+  /// No description provided for @distanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km'**
+  String distanceKm(String km);
 }
 
 class _AppLocalizationsDelegate

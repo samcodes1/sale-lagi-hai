@@ -600,4 +600,62 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get deletedToast => 'آپ کا اکاؤنٹ ڈیلیٹ ہو گیا۔';
+
+  @override
+  String get homeFeaturedTitle => 'نمایاں';
+
+  @override
+  String get homeTrendingTitle => 'آج کی مقبول ڈیلز';
+
+  @override
+  String get homeNearTitle => 'آپ کے قریب';
+
+  @override
+  String get homeEndingTitle => 'جلد ختم ہونے والی';
+
+  @override
+  String get homeForYouTitle => 'آپ کے لیے';
+
+  @override
+  String get homeNearBody =>
+      'اپنے قریب کی سیلز دیکھیں۔ ہم آپ کا مقام صرف ایک بار استعمال کرتے ہیں اور محفوظ نہیں رکھتے۔';
+
+  @override
+  String get actionShowNearby => 'میرے قریب کی ڈیلز دکھائیں';
+
+  @override
+  String get homeNearLocating => 'آپ کے قریب کی ڈیلز ڈھونڈ رہے ہیں…';
+
+  @override
+  String get homeNearNoLocation =>
+      'ہم آپ کا مقام معلوم نہیں کر سکے۔ مقامی ڈیلز کے لیے اپنا شہر چنیں۔';
+
+  @override
+  String get homeNearBlocked =>
+      'اس ایپ کے لیے لوکیشن بند ہے۔ سیٹنگز میں آن کریں یا اپنا شہر چنیں۔';
+
+  @override
+  String get homeFeedEnd => 'آپ نے تمام نئی ڈیلز دیکھ لیں۔ جلد دوبارہ دیکھیں۔';
+
+  @override
+  String get homeFeedEmpty =>
+      'یہاں ابھی کوئی ڈیل نہیں۔ مزید دلچسپیاں یا کوئی اور شہر چنیں۔';
+
+  @override
+  String get actionChangeCity => 'شہر بدلیں';
+
+  @override
+  String homeCityLabel(String city) {
+    return '⁨$city⁩ کی ڈیلز';
+  }
+
+  @override
+  String distanceMeters(String meters) {
+    return '⁦$meters⁩ میٹر';
+  }
+
+  @override
+  String distanceKm(String km) {
+    return '⁦$km⁩ کلومیٹر';
+  }
 }

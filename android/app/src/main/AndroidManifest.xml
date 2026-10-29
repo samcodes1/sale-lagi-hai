@@ -32,6 +32,7 @@
              foreground-service declaration is needed (QA 4.1 BUG-3). -->
         <service
             android:name="com.baseflow.geolocator.GeolocatorLocationService"
+            android:exported="false"
             tools:node="remove" />
         <activity
             android:name=".MainActivity"
