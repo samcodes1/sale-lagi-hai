@@ -143,9 +143,11 @@ class WidgetGalleryPage extends ConsumerWidget {
             ),
           ),
           const _Heading('Steps'),
-          const AppStepper(
+          AppStepper(
             currentStep: 1,
-            steps: [
+            onStepContinue: noop,
+            onStepCancel: noop,
+            steps: const [
               Step(
                 title: Text('City'),
                 content: SizedBox.shrink(),

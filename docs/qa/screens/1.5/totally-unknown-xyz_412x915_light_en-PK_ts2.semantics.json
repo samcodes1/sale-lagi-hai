@@ -1,0 +1,18 @@
+[
+  {
+    "role": "group",
+    "name": "",
+    "w": 412,
+    "h": 336,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "Go to Home",
+    "w": 208,
+    "h": 60,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  }
+]

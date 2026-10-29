@@ -31,6 +31,9 @@ final List<File> _buildScripts = [
         (f.path.endsWith('.gradle') ||
             f.path.endsWith('.gradle.kts') ||
             f.path.endsWith('.properties')) &&
+        // The owner's real, gitignored signing file (docs/RELEASE.md).
+        !f.path.endsWith('key.properties') &&
+        !f.path.endsWith('local.properties') &&
         !f.path.contains(
           '${Platform.pathSeparator}build${Platform.pathSeparator}',
         ) &&
@@ -46,15 +49,21 @@ const _binary = ['.ttf', '.otf', '.png', '.jpg', '.webp', '.jar', '.so'];
 String _code(File f) =>
     f.readAsStringSync().replaceAll(RegExp(r'^\s*//.*$', multiLine: true), '');
 
+/// Where [pattern] matches. With [redact], only the file and line are
+/// reported, never the matched text (it may be a real secret).
 List<String> _matches(
   Iterable<File> files,
   RegExp pattern, {
   bool code = true,
+  bool redact = false,
 }) => [
   for (final f in files)
     for (final m in pattern.allMatches(code ? _code(f) : f.readAsStringSync()))
-      '${f.path}: ${m[0]}',
+      if (redact) '${f.path}:${_lineOf(m)}' else '${f.path}: ${m[0]}',
 ];
+
+int _lineOf(Match m) =>
+    '\n'.allMatches(m.input.substring(0, m.start)).length + 1;
 
 void main() {
   test('scans real files', () {
@@ -68,7 +77,7 @@ void main() {
     final offenders = _matches(
       _libFiles.where((f) => !f.path.endsWith('log_sinks.dart')),
       RegExp(
-        r'\b(print|debugPrint\w*)\b|\bstd(out|err)\.|\bdeveloper\.log\b'
+        r'\b(print|debugPrint\w*)\b|\bstd(out|err)\b|\bdeveloper\.log\b'
         '|dart:developer',
       ),
     );
@@ -81,8 +90,8 @@ void main() {
     final offenders = _matches(
       _shippedFiles.where((f) => !f.path.endsWith('.xml')),
       RegExp(
-        r'[hH][tT][tT][pP]:|[wW][sS]://|\bUri\.http\('
-        r'|scheme:\s*.[hH][tT][tT][pP].',
+        r'[hH][tT][tT][pP]:|[hH][tT][tT][pP].\s*.://|[wW][sS]://|\bUri\.http\('
+        r'|scheme:\s*.([hH][tT][tT][pP]|[wW][sS]).',
       ),
     );
     expect(offenders, isEmpty);
@@ -100,13 +109,15 @@ void main() {
     final offenders = _matches(
       [..._shippedFiles, ..._buildScripts],
       code: false,
+      redact: true,
       RegExp(
         // Supabase secret keys, any JWT, private key blocks, keystore
         // passwords and Google API keys.
         'sb_secret_[A-Za-z0-9_-]{8,}'
         r'|eyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}'
         '|-----BEGIN [A-Z ]*PRIVATE KEY-----'
-        r'|(store|key)Password\s*[=:\s]\s*["\x27]?[^\s$()"\x27]{6,}["\x27]?\s*$'
+        r'|(?:[sS]tore|[kK]ey)Password\s*[=:]?\s*(?:[^\n]*\?:\s*)?["\x27]([^"\x27\n]{6,})["\x27]'
+        r'|^\s*(?:[sS]tore|[kK]ey)Password\s*[=:\s]\s*([^\s"\x27$(][^\s"\x27(]{5,})\s*(?://.*)?$'
         '|AIza[0-9A-Za-z_-]{35}',
         multiLine: true,
       ),

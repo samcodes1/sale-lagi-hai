@@ -119,7 +119,7 @@ void main() {
       );
 
       expect(find.text('\u2066-40%\u2069'), findsOneWidget);
-      expect(find.text('50% تک رعایت'), findsOneWidget);
+      expect(find.text('\u206650%\u2069 تک رعایت'), findsOneWidget);
     });
 
     testWidgets('uses the deal colours', (tester) async {
@@ -576,6 +576,33 @@ void main() {
       expect(circle(tester, '2'), scheme.surfaceContainerHighest);
       final digit = tester.widget<Text>(find.text('2'));
       expect(digit.style!.color, scheme.onSurface);
+    });
+
+    testWidgets('the connector line runs through the circles', (tester) async {
+      await _pump(
+        tester,
+        AppStepper(
+          onStepContinue: () {},
+          steps: const [
+            Step(
+              title: Text('City'),
+              content: Text('Pick a city'),
+              isActive: true,
+            ),
+            Step(title: Text('Alerts'), content: SizedBox.shrink()),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+      final circle = tester.getCenter(find.text('2')).dx;
+      final lines = tester
+          .widgetList<ColoredBox>(find.byType(ColoredBox))
+          .map((b) => tester.getRect(find.byWidget(b)))
+          .where((r) => r.width == 1 && r.height > 20);
+      expect(lines, isNotEmpty);
+      for (final r in lines) {
+        expect(r.center.dx, closeTo(circle, 1), reason: 'line at ${r.left}');
+      }
     });
 
     testWidgets('step numbers follow the Urdu UI', (tester) async {

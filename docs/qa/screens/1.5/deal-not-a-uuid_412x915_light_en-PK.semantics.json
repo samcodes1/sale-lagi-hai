@@ -1,0 +1,58 @@
+[
+  {
+    "role": "group",
+    "name": "",
+    "w": 412,
+    "h": 160,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tablist",
+    "name": "",
+    "w": 412,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Home",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Explore",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Alerts",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Saved",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Profile",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  }
+]

@@ -1,0 +1,98 @@
+[
+  {
+    "role": "group",
+    "name": "",
+    "w": 360,
+    "h": 664,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "radiogroup",
+    "name": "",
+    "w": 360,
+    "h": 112,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "radio",
+    "name": "English",
+    "w": 360,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "radio",
+    "name": "اردو",
+    "w": 360,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "Theme preview (dev)",
+    "w": 360,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "Widget gallery (dev)",
+    "w": 360,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tablist",
+    "name": "",
+    "w": 360,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Home",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Explore",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Alerts",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Saved",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "Profile",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  }
+]

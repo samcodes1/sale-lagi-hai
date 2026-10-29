@@ -24,8 +24,9 @@ final class DealTimeLabels {
     final remaining = endsAt.difference(now);
     if (remaining <= Duration.zero) return _l10n.dealExpired;
     if (remaining < _urgentWindow) {
-      // Round up: 90 minutes left reads "Ends in 2 hours", never "0 hours".
-      final hours = (remaining.inMinutes / 60).ceil();
+      // Round up: 90 minutes left reads "Ends in 2 hours", and 30 seconds
+      // "Ends in 1 hour", never "0 hours".
+      final hours = (remaining.inSeconds / Duration.secondsPerHour).ceil();
       return _l10n.endsInHours(hours);
     }
     final days = _calendarDaysBetween(now, endsAt);

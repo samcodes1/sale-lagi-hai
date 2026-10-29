@@ -1,0 +1,18 @@
+[
+  {
+    "role": "group",
+    "name": "",
+    "w": 412,
+    "h": 323,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "ہوم پر جائیں",
+    "w": 188,
+    "h": 75,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  }
+]

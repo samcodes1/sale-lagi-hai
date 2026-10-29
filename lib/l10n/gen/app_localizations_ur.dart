@@ -205,12 +205,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String flatPercentOff(int percent) {
-    return 'فلیٹ $percent% رعایت';
+    return 'فلیٹ ⁦$percent%⁩ رعایت';
   }
 
   @override
   String upToPercentOff(int percent) {
-    return '$percent% تک رعایت';
+    return '⁦$percent%⁩ تک رعایت';
   }
 
   @override
@@ -243,7 +243,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String emptySearch(String query) {
-    return '“$query” کے لیے کوئی ڈیل نہیں ملی۔ کوئی اور لفظ آزمائیں یا فلٹر ہٹائیں۔';
+    return '“⁨$query⁩” کے لیے کوئی ڈیل نہیں ملی۔ کوئی اور لفظ آزمائیں یا فلٹر ہٹائیں۔';
   }
 
   @override

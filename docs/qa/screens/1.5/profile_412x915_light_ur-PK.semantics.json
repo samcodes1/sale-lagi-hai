@@ -1,0 +1,98 @@
+[
+  {
+    "role": "group",
+    "name": "",
+    "w": 412,
+    "h": 779,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "radiogroup",
+    "name": "",
+    "w": 412,
+    "h": 112,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "radio",
+    "name": "English",
+    "w": 412,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "radio",
+    "name": "اردو",
+    "w": 412,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "Theme preview (dev)",
+    "w": 412,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "button",
+    "name": "Widget gallery (dev)",
+    "w": 412,
+    "h": 56,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tablist",
+    "name": "",
+    "w": 412,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "ہوم",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "تلاش",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "الرٹس",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "محفوظ",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "پروفائل",
+    "w": 82,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  }
+]

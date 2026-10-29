@@ -133,6 +133,13 @@ class _ExpiryTagState extends ConsumerState<ExpiryTag> {
       _timer = Timer.periodic(const Duration(minutes: 1), (_) {
         if (mounted) setState(() {});
       });
+    } else if (remaining > urgentWindow) {
+      // Wake up when it becomes urgent, then tick every minute.
+      _timer = Timer(remaining - urgentWindow, () {
+        if (!mounted) return;
+        setState(() {});
+        _schedule();
+      });
     }
   }
 

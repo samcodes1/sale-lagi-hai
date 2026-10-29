@@ -48,8 +48,8 @@
 
   "featuredLabel": "نمایاں",
   "discountBadge": "\u2066-{percent}%\u2069",
-  "flatPercentOff": "فلیٹ {percent}% رعایت",
-  "upToPercentOff": "{percent}% تک رعایت",
+  "flatPercentOff": "فلیٹ \u2066{percent}%\u2069 رعایت",
+  "upToPercentOff": "\u2066{percent}%\u2069 تک رعایت",
   "priceRupees": "{amount} روپے",
   "priceWasNow": "پہلے {oldPrice}، اب {newPrice}",
   "allPakistan": "پورا پاکستان",
@@ -58,7 +58,7 @@
   "emptyNearby": "بازار آج ٹھنڈا ہے۔ ابھی آس پاس کوئی سیل نہیں، جیسے ہی لگی ہم بتا دیں گے۔",
   "emptySaved": "ابھی کچھ محفوظ نہیں۔ کسی ڈیل پر بُک مارک دبائیں، وہ یہاں آ جائے گی۔",
   "emptyAlerts": "کسی برانڈ کو فالو کریں، سیل لگتے ہی ہم بتا دیں گے۔",
-  "emptySearch": "“{query}” کے لیے کوئی ڈیل نہیں ملی۔ کوئی اور لفظ آزمائیں یا فلٹر ہٹائیں۔",
+  "emptySearch": "“\u2068{query}\u2069” کے لیے کوئی ڈیل نہیں ملی۔ کوئی اور لفظ آزمائیں یا فلٹر ہٹائیں۔",
   "locationOff": "قریب کی ڈیلز دیکھنے کے لیے لوکیشن کی اجازت دیں، یا اپنا علاقہ چنیں۔",
 
   "errorOffline": "انٹرنیٹ کنکشن نہیں ہے۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔",

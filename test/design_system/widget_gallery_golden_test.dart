@@ -14,12 +14,14 @@ final _now = DateTime(2026, 10, 29, 12);
 Widget _gallery({
   Locale locale = AppLocales.english,
   Brightness brightness = Brightness.light,
+  bool highContrast = false,
 }) => ProviderScope(
   overrides: [clockProvider.overrideWithValue(() => _now)],
   child: goldenHost(
     const WidgetGalleryPage(),
     locale: locale,
     brightness: brightness,
+    highContrast: highContrast,
   ),
 );
 
@@ -34,17 +36,26 @@ void main() {
       builder: () => GoldenTestGroup(
         columns: 3,
         children: [
-          for (final (name, locale, brightness) in const [
-            ('en light', AppLocales.english, Brightness.light),
-            ('en dark', AppLocales.english, Brightness.dark),
-            ('ur light', AppLocales.urdu, Brightness.light),
+          // The plan's matrix: both languages, light and dark, and high
+          // contrast in each brightness.
+          for (final (name, locale, brightness, highContrast) in const [
+            ('en light', AppLocales.english, Brightness.light, false),
+            ('en dark', AppLocales.english, Brightness.dark, false),
+            ('ur light', AppLocales.urdu, Brightness.light, false),
+            ('ur dark', AppLocales.urdu, Brightness.dark, false),
+            ('en light HC', AppLocales.english, Brightness.light, true),
+            ('ur dark HC', AppLocales.urdu, Brightness.dark, true),
           ])
             GoldenTestScenario(
               name: name,
               child: SizedBox(
                 width: 412,
                 height: 2900,
-                child: _gallery(locale: locale, brightness: brightness),
+                child: _gallery(
+                  locale: locale,
+                  brightness: brightness,
+                  highContrast: highContrast,
+                ),
               ),
             ),
         ],

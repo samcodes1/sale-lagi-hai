@@ -135,4 +135,17 @@ packages:
       expect(result.exitCode, isNot(0));
     });
   });
+
+  // R2-3: since round 1, an event version that doesn't parse ends the range
+  // as "not affected" (`_ => false`, then `introduced = null`), so a
+  // malformed advisory is silently ignored instead of failing closed.
+  test('R2-3: an unparseable fixed version keeps the range affected', () {
+    final json = _dioAdvisory(
+      events: [
+        {'introduced': '0'},
+        {'fixed': '5.0'},
+      ],
+    );
+    expect(advisoryProblems(_dio('4.0.6'), json), hasLength(1));
+  });
 }

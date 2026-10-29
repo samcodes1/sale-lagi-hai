@@ -14,7 +14,9 @@ sealed class DealOffer {
   static PercentOff? fromPrices({required int was, required int now}) {
     if (was <= 0 || now < 0 || now >= was) return null;
     final percent = ((was - now) * 100) ~/ was;
-    return percent < 1 ? null : PercentOff(percent);
+    // A free item (100%) is not a percentage deal: no badge. 99.9% rounds
+    // down to 99, so only exactly free reaches 100.
+    return percent < 1 || percent > 99 ? null : PercentOff(percent);
   }
 }
 

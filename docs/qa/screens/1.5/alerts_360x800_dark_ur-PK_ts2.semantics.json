@@ -1,0 +1,58 @@
+[
+  {
+    "role": "group",
+    "name": "",
+    "w": 360,
+    "h": 286,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tablist",
+    "name": "",
+    "w": 360,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "ہوم",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "تلاش",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "الرٹس",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "محفوظ",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  },
+  {
+    "role": "tab",
+    "name": "پروفائل",
+    "w": 72,
+    "h": 80,
+    "unlabeledInteractive": false,
+    "smallTarget": false
+  }
+]

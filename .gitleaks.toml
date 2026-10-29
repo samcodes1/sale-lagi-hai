@@ -32,11 +32,11 @@ keywords = ["postgres://", "postgresql://"]
 [[rules]]
 id = "android-signing-password"
 description = "Android keystore or key password"
-# Matches key.properties (storePassword=...), Kotlin (storePassword = "...")
-# and Groovy (storePassword '...'); skips references such as
+# Matches key.properties (storePassword=...), Kotlin and Groovy literals
+# (storePassword = "...", keyPassword '...', getenv("X") ?: "...", with or
+# without a trailing comment); skips references such as
 # keystoreProperties.getProperty(...) and $System.env.X.
-regex = '''(?im)^\s*(?:store|key)Password\s*[=:\s]\s*["']?([^\s$()"']{6,})["']?\s*$'''
-secretGroup = 1
+regex = '''(?im)(?:store|key)Password\s*[=:]?\s*(?:[^\n]*\?:\s*)?["\x27]([^"\x27\n]{6,})["\x27]|^\s*(?:store|key)Password\s*[=:\s]\s*([^\s"\x27$(][^\s"\x27(]{5,})\s*(?://.*)?$'''
 keywords = ["storepassword", "keypassword"]
 
 # Test fixtures: short, obviously fake values that the default JWT rule

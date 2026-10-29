@@ -76,7 +76,7 @@
   "emptyNearby": "Quiet day in the bazaar. No sales near you right now; we'll shout when one starts.",
   "emptySaved": "Nothing saved yet. Tap the bookmark on a deal to keep it here.",
   "emptyAlerts": "Follow a brand and we'll tell you the moment its sale starts.",
-  "emptySearch": "No deals for “{query}”. Try another word or clear the filters.",
+  "emptySearch": "No deals for “\u2068{query}\u2069”. Try another word or clear the filters.",
   "@emptySearch": { "placeholders": { "query": { "type": "String" } } },
   "locationOff": "Allow location to see deals near you, or pick your area.",
 

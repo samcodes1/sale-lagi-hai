@@ -30,18 +30,57 @@ class AppTabBar extends StatelessWidget {
     return math.max(_minHeight, lineHeight + 2 * _verticalPadding);
   }
 
+  /// True when the labels don't fit side by side in [maxWidth] at the
+  /// current text size; the tabs then scroll instead of truncating.
+  static bool needsScrolling(
+    BuildContext context,
+    List<String> labels,
+    double maxWidth,
+  ) {
+    final style =
+        TabBarTheme.of(context).labelStyle ??
+        Theme.of(context).textTheme.labelLarge!;
+    final scaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    final share = maxWidth / labels.length;
+    for (final label in labels) {
+      final painter = TextPainter(
+        text: TextSpan(text: label, style: style),
+        textDirection: direction,
+        textScaler: scaler,
+        maxLines: 1,
+      )..layout();
+      final width = painter.width;
+      painter.dispose();
+      // Material's default label padding is 16dp on each side.
+      if (width + 32 > share) return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = tabHeight(context);
-    return TabBar(
-      controller: controller,
-      tabs: [
-        for (final label in labels)
-          Tab(
-            height: height,
-            child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
-          ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scroll = needsScrolling(context, labels, constraints.maxWidth);
+        return TabBar(
+          controller: controller,
+          isScrollable: scroll,
+          tabAlignment: scroll ? TabAlignment.start : null,
+          tabs: [
+            for (final label in labels)
+              Tab(
+                height: height,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

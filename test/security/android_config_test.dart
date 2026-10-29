@@ -218,9 +218,24 @@ void main() {
       expect(release, isNot(contains('isDebuggable = true')));
     });
 
-    test('CI cannot ship a debug-signed release', () {
-      expect(release, contains('REQUIRE_RELEASE_SIGNING'));
-      expect(gradle, contains('key.properties'));
+    test('a release build can be made to require the real key', () {
+      // With REQUIRE_RELEASE_SIGNING=true and no key.properties, the
+      // release signing config throws instead of using the debug key.
+      expect(
+        release,
+        matches(
+          RegExp(
+            r'REQUIRE_RELEASE_SIGNING"\)\s*==\s*"true"\s*->\s*throw GradleException',
+          ),
+        ),
+      );
+      expect(
+        release,
+        contains(
+          'keystoreProperties.isNotEmpty() -> '
+          'signingConfigs.getByName("release")',
+        ),
+      );
     });
 
     test("targets Play's required API level (36)", () {
@@ -242,7 +257,19 @@ void main() {
       for (final pattern in ['key.properties', '*.jks']) {
         expect(ignore, contains(pattern));
       }
-      expect(File('android/key.properties').existsSync(), isFalse);
+      // The owner keeps a real key.properties locally (docs/RELEASE.md);
+      // it must never be tracked.
+      for (final path in [
+        'android/key.properties',
+        'android/app/upload-keystore.jks',
+      ]) {
+        final tracked = Process.runSync('git', [
+          'ls-files',
+          '--error-unmatch',
+          path,
+        ]);
+        expect(tracked.exitCode, isNot(0), reason: '$path is tracked by git');
+      }
     });
   });
 }

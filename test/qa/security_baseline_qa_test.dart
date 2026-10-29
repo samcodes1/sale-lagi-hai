@@ -323,14 +323,18 @@ void main() {
       }
     });
 
+    // Fixtures are split across literals so the committed file does not
+    // trip gitleaks itself (a contiguous value would fail CI's secret scan).
     test('positive controls', () {
       const jwt =
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
           'eyJyb2xlIjoic2VydmljZV9yb2xlIn0.'
           'dBjftJeZ4CVPmB92K27uhbUJU1p1r_wW1gFWFOEjXk';
       expect(
-        _gitleaksRule(ids[0])
-            .hasMatch('KEY=sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz'),
+        _gitleaksRule(ids[0]).hasMatch(
+          'KEY=sb_secret_'
+          'N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz',
+        ),
         isTrue,
       );
       expect(
@@ -339,7 +343,8 @@ void main() {
       );
       expect(
         _gitleaksRule(ids[2]).hasMatch(
-          'postgresql://postgres.ref:S3cretPassw0rd@aws-0.pooler.supabase.com',
+          'postgresql://postgres.ref:'
+          'S3cretPassw0rd@aws-0.pooler.supabase.com',
         ),
         isTrue,
       );
@@ -383,5 +388,51 @@ void main() {
       final minor = int.parse(version.group(2)!);
       expect(major > 8 || (major == 8 && minor >= 25), isTrue);
     });
+  });
+
+  // Round 2: forms that still pass the fixed patterns.
+  group('R2-1: cleartext and console forms still missed', () {
+    const cleartext = "test('no cleartext URLs'";
+    const console = "test('no print or debugPrint";
+    final cases = <(String, String, String)>[
+      ('split before the colon', cleartext, "const u = 'http' '://api.x.pk';"),
+      (
+        'Uri with a ws scheme',
+        cleartext,
+        "final u = Uri(scheme: 'ws', host: 'api.x.pk');",
+      ),
+      (
+        'stdout cascade on the next line (dart format output)',
+        console,
+        'stdout\n    ..write(token)\n    ..write(phone);',
+      ),
+      ('stdout through a variable', console, 'final IOSink out = stdout;'),
+    ];
+    for (final (name, anchor, code) in cases) {
+      test(name, () {
+        expect(_hygieneCatches(code, anchor), isTrue, reason: code);
+      });
+    }
+  });
+
+  group('R2-2: signing passwords that still pass both checks', () {
+    final hygiene = _hygienePattern("test('no secret keys").regExp;
+    for (final line in [
+      // A key.properties copy whose password contains a dollar sign.
+      r'storePassword=Pa$$w0rd2026',
+      // Kotlin fallback after an environment variable.
+      '        storePassword = System.getenv("KS_PASS") ?: "hunter2hunter2"',
+      // A trailing comment after the value.
+      '        keyPassword = "hunter2hunter2" // TODO: move to CI',
+    ]) {
+      test('caught: $line', () {
+        expect(
+          _gitleaksRule('android-signing-password').hasMatch(line),
+          isTrue,
+          reason: 'gitleaks',
+        );
+        expect(hygiene.hasMatch(line), isTrue, reason: 'hygiene test');
+      });
+    }
   });
 }

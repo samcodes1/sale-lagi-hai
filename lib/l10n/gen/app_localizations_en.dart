@@ -243,7 +243,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String emptySearch(String query) {
-    return 'No deals for “$query”. Try another word or clear the filters.';
+    return 'No deals for “⁨$query⁩”. Try another word or clear the filters.';
   }
 
   @override

@@ -74,8 +74,12 @@ final class LockedPackage {
 }
 
 List<LockedPackage> parseLockfile(String lockfile) {
-  final yaml = loadYaml(lockfile) as YamlMap;
-  final packages = (yaml['packages'] as YamlMap?) ?? YamlMap();
+  final yaml = loadYaml(lockfile);
+  if (yaml is! YamlMap) return const []; // empty or not a lockfile
+  final packages = switch (yaml['packages']) {
+    final YamlMap map => map,
+    _ => YamlMap(),
+  };
   return [
     for (final MapEntry(:key, :value) in packages.entries)
       if (value case final YamlMap entry)
@@ -163,10 +167,13 @@ bool _affects(Map<String, Object?> affected, Version version) {
         introduced = v == '0' ? Version.none : _parseVersion(v);
       } else if (introduced != null) {
         final inRange = switch (event) {
-          {'fixed': final String v} when _parseVersion(v) != null =>
-            version >= introduced && version < Version.parse(v),
-          {'last_affected': final String v} when _parseVersion(v) != null =>
-            version >= introduced && version <= Version.parse(v),
+          // An end we can't parse fails closed: still affected.
+          {'fixed': final String v} =>
+            version >= introduced &&
+                (_parseVersion(v) == null || version < _parseVersion(v)!),
+          {'last_affected': final String v} =>
+            version >= introduced &&
+                (_parseVersion(v) == null || version <= _parseVersion(v)!),
           _ => false,
         };
         if (inRange) return true;
@@ -181,10 +188,18 @@ bool _affects(Map<String, Object?> affected, Version version) {
 Future<List<String>> _onlineProblems(List<LockedPackage> packages) async {
   final client = HttpClient()
     ..findProxy = HttpClient.findProxyFromEnvironment
+    ..connectionTimeout = const Duration(seconds: 15)
     ..userAgent = 'sale-lagi-hai-audit (+tool/audit_deps.dart)';
   try {
     final problems = <String>[];
+    var networkFailures = 0;
     for (final p in packages.where((p) => p.source == 'hosted')) {
+      // pub.dev is unreachable: say so once instead of timing out on every
+      // package (the run still fails).
+      if (networkFailures >= 3) {
+        problems.add('pub.dev is unreachable; the online checks did not run.');
+        break;
+      }
       final base =
           'https://pub.dev/api/packages/${Uri.encodeComponent(p.name)}';
       try {
@@ -193,49 +208,56 @@ Future<List<String>> _onlineProblems(List<LockedPackage> packages) async {
           ..addAll(
             advisoryProblems(p, await _getJson(client, '$base/advisories')),
           );
+        networkFailures = 0;
       } on _NotFound {
         problems.add('${p.name} is not on pub.dev (removed or unpublished).');
+      } on _Rejected catch (e) {
+        problems.add('${p.name} could not be checked: ${e.message}');
       } on Exception catch (e) {
+        networkFailures++;
         problems.add('${p.name} could not be checked: $e');
       }
     }
     return problems;
   } finally {
-    client.close();
+    client.close(force: true);
   }
 }
 
 final class _NotFound implements Exception;
 
-/// GETs JSON with a timeout, retrying network errors, 429 and 5xx up to
-/// three times with backoff.
+/// A response that retrying won't fix (4xx other than 404 and 429).
+final class _Rejected implements Exception {
+  const new(this.message);
+  final String message;
+}
+
+/// GETs JSON. The whole request (including the body) has a 30 s timeout;
+/// network errors, timeouts, 429 and 5xx are retried twice with backoff.
 Future<Map<String, Object?>> _getJson(HttpClient client, String url) async {
   for (var attempt = 1; ; attempt++) {
     try {
-      final request = await client
-          .getUrl(Uri.parse(url))
-          .timeout(const Duration(seconds: 20));
-      request.headers.set('accept', 'application/json');
-      final response = await request.close().timeout(
-        const Duration(seconds: 20),
-      );
-      final body = await response.transform(utf8.decoder).join();
-      if (response.statusCode == 404) throw _NotFound();
-      if (response.statusCode == 200) {
-        return jsonDecode(body) as Map<String, Object?>;
+      final (status, body) = await () async {
+        final request = await client.getUrl(Uri.parse(url));
+        request.headers.set('accept', 'application/json');
+        final response = await request.close();
+        return (
+          response.statusCode,
+          await response.transform(utf8.decoder).join(),
+        );
+      }().timeout(const Duration(seconds: 30));
+      if (status == 200) return jsonDecode(body) as Map<String, Object?>;
+      if (status == 404) throw _NotFound();
+      if (status != 429 && status < 500) {
+        throw _Rejected('$url answered $status');
       }
-      if (response.statusCode != 429 && response.statusCode < 500) {
-        throw HttpException('$url answered ${response.statusCode}');
-      }
-      if (attempt >= 3) {
-        throw HttpException('$url answered ${response.statusCode}');
-      }
+      if (attempt >= 3) throw HttpException('$url answered $status');
     } on _NotFound {
       rethrow;
-    } on HttpException {
-      if (attempt >= 3) rethrow;
+    } on _Rejected {
+      rethrow;
     } on Exception {
-      // SocketException, TimeoutException, FormatException...
+      // SocketException, TimeoutException, HttpException (429, 5xx)...
       if (attempt >= 3) rethrow;
     }
     await Future<void>.delayed(Duration(seconds: 2 * attempt));

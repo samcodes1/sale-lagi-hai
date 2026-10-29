@@ -401,7 +401,7 @@ abstract class AppLocalizations {
   /// No description provided for @emptySearch.
   ///
   /// In en, this message translates to:
-  /// **'No deals for “{query}”. Try another word or clear the filters.'**
+  /// **'No deals for “⁨{query}⁩”. Try another word or clear the filters.'**
   String emptySearch(String query);
 
   /// No description provided for @locationOff.
