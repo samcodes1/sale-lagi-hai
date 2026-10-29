@@ -238,9 +238,8 @@ select is((select count(*) from public.businesses where id = (select biz_a from 
 select tests.clear_authentication();
 
 -- ---------------------------------------------------------------------------
--- Round 2 (commit 50a4ac6): S4 findings in the new code (TODO).
+-- Round 2 (commit 50a4ac6) S4 findings, fixed in round 3 (9746349); kept as regression checks.
 -- ---------------------------------------------------------------------------
-select todo('QA 2.2-B12 (S4): the automatic de-verification (B5 fix) is not audited', 1);
 insert into public.business_members values ((select biz_b from w), (select editor from w), 'owner')
   on conflict (business_id, user_id) do update set role = 'owner';
 update public.businesses set status = 'verified', verified_at = now() where id = (select biz_b from w);
@@ -251,14 +250,12 @@ select tests.clear_authentication();
 select is((select count(*) from public.audit_log where table_name = 'businesses' and row_id = (select biz_b from w)::text),
   :'audit_before'::bigint + 1, 'a business sent back to review by a rename leaves an audit row');
 
-select todo('QA 2.2-B13 (S4): a suspended business''s owners still add and remove members', 1);
 update public.businesses set status = 'suspended', verified_at = null where id = (select biz_b from w);
 select tests.authenticate_as((select editor from w));
 select is(pg_temp.state($$ insert into public.business_members (business_id, user_id, role)
   select biz_b, admin, 'editor' from w $$), '42501', 'a suspended business cannot add members');
 select tests.clear_authentication();
 
-select todo('QA 2.2-B14 (S4): a hidden brand renamed by its members keeps its verified badge when staff reactivate it', 1);
 update public.brands set is_verified = true, is_active = false where id = (select brand_b from w);
 update public.businesses set status = 'pending' where id = (select biz_b from w);
 select tests.authenticate_as((select other_owner from w));

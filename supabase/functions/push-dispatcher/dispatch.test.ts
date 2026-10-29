@@ -71,6 +71,19 @@ test('a few dead tokens among many sends are still dropped', async () => {
   assert.equal(calls.dropped.length, 10);
 });
 
+test('SENDER_ID_MISMATCH alone never drops tokens; next to a success it does', async () => {
+  const mismatch = { kind: 'dead-token' as const, reason: 'sender-mismatch' as const };
+  const alone = fakeDeps([row(1, 'a'), row(2, 'b')], { a: mismatch, b: mismatch });
+  const summary = await dispatch(alone.deps);
+  assert.deepEqual(alone.calls.dropped, []);
+  assert.deepEqual(alone.calls.marked, [], 'left for a later run');
+  assert.equal(summary.retried, 2);
+
+  const proven = fakeDeps([row(1, 'a'), row(2, 'ok')], { a: mismatch });
+  await dispatch(proven.deps);
+  assert.deepEqual(proven.calls.dropped, ['a']);
+});
+
 test('nothing due: nothing marked or dropped', async () => {
   const { deps, calls } = fakeDeps([], {});
   assert.deepEqual(await dispatch(deps), { claimed: 0, sent: 0, deadTokens: 0, retried: 0, failed: 0, breakerTripped: false });

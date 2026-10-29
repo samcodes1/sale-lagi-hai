@@ -21,7 +21,11 @@ export type Push = {
 /** What to do after sending one push. */
 export type SendResult =
   | { kind: 'sent' }
-  | { kind: 'dead-token' } // remove the token
+  // Remove the token. 'sender-mismatch': the token belongs to another
+  // Firebase project, which is also what every token says when *our*
+  // service account is the wrong one, so the dispatcher needs more
+  // evidence before acting on it.
+  | { kind: 'dead-token'; reason?: 'sender-mismatch' }
   | { kind: 'retry' } // try again later (rate limited, server error, network)
   | { kind: 'failed'; status: number }; // our request was wrong; don't retry
 
@@ -113,9 +117,8 @@ export function classify(status: number, body: unknown): SendResult {
   const error = (body as { error?: FcmError } | null)?.error;
   const details = error?.details ?? [];
   const codes = details.map((d) => d.errorCode);
-  if (codes.includes('UNREGISTERED') || codes.includes('SENDER_ID_MISMATCH')) {
-    return { kind: 'dead-token' };
-  }
+  if (codes.includes('UNREGISTERED')) return { kind: 'dead-token' };
+  if (codes.includes('SENDER_ID_MISMATCH')) return { kind: 'dead-token', reason: 'sender-mismatch' };
   const aboutToken =
     details.some((d) => (d.fieldViolations ?? []).some((v) => v.field === 'message.token')) ||
     /registration token/i.test(error?.message ?? '');

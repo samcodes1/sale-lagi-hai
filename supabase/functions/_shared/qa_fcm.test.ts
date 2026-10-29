@@ -189,3 +189,48 @@ test('a burst of 401s refreshes the access token once', async () => {
   await Promise.all(Array.from({ length: 10 }, () => client.send(push)));
   assert.equal(oauthCalls, 1);
 });
+
+// ---------------------------------------------------------------------------
+// Round 3 (commit 9746349).
+// ---------------------------------------------------------------------------
+
+// QA BUG 2.5-F6b (S3): the breaker needs at least 10 sends in one run. At
+// launch volume a run often has fewer, and then a wrong-project service
+// account still drops every token it touches: each user loses their device
+// on their next push, and a day of alerts wipes the active user base.
+// Expected: SENDER_ID_MISMATCH for every send in a run is never enough
+// evidence to drop a token, whatever the run size.
+test('QA BUG 2.5-F6b: a small run where every send is SENDER_ID_MISMATCH drops nothing', async () => {
+  const rows: ClaimedPush[] = Array.from({ length: 9 }, (_, i) => ({
+    outbox_id: i, token: `device-token-${i}-xxxxxxxxxxxx`, platform: 'android', title: 't', body: null, deal_id: null,
+  }));
+  const dropped: string[] = [];
+  const deps: DispatchDeps = {
+    claim: async () => rows,
+    markSent: async (ids) => ids.length,
+    dropTokens: async (tokens) => { dropped.push(...tokens); return tokens.length; },
+    send: async () => classify(403, { error: { status: 'PERMISSION_DENIED', details: [{ errorCode: 'SENDER_ID_MISMATCH' }] } }),
+  };
+  await dispatch(deps);
+  assert.equal(dropped.length, 0, `dropped ${dropped.length} of 9 tokens in one run`);
+});
+
+// Checked in round 3: UNREGISTERED tokens in a run with a few failures are
+// still dropped (the breaker doesn't stop normal cleanup).
+test('a run with 2 of 20 tokens unregistered drops exactly those 2', async () => {
+  const rows: ClaimedPush[] = Array.from({ length: 20 }, (_, i) => ({
+    outbox_id: i, token: `device-token-${i}-xxxxxxxxxxxx`, platform: 'android', title: 't', body: null, deal_id: null,
+  }));
+  const dropped: string[] = [];
+  const deps: DispatchDeps = {
+    claim: async () => rows,
+    markSent: async (ids) => ids.length,
+    dropTokens: async (tokens) => { dropped.push(...tokens); return tokens.length; },
+    send: async (p) => (p.token.startsWith('device-token-1-') || p.token.startsWith('device-token-2-')
+      ? classify(404, { error: { status: 'NOT_FOUND', details: [{ errorCode: 'UNREGISTERED' }] } })
+      : { kind: 'sent' }),
+  };
+  const summary = await dispatch(deps);
+  assert.equal(summary.breakerTripped, false);
+  assert.deepEqual(dropped.sort(), ['device-token-1-xxxxxxxxxxxx', 'device-token-2-xxxxxxxxxxxx']);
+});

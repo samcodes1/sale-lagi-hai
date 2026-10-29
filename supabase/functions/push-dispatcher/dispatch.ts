@@ -56,6 +56,7 @@ export async function dispatch(
   const claimed = await deps.claim(batch);
   const results = new Map<number, SendResult[]>();
   const deadTokens: string[] = [];
+  const mismatchTokens: string[] = [];
 
   await pool(claimed, concurrency, async (row) => {
     const result = await deps.send({
@@ -64,7 +65,9 @@ export async function dispatch(
       body: row.body,
       dealId: row.deal_id,
     });
-    if (result.kind === 'dead-token') deadTokens.push(row.token);
+    if (result.kind === 'dead-token') {
+      (result.reason === 'sender-mismatch' ? mismatchTokens : deadTokens).push(row.token);
+    }
     const list = results.get(row.outbox_id) ?? [];
     list.push(result);
     results.set(row.outbox_id, list);
@@ -74,10 +77,18 @@ export async function dispatch(
   // or our request was rejected). Rows with only retryable failures stay
   // claimed and come back after the claim expires.
   const sends = [...results.values()].reduce((n, l) => n + l.length, 0);
+  // SENDER_ID_MISMATCH counts only when this run proved our credentials
+  // work (some send succeeded); otherwise it may be our key, at any run
+  // size, so those pushes wait for a later run.
+  const anySent = [...results.values()].some((l) => l.some((r) => r.kind === 'sent'));
+  if (anySent) deadTokens.push(...mismatchTokens);
   const breakerTripped =
     deadTokens.length >= DEAD_TOKEN_BREAKER.min && deadTokens.length >= sends * DEAD_TOKEN_BREAKER.share;
-  // With the breaker tripped, "dead" means "try again later".
-  const settled = (r: SendResult) => r.kind !== 'retry' && !(breakerTripped && r.kind === 'dead-token');
+  const dropping = !breakerTripped;
+  // A dead token we won't drop means "try again later".
+  const settled = (r: SendResult) =>
+    r.kind !== 'retry' &&
+    !(r.kind === 'dead-token' && (!dropping || (r.reason === 'sender-mismatch' && !anySent)));
 
   const done: number[] = [];
   let retried = 0;
@@ -92,7 +103,7 @@ export async function dispatch(
   }
 
   if (done.length > 0) await deps.markSent(done);
-  if (deadTokens.length > 0 && !breakerTripped) await deps.dropTokens(deadTokens);
+  if (deadTokens.length > 0 && dropping) await deps.dropTokens(deadTokens);
 
   return {
     claimed: results.size,
