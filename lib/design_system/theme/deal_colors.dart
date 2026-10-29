@@ -83,11 +83,11 @@ final class DealColors extends ThemeExtension<DealColors> {
     onFeatured: BrandDark.onFeatured,
     success: BrandColors.success50,
     successContainer: BrandColors.success800,
-    warning: BrandColors.warning300,
+    warning: BrandColors.warning50,
     warningContainer: BrandColors.warning800,
     info: BrandColors.neel100,
     infoContainer: BrandColors.info800,
-    focus: BrandColors.neel200,
+    focus: BrandColors.neel100,
   );
 
   /// Discount badge fill and its label. Fill only: never use [deal] for

@@ -113,6 +113,33 @@ void main() {
     });
   });
 
+  group('Urdu fonts leave Latin to the UI font', () {
+    // Flutter falls back only for glyphs a font lacks: Latin left in the
+    // Urdu fonts would draw brand names and prices in Noto's Latin.
+    // Rebuild with: python3 tool/subset_urdu_fonts.py
+    const urduFonts = [
+      'NotoNastaliqUrdu-Regular',
+      'NotoNastaliqUrdu-Bold',
+      'NotoNaskhArabic-Regular',
+      'NotoNaskhArabic-Bold',
+    ];
+    for (final name in urduFonts) {
+      test(name, () {
+        final mapped = _mappedCodePoints(
+          File('assets/fonts/$name.ttf').readAsBytesSync(),
+        );
+        expect(mapped, contains(0x0627), reason: 'alef (Urdu) is kept');
+        expect(mapped, contains(0x06D4), reason: 'Urdu full stop is kept');
+        expect(mapped, contains(0x20), reason: 'space is kept');
+        final latin = [
+          for (final c in 'AZaz09,.%'.codeUnits)
+            if (mapped.contains(c)) String.fromCharCode(c),
+        ];
+        expect(latin, isEmpty);
+      });
+    }
+  });
+
   test('registerFontLicenses adds one OFL entry per font', () async {
     final bundle = _MapBundle({
       for (final (font, path) in fontLicenses) path: 'SIL Open Font $font',
@@ -132,4 +159,48 @@ void main() {
       startsWith('SIL Open Font'),
     );
   });
+}
+
+/// The code points a TrueType font maps, from its format 4 `cmap`
+/// subtable (enough for the Basic Multilingual Plane).
+Set<int> _mappedCodePoints(Uint8List bytes) {
+  final data = ByteData.sublistView(bytes);
+  final tables = data.getUint16(4);
+  var cmap = -1;
+  for (var i = 0; i < tables; i++) {
+    final record = 12 + 16 * i;
+    if (String.fromCharCodes(bytes.sublist(record, record + 4)) == 'cmap') {
+      cmap = data.getUint32(record + 8);
+    }
+  }
+  if (cmap < 0) throw StateError('no cmap table');
+
+  final result = <int>{};
+  for (var i = 0; i < data.getUint16(cmap + 2); i++) {
+    final sub = cmap + data.getUint32(cmap + 4 + 8 * i + 4);
+    if (data.getUint16(sub) != 4) continue;
+    final segments = data.getUint16(sub + 6) ~/ 2;
+    final ends = sub + 14;
+    final starts = ends + 2 * segments + 2;
+    final deltas = starts + 2 * segments;
+    final offsets = deltas + 2 * segments;
+    for (var s = 0; s < segments; s++) {
+      final start = data.getUint16(starts + 2 * s);
+      final end = data.getUint16(ends + 2 * s);
+      final delta = data.getUint16(deltas + 2 * s);
+      final rangeOffset = data.getUint16(offsets + 2 * s);
+      for (var c = start; c <= end && c != 0xFFFF; c++) {
+        int glyph;
+        if (rangeOffset == 0) {
+          glyph = (c + delta) & 0xFFFF;
+        } else {
+          final at = offsets + 2 * s + rangeOffset + 2 * (c - start);
+          final raw = data.getUint16(at);
+          glyph = raw == 0 ? 0 : (raw + delta) & 0xFFFF;
+        }
+        if (glyph != 0) result.add(c);
+      }
+    }
+  }
+  return result;
 }

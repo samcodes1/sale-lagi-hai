@@ -187,12 +187,14 @@ for bundling, variable originals in `fonts/variable/`, licences in `fonts/licens
 | Display: headlines, prices, badges, the wordmark | **Bricolage Grotesque** ExtraBold 75% width (static "BricolageCondensed") and Bold (static "BricolageGrotesque") | Condensed grotesque with ink-trap character: the sign-painter confidence without kitsch; long brand names fit; numerals are strong. |
 | UI and reading text | **Instrument Sans** 400/500/600/700 | Crisp, neutral, open shapes at 12–16 px, has **tabular figures** (`tnum`) so prices align. |
 | Urdu | **Noto Nastaliq Urdu** 400/700 | Real Nastaliq, the script Urdu readers expect; correct Urdu shaping and dots. |
-| Urdu compact (optional) | Noto Naskh Arabic 400/700 | Only for fixed-height numeric UI that cannot grow. |
+| Urdu controls | Noto Naskh Arabic 400/700 | Controls and inputs: buttons, chips, tabs, labels, text fields, list-tile titles and small meta text. |
 
 **Nastaliq vs Naskh.** Nastaliq is how Urdu is read in Pakistan (Jang, signage, poetry). It looks native and
 respectful, but it is tall (natural line ≈ 2.5 em), slower to shape and has no tabular figures. Naskh is compact
-and fast but reads as Arabic or "computer Urdu". Decision: **Nastaliq for everything people read**; give components
-room to grow instead of switching to Naskh. Naskh is bundled only as an escape hatch.
+and fast but reads as Arabic or "computer Urdu". Decision (revised in sub-phase 1.6 after QA): **Nastaliq for
+headings and reading text** (display, headline, title large/medium, body medium, the default for plain text);
+**Naskh for controls and inputs** (label styles, body large, title small, body small), where Nastaliq's height
+breaks fixed component bounds even at 1.9–2.1 line height. The wordmark is always Nastaliq.
 
 ### Type scale
 | Token | Font | Size / line-height | Weight | Notes |

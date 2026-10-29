@@ -59,15 +59,28 @@ class InlineErrorBanner extends StatelessWidget {
                 child: Icon(Icons.error_outline, color: scheme.onSurface),
               ),
               const SizedBox(width: BrandSpacing.s4),
+              // The action sits under the message, so at large text sizes
+              // it never squeezes the message into a narrow column.
               Expanded(
-                child: Text(
-                  failure.message(l10n),
-                  style: Theme.of(context).textTheme.bodyMedium!
-                      .copyWith(color: scheme.onSurface),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      failure.message(l10n),
+                      style: Theme.of(context).textTheme.bodyMedium!
+                          .copyWith(color: scheme.onSurface),
+                    ),
+                    if (onRetry != null && failure.isRetryable)
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: TextButton(
+                          onPressed: onRetry,
+                          child: Text(l10n.actionRetry),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              if (onRetry != null && failure.isRetryable)
-                TextButton(onPressed: onRetry, child: Text(l10n.actionRetry)),
             ],
           ),
         ),

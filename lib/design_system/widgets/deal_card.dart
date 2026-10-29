@@ -6,6 +6,7 @@ import 'package:sale_lagi_hai/core/l10n/formatters.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/design_system/models/deal_card_data.dart';
+import 'package:sale_lagi_hai/design_system/theme/accent_primary.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
@@ -384,7 +385,8 @@ class _SaveButton extends StatelessWidget {
     );
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: BrandSpacing.s1),
-      child: button,
+      // A toggle IconButton paints its selected icon in `primary` (yellow).
+      child: AccentPrimary(child: button),
     );
   }
 }

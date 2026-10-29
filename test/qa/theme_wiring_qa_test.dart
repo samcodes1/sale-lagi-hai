@@ -14,10 +14,10 @@ import 'package:sale_lagi_hai/app/config/app_config.dart';
 import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
 import 'package:sale_lagi_hai/app/config/flavor.dart';
 import 'package:sale_lagi_hai/design_system/fonts/font_licenses.dart';
-import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
 import 'package:sale_lagi_hai/design_system/theme/app_theme.dart';
 import 'package:sale_lagi_hai/design_system/theme/deal_colors.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/features/home/presentation/home_screen.dart';
 
 double _channel(double v) {
   final c = (v * 255).round() / 255;
@@ -60,7 +60,8 @@ Future<ThemeData> _effectiveTheme(
     ),
   );
   await tester.pumpAndSettle();
-  return Theme.of(tester.element(find.byType(ThemePreviewPage)));
+  // Since 1.5 the home is the Home tab (edited by the developer).
+  return Theme.of(tester.element(find.byType(HomeScreen)));
 }
 
 void main() {

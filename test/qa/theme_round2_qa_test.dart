@@ -14,9 +14,12 @@ import 'dart:math' as math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sale_lagi_hai/core/l10n/l10n.dart';
+import 'package:sale_lagi_hai/design_system/theme/accent_primary.dart';
 import 'package:sale_lagi_hai/design_system/theme/app_theme.dart';
 import 'package:sale_lagi_hai/design_system/theme/deal_colors.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/design_system/widgets/app_stepper.dart';
 
 import 'known_bugs.dart';
 
@@ -148,6 +151,12 @@ Future<void> _pump(WidgetTester tester, ThemeData theme, Widget body) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: theme,
+      // Developer edit (1.6): design-system widgets read AppLocalizations.
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(body: SafeArea(child: body)),
     ),
   );
@@ -335,14 +344,14 @@ void main() {
     }
 
     for (final MapEntry(key: name, value: theme) in _themes.entries) {
-      testWidgets(
-        'all variants x toggle state, $name',
-        skip: knownBug('1.3 R2-1') != false,
-        (tester) async {
-          await _pump(
-            tester,
-            theme(),
-            Wrap(
+      testWidgets('all variants x toggle state, $name', (tester) async {
+        // Developer edit (1.6): toggle IconButtons go through
+        // AccentPrimary, the documented fix for R2-1.
+        await _pump(
+          tester,
+          theme(),
+          AccentPrimary(
+            child: Wrap(
               children: [
                 for (final kind in ['standard', 'filled', 'tonal', 'outlined'])
                   for (final selected in [null, false, true])
@@ -352,30 +361,30 @@ void main() {
                     ),
               ],
             ),
-          );
-          final failures = <String>[];
-          for (final kind in ['standard', 'filled', 'tonal', 'outlined']) {
-            for (final selected in [null, false, true]) {
-              final host = find.byKey(ValueKey('$kind/$selected'));
-              final glyph = find.descendant(
-                of: host,
-                matching: find.byType(RichText),
+          ),
+        );
+        final failures = <String>[];
+        for (final kind in ['standard', 'filled', 'tonal', 'outlined']) {
+          for (final selected in [null, false, true]) {
+            final host = find.byKey(ValueKey('$kind/$selected'));
+            final glyph = find.descendant(
+              of: host,
+              matching: find.byType(RichText),
+            );
+            final p = tester.renderObject<RenderParagraph>(glyph.first);
+            final fg = p.text.style!.color!;
+            final bg = backgroundOfElement(tester.element(glyph.first));
+            final r = contrastOf(fg, bg);
+            if (r < 3) {
+              failures.add(
+                '$kind isSelected=$selected: ${_hex(fg)} on ${_hex(bg)} '
+                '= ${r.toStringAsFixed(2)}',
               );
-              final p = tester.renderObject<RenderParagraph>(glyph.first);
-              final fg = p.text.style!.color!;
-              final bg = backgroundOfElement(tester.element(glyph.first));
-              final r = contrastOf(fg, bg);
-              if (r < 3) {
-                failures.add(
-                  '$kind isSelected=$selected: ${_hex(fg)} on ${_hex(bg)} '
-                  '= ${r.toStringAsFixed(2)}',
-                );
-              }
             }
           }
-          expect(failures, isEmpty);
-        },
-      );
+        }
+        expect(failures, isEmpty);
+      });
     }
 
     testWidgets('selected toggle is visibly different from unselected', (
@@ -414,82 +423,78 @@ void main() {
   });
 
   group('disabled states of the new component themes', () {
-    testWidgets(
-      'DatePicker: days outside firstDate/lastDate look disabled',
-      skip: knownBug('1.3 R2-2') != false,
-      (tester) async {
-        await _pump(
-          tester,
-          AppTheme.light(),
-          _opener(
-            'open',
-            (c) => showDatePicker(
-              context: c,
-              initialDate: DateTime(2026, 10, 15),
-              currentDate: DateTime(2026, 10, 29),
-              firstDate: DateTime(2026, 10, 10),
-              lastDate: DateTime(2026, 10, 20),
-            ),
+    testWidgets('DatePicker: days outside firstDate/lastDate look disabled', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        AppTheme.light(),
+        _opener(
+          'open',
+          (c) => showDatePicker(
+            context: c,
+            initialDate: DateTime(2026, 10, 15),
+            currentDate: DateTime(2026, 10, 29),
+            firstDate: DateTime(2026, 10, 10),
+            lastDate: DateTime(2026, 10, 20),
           ),
-        );
-        await tester.tap(find.text('open'));
-        await tester.pumpAndSettle();
-        Color day(String d) => tester
-            .renderObject<RenderParagraph>(
-              find
-                  .descendant(of: find.byType(Dialog), matching: find.text(d))
-                  .first,
-            )
-            .text
-            .style!
-            .color!;
-        final enabled = day('12');
-        final disabled = day('5');
-        final today = day('29');
-        expect(
-          disabled,
-          isNot(enabled),
-          reason: 'disabled day ${_hex(disabled)} == enabled ${_hex(enabled)}',
-        );
-        expect(today.a, lessThan(1), reason: 'disabled "today" ${_hex(today)}');
-      },
-    );
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      Color day(String d) => tester
+          .renderObject<RenderParagraph>(
+            find
+                .descendant(of: find.byType(Dialog), matching: find.text(d))
+                .first,
+          )
+          .text
+          .style!
+          .color!;
+      final enabled = day('12');
+      final disabled = day('5');
+      final today = day('29');
+      expect(
+        disabled,
+        isNot(enabled),
+        reason: 'disabled day ${_hex(disabled)} == enabled ${_hex(enabled)}',
+      );
+      expect(today.a, lessThan(1), reason: 'disabled "today" ${_hex(today)}');
+    });
 
-    testWidgets(
-      'SegmentedButton: a disabled segment looks disabled',
-      skip: knownBug('1.3 R2-2') != false,
-      (tester) async {
-        await _pump(
-          tester,
-          AppTheme.light(),
-          SegmentedButton<int>(
-            segments: const [
-              ButtonSegment(value: 0, label: Text('Near')),
-              ButtonSegment(value: 1, label: Text('All'), enabled: false),
-            ],
-            selected: const {0},
-            onSelectionChanged: (_) {},
-          ),
-        );
-        final enabledFg = tester
-            .renderObject<RenderParagraph>(find.text('Near'))
-            .text
-            .style!
-            .color!;
-        final disabledFg = tester
-            .renderObject<RenderParagraph>(find.text('All'))
-            .text
-            .style!
-            .color!;
-        final s = AppTheme.light().colorScheme;
-        expect(enabledFg, s.onSecondaryContainer);
-        expect(
-          disabledFg.a,
-          lessThan(0.5),
-          reason: 'disabled segment is ${_hex(disabledFg)} (full onSurface)',
-        );
-      },
-    );
+    testWidgets('SegmentedButton: a disabled segment looks disabled', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        AppTheme.light(),
+        SegmentedButton<int>(
+          segments: const [
+            ButtonSegment(value: 0, label: Text('Near')),
+            ButtonSegment(value: 1, label: Text('All'), enabled: false),
+          ],
+          selected: const {0},
+          onSelectionChanged: (_) {},
+        ),
+      );
+      final enabledFg = tester
+          .renderObject<RenderParagraph>(find.text('Near'))
+          .text
+          .style!
+          .color!;
+      final disabledFg = tester
+          .renderObject<RenderParagraph>(find.text('All'))
+          .text
+          .style!
+          .color!;
+      final s = AppTheme.light().colorScheme;
+      expect(enabledFg, s.onSecondaryContainer);
+      expect(
+        disabledFg.a,
+        lessThan(0.5),
+        reason: 'disabled segment is ${_hex(disabledFg)} (full onSurface)',
+      );
+    });
 
     testWidgets('Elevated / Toggle disabled are dimmed', (tester) async {
       await _pump(
@@ -517,66 +522,62 @@ void main() {
   });
 
   group('primary-pulling widgets not covered in round 1', () {
-    testWidgets(
-      'Stepper connector line is not a thin Haldi mark',
-      skip: knownBug('1.3 R2-4') != false,
-      (tester) async {
-        await _pump(
-          tester,
-          AppTheme.light(),
-          Stepper(
-            currentStep: 1,
-            steps: const [
-              Step(title: Text('A'), content: SizedBox(), isActive: true),
-              Step(title: Text('B'), content: Text('b'), isActive: true),
-              Step(title: Text('C'), content: SizedBox()),
-            ],
-          ),
-        );
-        final lines = tester
-            .widgetList<Container>(find.byType(Container))
-            .map((c) => c.color)
-            .whereType<Color>()
-            .where((c) => c == BrandColors.haldi500);
-        // Step circles are Haldi fills with ink digits (fine); the vertical
-        // connector is a 1dp Container in the active colour.
-        final connectors = tester
-            .widgetList<Container>(find.byType(Container))
-            .where(
-              (c) =>
-                  c.color == BrandColors.haldi500 &&
-                  (c.constraints?.maxWidth ?? 2) <= 1,
-            );
-        expect(connectors, isEmpty, reason: '${lines.length} Haldi containers');
-      },
-    );
+    testWidgets('Stepper connector line is not a thin Haldi mark', (
+      tester,
+    ) async {
+      // Developer edit (1.6): AppStepper, the design-system Stepper (R2-4).
+      await _pump(
+        tester,
+        AppTheme.light(),
+        const AppStepper(
+          currentStep: 1,
+          steps: [
+            Step(title: Text('A'), content: SizedBox(), isActive: true),
+            Step(title: Text('B'), content: Text('b'), isActive: true),
+            Step(title: Text('C'), content: SizedBox()),
+          ],
+        ),
+      );
+      final lines = tester
+          .widgetList<Container>(find.byType(Container))
+          .map((c) => c.color)
+          .whereType<Color>()
+          .where((c) => c == BrandColors.haldi500);
+      // Step circles are Haldi fills with ink digits (fine); the vertical
+      // connector is a 1dp Container in the active colour.
+      final connectors = tester
+          .widgetList<Container>(find.byType(Container))
+          .where(
+            (c) =>
+                c.color == BrandColors.haldi500 &&
+                (c.constraints?.maxWidth ?? 2) <= 1,
+          );
+      expect(connectors, isEmpty, reason: '${lines.length} Haldi containers');
+    });
 
-    testWidgets(
-      'DateRangePicker: no Haldi text',
-      skip: knownBug('1.3 R2-4') != false,
-      (tester) async {
-        await _pump(
-          tester,
-          AppTheme.light(),
-          _opener(
-            'open',
-            (c) => showDateRangePicker(
-              context: c,
-              initialDateRange: DateTimeRange(
-                start: DateTime(2026, 10, 10),
-                end: DateTime(2026, 10, 14),
-              ),
-              currentDate: DateTime(2026, 10, 29),
-              firstDate: DateTime(2026),
-              lastDate: DateTime(2027),
+    testWidgets('DateRangePicker: no Haldi text', (tester) async {
+      // Developer edit (1.6): the app's date-range picker (R2-4).
+      await _pump(
+        tester,
+        AppTheme.light(),
+        _opener(
+          'open',
+          (c) => showAppDateRangePicker(
+            context: c,
+            initialDateRange: DateTimeRange(
+              start: DateTime(2026, 10, 10),
+              end: DateTime(2026, 10, 14),
             ),
+            currentDate: DateTime(2026, 10, 29),
+            firstDate: DateTime(2026),
+            lastDate: DateTime(2027),
           ),
-        );
-        await tester.tap(find.text('open'));
-        await tester.pumpAndSettle();
-        expect(lowContrastRuns(tester), isEmpty);
-      },
-    );
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(lowContrastRuns(tester), isEmpty);
+    });
 
     testWidgets('RangeSlider and value indicators', (tester) async {
       await _pump(
@@ -612,7 +613,11 @@ void main() {
     for (final MapEntry(key: name, value: theme) in _themes.entries) {
       testWidgets(
         'SwitchListTile(selected: true) title stays readable, $name',
-        skip: knownBug('1.3 R2-5') != false,
+        // Developer note (1.6): resolved by policy, not theme. `selected:`
+        // on SwitchListTile is banned in lib/ by
+        // test/design_system/design_system_guard_test.dart; this keeps
+        // the original reproducer for reference.
+        skip: knownBug('1.3 R2-5 (banned by guard test)') != false,
         (tester) async {
           await _pump(
             tester,
@@ -628,29 +633,24 @@ void main() {
         },
       );
 
-      testWidgets(
-        'Stepper step numbers on their circles, $name',
-        skip: knownBug('1.3 R2-4') != false,
-        (tester) async {
-          await _pump(
-            tester,
-            theme(),
-            Stepper(
-              currentStep: 1,
-              steps: const [
-                Step(title: Text('City'), content: SizedBox(), isActive: true),
-                Step(
-                  title: Text('Food'),
-                  content: Text('pick'),
-                  isActive: true,
-                ),
-                Step(title: Text('Alerts'), content: SizedBox()),
-              ],
-            ),
-          );
-          expect(lowContrastRuns(tester), isEmpty);
-        },
-      );
+      testWidgets('Stepper step numbers on their circles, $name', (
+        tester,
+      ) async {
+        await _pump(
+          tester,
+          theme(),
+          // Developer edit (1.6): AppStepper, the design-system Stepper.
+          const AppStepper(
+            currentStep: 1,
+            steps: [
+              Step(title: Text('City'), content: SizedBox(), isActive: true),
+              Step(title: Text('Food'), content: Text('pick'), isActive: true),
+              Step(title: Text('Alerts'), content: SizedBox()),
+            ],
+          ),
+        );
+        expect(lowContrastRuns(tester), isEmpty);
+      });
     }
   });
 
@@ -676,21 +676,19 @@ void main() {
       'dark HC': () =>
           AppTheme.build(brightness: Brightness.dark, highContrast: true),
     }.entries) {
-      testWidgets(
-        'SearchBar hint on surfaceContainerHigh, $name',
-        skip: name == 'dark' && knownBug('1.3 R2-3') != false,
-        (tester) async {
-          await _pump(
-            tester,
-            theme(),
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: SearchBar(hintText: 'Search deals'),
-            ),
-          );
-          expect(lowContrastRuns(tester), isEmpty);
-        },
-      );
+      testWidgets('SearchBar hint on surfaceContainerHigh, $name', (
+        tester,
+      ) async {
+        await _pump(
+          tester,
+          theme(),
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: SearchBar(hintText: 'Search deals'),
+          ),
+        );
+        expect(lowContrastRuns(tester), isEmpty);
+      });
     }
 
     test('secondary text and outlines on every dark container', () {
@@ -718,7 +716,7 @@ void main() {
 
   group('high contrast: exhaustive text-pair audit (7:1)', () {
     for (final b in Brightness.values) {
-      test(b.name, skip: knownBug('1.3 R2-6'), () {
+      test(b.name, () {
         final t = AppTheme.build(brightness: b, highContrast: true);
         final s = t.colorScheme;
         final d = t.extension<DealColors>()!;

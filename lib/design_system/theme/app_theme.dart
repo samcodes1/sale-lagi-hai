@@ -106,15 +106,13 @@ abstract final class AppTheme {
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.selected)
-                ? scheme.secondaryContainer
-                : Colors.transparent,
+          backgroundColor: _selected(
+            scheme.secondaryContainer,
+            Colors.transparent,
           ),
-          foregroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.selected)
-                ? scheme.onSecondaryContainer
-                : scheme.onSurface,
+          foregroundColor: _selected(
+            scheme.onSecondaryContainer,
+            scheme.onSurface,
           ),
           side: WidgetStatePropertyAll(BorderSide(color: scheme.outline)),
           minimumSize: const WidgetStatePropertyAll(buttonMinSize),
@@ -142,17 +140,13 @@ abstract final class AppTheme {
           textStyle: textTheme.labelLarge,
         ),
       ),
-      // Only the selected (toggle) state is recoloured: Material defaults it
-      // to yellow. Other states resolve to null, so each variant keeps its
-      // own default (e.g. dark ink on the yellow filled variant).
-      iconButtonTheme: IconButtonThemeData(
+      // Size only. Toggle IconButtons paint `primary` for their selected
+      // and filled states, which no theme can redirect per variant: wrap
+      // toggles in `AccentPrimary`.
+      iconButtonTheme: const IconButtonThemeData(
         style: ButtonStyle(
-          minimumSize: const WidgetStatePropertyAll(
+          minimumSize: WidgetStatePropertyAll(
             Size.square(BrandSpacing.minTouchTarget),
-          ),
-          foregroundColor: WidgetStateProperty.resolveWith(
-            (states) =>
-                states.contains(WidgetState.selected) ? scheme.secondary : null,
           ),
         ),
       ),
@@ -436,7 +430,7 @@ abstract final class AppTheme {
             surfaceContainerLowest: BrandColors.surma900,
             surfaceContainerLow: BrandColors.surma800,
             surfaceContainer: BrandColors.surma800,
-            surfaceContainerHigh: BrandColors.surma700,
+            surfaceContainerHigh: BrandColors.surma800,
             surfaceContainerHighest: BrandColors.surma700,
             surfaceDim: BrandColors.surma950,
             surfaceBright: BrandColors.surma800,
@@ -450,6 +444,8 @@ abstract final class AppTheme {
             outlineVariant: BrandColors.surma500,
             secondary: BrandColors.neel700,
             onSecondary: BrandColors.surma0,
+            tertiary: BrandColors.mirch700,
+            onTertiary: BrandColors.surma0,
             error: BrandColors.error800,
             onError: BrandColors.surma0,
           )
@@ -457,8 +453,14 @@ abstract final class AppTheme {
             onSurfaceVariant: scheme.onSurface,
             outline: BrandColors.surma200,
             outlineVariant: BrandColors.surma400,
-            secondary: BrandColors.neel200,
+            // Lifted further than the light theme: dark containers go up to
+            // Surma 700, and text must still reach 7:1 on them.
+            secondary: BrandColors.neel100,
             onSecondary: BrandColors.neel900,
+            tertiary: BrandColors.mirch200,
+            onTertiary: BrandColors.surma950,
+            error: BrandColors.error50,
+            onError: BrandColors.surma950,
             inversePrimary: BrandColors.haldi900,
           );
   }
@@ -473,16 +475,18 @@ abstract final class AppTheme {
     );
   }
 
-  /// The Urdu type scale. Nastaliq (tall, calligraphic) for display,
-  /// headlines and large titles; Naskh for everything denser (titles,
-  /// body, labels, chips, inputs, tabs), where Nastaliq's ascenders and
+  /// The Urdu type scale.
+  ///
+  /// Nastaliq, the script Urdu readers expect, for everything people read:
+  /// display, headlines, titles and body text (`bodyMedium`, the default
+  /// for plain text). Naskh, which is more compact, for controls only:
+  /// labels, chips, buttons, tabs, inputs and list-tile titles
+  /// (`bodyLarge`), and small text, where Nastaliq's ascenders and
   /// descenders overflow component bounds even at 1.9–2.1 line height.
   static final TextTheme urduTextTheme = BrandTypography.urduTextTheme.copyWith(
     // Naskh reads smaller than Latin at the same size: +1sp over Latin.
-    titleMedium: _naskh(17, FontWeight.w700),
     titleSmall: _naskh(16, FontWeight.w700),
     bodyLarge: _naskh(17, FontWeight.w400, height: 1.7),
-    bodyMedium: _naskh(16, FontWeight.w400, height: 1.7),
     bodySmall: _naskh(14, FontWeight.w400, height: 1.7),
     labelLarge: _naskh(16, FontWeight.w700),
     labelMedium: _naskh(14, FontWeight.w700),
@@ -504,10 +508,17 @@ abstract final class AppTheme {
 
   /// A colour that depends on the selected state. As a [WidgetStateColor]
   /// it fits both `Color` and `WidgetStateProperty<Color>` parameters.
+  ///
+  /// Disabled states (out-of-range dates, disabled segments) fade the idle
+  /// colour, as Material does, so they never look enabled.
   static WidgetStateColor _selected(Color selected, Color idle) =>
-      WidgetStateColor.resolveWith(
-        (states) => states.contains(WidgetState.selected) ? selected : idle,
-      );
+      WidgetStateColor.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return selected;
+        if (states.contains(WidgetState.disabled)) {
+          return idle.a == 0 ? idle : idle.withValues(alpha: idle.a * 0.38);
+        }
+        return idle;
+      });
 
   static OutlineInputBorder _inputBorder(Color color, {double width = 1}) =>
       OutlineInputBorder(

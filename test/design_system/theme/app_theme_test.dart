@@ -194,32 +194,35 @@ void main() {
       );
     });
 
-    test('Urdu: Nastaliq for display and headlines, Naskh for dense UI', () {
-      final text = AppTheme.light(script: AppScript.urdu).textTheme;
-      for (final style in [
-        text.displayLarge,
-        text.displayMedium,
-        text.headlineMedium,
-        text.titleLarge,
-      ]) {
-        expect(style!.fontFamily, BrandFonts.urdu);
-        expect(style.height, greaterThanOrEqualTo(1.9));
-      }
-      for (final style in [
-        text.titleMedium,
-        text.titleSmall,
-        text.bodyLarge,
-        text.bodyMedium,
-        text.bodySmall,
-        text.labelLarge,
-        text.labelMedium,
-        text.labelSmall,
-      ]) {
-        expect(style!.fontFamily, BrandFonts.urduCompact);
-        expect(style.height, greaterThanOrEqualTo(1.6));
-        expect(style.fontFamilyFallback, [BrandFonts.urdu, BrandFonts.ui]);
-      }
-    });
+    test(
+      'Urdu: Nastaliq for headings and reading text, Naskh for controls',
+      () {
+        final text = AppTheme.light(script: AppScript.urdu).textTheme;
+        for (final style in [
+          text.displayLarge,
+          text.displayMedium,
+          text.headlineMedium,
+          text.titleLarge,
+          text.titleMedium,
+          text.bodyMedium,
+        ]) {
+          expect(style!.fontFamily, BrandFonts.urdu);
+          expect(style.height, greaterThanOrEqualTo(1.9));
+        }
+        for (final style in [
+          text.titleSmall,
+          text.bodyLarge,
+          text.bodySmall,
+          text.labelLarge,
+          text.labelMedium,
+          text.labelSmall,
+        ]) {
+          expect(style!.fontFamily, BrandFonts.urduCompact);
+          expect(style.height, greaterThanOrEqualTo(1.6));
+          expect(style.fontFamilyFallback, [BrandFonts.urdu, BrandFonts.ui]);
+        }
+      },
+    );
 
     test('Latin styles fall back to Naskh first for Urdu content', () {
       expect(

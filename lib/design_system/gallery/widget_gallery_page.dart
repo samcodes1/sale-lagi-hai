@@ -6,6 +6,7 @@ import 'package:sale_lagi_hai/design_system/models/deal_card_data.dart';
 import 'package:sale_lagi_hai/design_system/models/deal_offer.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_bottom_sheet.dart';
+import 'package:sale_lagi_hai/design_system/widgets/app_stepper.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_tab_bar.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
@@ -140,6 +141,24 @@ class WidgetGalleryPage extends ConsumerWidget {
               ),
               child: const Text('Open bottom sheet'),
             ),
+          ),
+          const _Heading('Steps'),
+          const AppStepper(
+            currentStep: 1,
+            steps: [
+              Step(
+                title: Text('City'),
+                content: SizedBox.shrink(),
+                isActive: true,
+                state: StepState.complete,
+              ),
+              Step(
+                title: Text('Interests'),
+                content: Text('Pick three or more.'),
+                isActive: true,
+              ),
+              Step(title: Text('Alerts'), content: SizedBox.shrink()),
+            ],
           ),
           const SizedBox(height: BrandSpacing.s8),
         ],

@@ -6,8 +6,11 @@ import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/design_system/models/deal_card_data.dart';
 import 'package:sale_lagi_hai/design_system/models/deal_offer.dart';
+import 'package:sale_lagi_hai/design_system/theme/accent_primary.dart';
 import 'package:sale_lagi_hai/design_system/theme/deal_colors.dart';
+import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_bottom_sheet.dart';
+import 'package:sale_lagi_hai/design_system/widgets/app_stepper.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_tab_bar.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
@@ -546,6 +549,72 @@ void main() {
         );
       }
     });
+  });
+
+  group('AppStepper', () {
+    const steps = [
+      Step(title: Text('City'), content: SizedBox.shrink(), isActive: true),
+      Step(title: Text('Alerts'), content: SizedBox.shrink()),
+    ];
+
+    Color circle(WidgetTester tester, String digit) {
+      final box = tester.widget<AnimatedContainer>(
+        find.ancestor(
+          of: find.text(digit),
+          matching: find.byType(AnimatedContainer),
+        ),
+      );
+      return (box.decoration! as BoxDecoration).color!;
+    }
+
+    testWidgets('active steps are Neel, the rest a container colour', (
+      tester,
+    ) async {
+      await _pump(tester, const AppStepper(steps: steps));
+      final scheme = Theme.of(tester.element(find.text('City'))).colorScheme;
+      expect(circle(tester, '1'), scheme.secondary);
+      expect(circle(tester, '2'), scheme.surfaceContainerHighest);
+      final digit = tester.widget<Text>(find.text('2'));
+      expect(digit.style!.color, scheme.onSurface);
+    });
+
+    testWidgets('step numbers follow the Urdu UI', (tester) async {
+      await _pump(
+        tester,
+        const AppStepper(steps: steps),
+        locale: AppLocales.urdu,
+      );
+      expect(find.text('City'), findsOneWidget);
+      expect(find.text('1'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  testWidgets('a saved DealCard toggle is Neel, never Haldi', (tester) async {
+    await _pump(
+      tester,
+      Builder(
+        builder: (context) => AccentPrimary(
+          child: IconButton(
+            isSelected: true,
+            onPressed: () {},
+            icon: const Icon(Icons.bookmark_border),
+            selectedIcon: const Icon(Icons.bookmark),
+          ),
+        ),
+      ),
+    );
+    final scheme = Theme.of(tester.element(find.byType(Scaffold))).colorScheme;
+    final icon = tester.widget<IconTheme>(
+      find
+          .ancestor(
+            of: find.byIcon(Icons.bookmark),
+            matching: find.byType(IconTheme),
+          )
+          .first,
+    );
+    expect(icon.data.color, scheme.secondary);
+    expect(icon.data.color, isNot(BrandColors.haldi500));
   });
 
   testWidgets('showAppBottomSheet shows a heading and the content', (

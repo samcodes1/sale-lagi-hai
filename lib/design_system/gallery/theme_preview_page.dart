@@ -281,7 +281,9 @@ class _LanguageToggle extends ConsumerWidget {
     final next = AppLocales.isRtl(locale)
         ? AppLocales.english
         : AppLocales.urdu;
-    return TextButton.icon(
+    // Full ink, not the link colour: thin Urdu strokes at label size need
+    // the extra contrast.
+    return OutlinedButton.icon(
       onPressed: () => ref.read(localeControllerProvider.notifier).select(next),
       icon: const Icon(Icons.translate),
       label: Text(

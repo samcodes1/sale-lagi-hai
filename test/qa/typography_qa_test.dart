@@ -17,8 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/design_system/theme/app_theme.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
-
-import 'known_bugs.dart';
+import 'package:sale_lagi_hai/design_system/widgets/app_tab_bar.dart';
 
 const Set<String> _bundled = {
   BrandFonts.display,
@@ -153,14 +152,11 @@ Widget _kitchenSink() => Builder(
         title: Text('گھنٹے پہلے تصدیق شدہ'),
         subtitle: Text('کلفٹن، کراچی · اتوار رات تک'),
       ),
+      // Developer edit (1.6): AppTabBar, the design-system tab row that
+      // fixes BUG-10. Raw TabBar is banned in lib/ by the guard test.
       const DefaultTabController(
         length: 2,
-        child: TabBar(
-          tabs: [
-            Tab(text: 'قریب'),
-            Tab(text: 'آن لائن'),
-          ],
-        ),
+        child: AppTabBar(labels: ['قریب', 'آن لائن']),
       ),
       SegmentedButton<int>(
         segments: const [
@@ -367,42 +363,39 @@ void main() {
       }
     });
 
-    testWidgets(
-      'TabBar: Urdu labels at 200% fit the tab',
-      // Deferred to sub-phase 1.6: Material's Tab has a fixed height, so the
-      // fix is a design-system tab widget (see docs/qa/1.3.md).
-      skip: knownBug('1.3 BUG-10') != false,
-      (tester) async {
-        await _pumpUrdu(tester, textScale: 2, size: const Size(360, 2600));
-        final problems = <String>[];
-        // A paragraph laid out shorter than its text needs is clipped (Tab
-        // and SegmentedButton labels use overflow: fade/clip/ellipsis).
-        void check(Finder label) {
-          final p = tester.renderObject<RenderParagraph>(
-            find.descendant(
-              of: label,
-              matching: find.byType(RichText),
-              matchRoot: true,
-            ),
-          );
-          final needed = p.getMaxIntrinsicHeight(double.infinity);
-          if (needed > p.size.height + 0.5 ||
-              p.getMaxIntrinsicWidth(double.infinity) > p.size.width + 0.5) {
-            problems.add(
-              '$label: needs ${needed.toStringAsFixed(1)} x '
-              '${p.getMaxIntrinsicWidth(double.infinity).toStringAsFixed(1)}, '
-              'got ${p.size}',
-            );
-          }
-        }
-
-        check(
-          find.descendant(of: find.byType(TabBar), matching: find.text('قریب')),
+    testWidgets('TabBar: Urdu labels at 200% fit the tab', (tester) async {
+      await _pumpUrdu(tester, textScale: 2, size: const Size(360, 2600));
+      final problems = <String>[];
+      // A paragraph laid out shorter than its text needs is clipped (Tab
+      // and SegmentedButton labels use overflow: fade/clip/ellipsis).
+      void check(Finder label) {
+        final p = tester.renderObject<RenderParagraph>(
+          find.descendant(
+            of: label,
+            matching: find.byType(RichText),
+            matchRoot: true,
+          ),
         );
-        check(find.text('آن لائن'));
-        expect(problems, isEmpty);
-      },
-    );
+        final needed = p.getMaxIntrinsicHeight(double.infinity);
+        if (needed > p.size.height + 0.5 ||
+            p.getMaxIntrinsicWidth(double.infinity) > p.size.width + 0.5) {
+          problems.add(
+            '$label: needs ${needed.toStringAsFixed(1)} x '
+            '${p.getMaxIntrinsicWidth(double.infinity).toStringAsFixed(1)}, '
+            'got ${p.size}',
+          );
+        }
+      }
+
+      check(
+        find.descendant(
+          of: find.byType(AppTabBar),
+          matching: find.text('قریب'),
+        ),
+      );
+      check(find.text('آن لائن'));
+      expect(problems, isEmpty);
+    });
 
     testWidgets('Latin theme showing Urdu content (fallback to Nastaliq)', (
       tester,

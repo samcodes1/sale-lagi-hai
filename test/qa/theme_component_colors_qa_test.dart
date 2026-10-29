@@ -14,6 +14,7 @@ import 'dart:math' as math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sale_lagi_hai/design_system/theme/accent_primary.dart';
 import 'package:sale_lagi_hai/design_system/theme/app_theme.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_refresh_indicator.dart';
@@ -743,24 +744,28 @@ void main() {
       testWidgets('${brightness.name}: selected state differs from idle', (
         tester,
       ) async {
+        // Developer edit (1.6): toggles go through AccentPrimary; the theme
+        // no longer recolours every IconButton (QA 1.3 R2-1).
         await pumpThemed(
           tester,
-          Row(
-            children: [
-              IconButton(
-                tooltip: 'a',
-                isSelected: true,
-                onPressed: () {},
-                icon: const Icon(Icons.favorite_border),
-                selectedIcon: const Icon(Icons.favorite),
-              ),
-              IconButton(
-                tooltip: 'b',
-                onPressed: () {},
-                icon: const Icon(Icons.favorite_border),
-                selectedIcon: const Icon(Icons.favorite),
-              ),
-            ],
+          AccentPrimary(
+            child: Row(
+              children: [
+                IconButton(
+                  tooltip: 'a',
+                  isSelected: true,
+                  onPressed: () {},
+                  icon: const Icon(Icons.favorite_border),
+                  selectedIcon: const Icon(Icons.favorite),
+                ),
+                IconButton(
+                  tooltip: 'b',
+                  onPressed: () {},
+                  icon: const Icon(Icons.favorite_border),
+                  selectedIcon: const Icon(Icons.favorite),
+                ),
+              ],
+            ),
           ),
           brightness: brightness,
         );
