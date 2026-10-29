@@ -14,20 +14,21 @@
 
 -- Copies a guest's choices into the signed-in account. Existing account
 -- values win only where the guest chose nothing (null city, null
--- language). Brands are followed only if the caller can see them (active
--- brands, by RLS); following twice is a no-op.
+-- language). Brands and categories are followed only if the caller can
+-- see them (active ones, by RLS); following twice is a no-op.
 create function public.sync_guest_preferences(
   city uuid default null,
   lang text default null,
-  brand_ids uuid[] default '{}'
+  brand_ids uuid[] default '{}',
+  category_ids uuid[] default '{}'
 ) returns void
 language plpgsql security invoker set search_path = '' as $$
 begin
   if (select auth.uid()) is null then
     raise exception 'sign in first' using errcode = '42501';
   end if;
-  if coalesce(cardinality(brand_ids), 0) > 200 then
-    raise exception 'at most 200 brands at once' using errcode = '22023';
+  if coalesce(cardinality(brand_ids), 0) + coalesce(cardinality(category_ids), 0) > 200 then
+    raise exception 'at most 200 follows at once' using errcode = '22023';
   end if;
   update public.profiles p
   set home_city_id = coalesce(sync_guest_preferences.city, p.home_city_id),
@@ -38,9 +39,14 @@ begin
   from public.brands b
   where b.id = any(coalesce(sync_guest_preferences.brand_ids, '{}'))
   on conflict do nothing;
+  insert into public.follows (user_id, category_id)
+  select (select auth.uid()), c.id
+  from public.categories c
+  where c.id = any(coalesce(sync_guest_preferences.category_ids, '{}'))
+  on conflict do nothing;
 end $$;
-revoke execute on function public.sync_guest_preferences(uuid, text, uuid[]) from public, anon;
-grant execute on function public.sync_guest_preferences(uuid, text, uuid[]) to authenticated;
+revoke execute on function public.sync_guest_preferences(uuid, text, uuid[], uuid[]) from public, anon;
+grant execute on function public.sync_guest_preferences(uuid, text, uuid[], uuid[]) to authenticated;
 
 -- For the delete-account Edge Function only (service role). Hands the
 -- person's uploads in the public business buckets over to the business

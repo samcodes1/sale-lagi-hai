@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
+import 'package:sale_lagi_hai/core/backend/demo/demo_gateway.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/errors/crash_reporter.dart';
 import 'package:sale_lagi_hai/core/network/connectivity_service.dart';
@@ -20,6 +22,10 @@ final Override onboardedShopper = savedPreferencesProvider.overrideWithValue(
 Override onlineNetwork() => networkStatusProvider.overrideWith(
   (ref) => Stream.value(NetworkStatus.online),
 );
+
+/// The in-memory demo backend (the app needs one to load anything).
+Override demoBackend() =>
+    backendGatewayProvider.overrideWithValue(DemoGateway());
 
 /// A signed-out shopper on the demo sign-in (code 123456).
 Override guestAuth() =>

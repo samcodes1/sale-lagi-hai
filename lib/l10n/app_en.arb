@@ -249,5 +249,20 @@
   "@shareDealText": {"description": "WhatsApp share text. Brand, offer and title are already localized.", "placeholders": {"brand": {"type": "String"}, "offer": {"type": "String"}, "title": {"type": "String"}}},
   "savedToast": "Saved.",
   "unsavedToast": "Removed from saved.",
-  "linkFailed": "Couldn't open that. Try again later."
+  "linkFailed": "Couldn't open that. Try again later.",
+
+  "exploreCategories": "Categories",
+  "exploreBrands": "Brands",
+  "categoryAll": "All",
+  "brandVerified": "Verified brand",
+  "actionVisitWebsite": "Visit website",
+  "brandNoDeals": "No live deals from this brand right now. Follow it to hear when the next one starts.",
+  "categoryNoDeals": "No live deals here right now. Follow this category to hear when one starts.",
+  "followedToast": "Following {name}. We'll tell you when a sale starts.",
+  "@followedToast": {"placeholders": {"name": {"type": "String"}}},
+  "unfollowedToast": "Stopped following {name}.",
+  "@unfollowedToast": {"placeholders": {"name": {"type": "String"}}},
+  "followLabel": "Follow {name}",
+  "@followLabel": {"description": "Screen-reader label of a follow button.", "placeholders": {"name": {"type": "String"}}},
+  "listEnd": "That's every live deal here."
 }

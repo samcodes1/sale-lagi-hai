@@ -1,6 +1,6 @@
 -- Accounts: guest sync and account-deletion preparation.
 begin;
-select plan(11);
+select plan(12);
 
 create temp table w as select * from tests.make_world();
 grant select on w to anon, authenticated, service_role;
@@ -27,8 +27,12 @@ select is((select (home_city_id, locale)::text from public.profiles where id = (
 select throws_ok($$ select public.sync_guest_preferences(null, 'fr', '{}') $$, '23514', null,
   'only supported languages');
 select throws_ok($$ select public.sync_guest_preferences(null, null,
-  array(select gen_random_uuid() from generate_series(1, 201))) $$, '22023', null,
-  'at most 200 brands at once');
+  array(select gen_random_uuid() from generate_series(1, 150)),
+  array(select gen_random_uuid() from generate_series(1, 51))) $$, '22023', null,
+  'at most 200 follows at once');
+select lives_ok($$ select public.sync_guest_preferences(null, null, '{}',
+  array[(select category_id from public.brands where id = (select brand_a from w))]) $$,
+  'category follows sync too');
 select tests.clear_authentication();
 
 -- Deletion preparation

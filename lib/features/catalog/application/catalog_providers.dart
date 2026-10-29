@@ -69,3 +69,13 @@ final FutureProviderFamily<List<Brand>, String> brandsForInterestsProvider =
 /// The [brandsForInterestsProvider] key for a selection.
 String interestKey(Iterable<String> categoryIds) =>
     (categoryIds.toList()..sort()).join(',');
+
+/// A brand page's brand. A missing or hidden brand is a NotFoundFailure.
+final FutureProviderFamily<Brand, String> brandProvider =
+    FutureProvider.family<Brand, String>((ref, slug) async {
+      final brand = await _load(
+        ref,
+        () => ref.watch(catalogRepositoryProvider).brandBySlug(slug),
+      );
+      return brand ?? (throw const NotFoundFailure());
+    });

@@ -81,24 +81,40 @@ final class BackendCatalogRepository implements CatalogRepository {
     final rows = await _backend.select(
       TableQuery(
         'brands',
-        columns: 'id,slug,name,name_ur,category_id,logo_path,is_verified',
+        columns: _brandColumns,
         equals: const {'is_active': true},
         inList: {'category_id': ?categoryIds},
         orderBy: 'name',
         limit: limit.clamp(1, 100),
       ),
     );
-    return [
-      for (final row in rows)
-        Brand(
-          id: _req<String>(row, 'brands', 'id'),
-          slug: _req<String>(row, 'brands', 'slug'),
-          name: _req<String>(row, 'brands', 'name'),
-          nameUr: _opt<String>(row, 'brands', 'name_ur'),
-          categoryId: _req<String>(row, 'brands', 'category_id'),
-          logoPath: _opt<String>(row, 'brands', 'logo_path'),
-          isVerified: _opt<bool>(row, 'brands', 'is_verified') ?? false,
-        ),
-    ];
+    return [for (final row in rows) _brand(row)];
+  }
+
+  static const _brandColumns =
+      'id,slug,name,name_ur,category_id,logo_path,website,is_verified';
+
+  static Brand _brand(Map<String, Object?> row) => Brand(
+    id: _req<String>(row, 'brands', 'id'),
+    slug: _req<String>(row, 'brands', 'slug'),
+    name: _req<String>(row, 'brands', 'name'),
+    nameUr: _opt<String>(row, 'brands', 'name_ur'),
+    categoryId: _req<String>(row, 'brands', 'category_id'),
+    logoPath: _opt<String>(row, 'brands', 'logo_path'),
+    website: _opt<String>(row, 'brands', 'website'),
+    isVerified: _opt<bool>(row, 'brands', 'is_verified') ?? false,
+  );
+
+  @override
+  Future<Brand?> brandBySlug(String slug) async {
+    final rows = await _backend.select(
+      TableQuery(
+        'brands',
+        columns: _brandColumns,
+        equals: {'slug': slug, 'is_active': true},
+        limit: 1,
+      ),
+    );
+    return rows.isEmpty ? null : _brand(rows.single);
   }
 }

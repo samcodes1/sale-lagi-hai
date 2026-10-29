@@ -214,5 +214,17 @@
   "shareDealText": "⁨{brand}⁩: ⁨{offer}⁩۔ ⁨{title}⁩۔ سیل لگی ہے! پر ملی",
   "savedToast": "محفوظ ہو گئی۔",
   "unsavedToast": "محفوظ سے ہٹا دی گئی۔",
-  "linkFailed": "یہ نہیں کھل سکا۔ بعد میں دوبارہ کوشش کریں۔"
+  "linkFailed": "یہ نہیں کھل سکا۔ بعد میں دوبارہ کوشش کریں۔",
+
+  "exploreCategories": "کیٹیگریز",
+  "exploreBrands": "برانڈز",
+  "categoryAll": "سب",
+  "brandVerified": "تصدیق شدہ برانڈ",
+  "actionVisitWebsite": "ویب سائٹ دیکھیں",
+  "brandNoDeals": "اس برانڈ کی ابھی کوئی ڈیل نہیں۔ فالو کریں تاکہ اگلی سیل کی خبر ملے۔",
+  "categoryNoDeals": "یہاں ابھی کوئی ڈیل نہیں۔ فالو کریں تاکہ نئی ڈیل کی خبر ملے۔",
+  "followedToast": "⁨{name}⁩ کو فالو کر لیا۔ سیل شروع ہوتے ہی ہم بتائیں گے۔",
+  "unfollowedToast": "⁨{name}⁩ کو فالو کرنا بند کر دیا۔",
+  "followLabel": "⁨{name}⁩ کو فالو کریں",
+  "listEnd": "یہاں کی تمام ڈیلز یہی ہیں۔"
 }

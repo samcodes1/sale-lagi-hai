@@ -767,4 +767,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get linkFailed => 'Couldn\'t open that. Try again later.';
+
+  @override
+  String get exploreCategories => 'Categories';
+
+  @override
+  String get exploreBrands => 'Brands';
+
+  @override
+  String get categoryAll => 'All';
+
+  @override
+  String get brandVerified => 'Verified brand';
+
+  @override
+  String get actionVisitWebsite => 'Visit website';
+
+  @override
+  String get brandNoDeals =>
+      'No live deals from this brand right now. Follow it to hear when the next one starts.';
+
+  @override
+  String get categoryNoDeals =>
+      'No live deals here right now. Follow this category to hear when one starts.';
+
+  @override
+  String followedToast(String name) {
+    return 'Following $name. We\'ll tell you when a sale starts.';
+  }
+
+  @override
+  String unfollowedToast(String name) {
+    return 'Stopped following $name.';
+  }
+
+  @override
+  String followLabel(String name) {
+    return 'Follow $name';
+  }
+
+  @override
+  String get listEnd => 'That\'s every live deal here.';
 }

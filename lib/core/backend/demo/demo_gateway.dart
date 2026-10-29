@@ -270,6 +270,16 @@ final class DemoGateway implements BackendGateway {
             _tables['follows']!.add({'user_id': userId, 'brand_id': id});
           }
         }
+        for (final id
+            in (params['category_ids'] as List<Object?>?) ?? const []) {
+          final known = demoCategories.any((c) => c['id'] == id);
+          final already = _tables['follows']!.any(
+            (f) => f['category_id'] == id,
+          );
+          if (known && !already) {
+            _tables['follows']!.add({'user_id': userId, 'category_id': id});
+          }
+        }
         return const [];
       case 'brand_deals':
         return _page(

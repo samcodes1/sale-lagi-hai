@@ -35,6 +35,7 @@ final guestSyncProvider = Provider<Future<void> Function()>(
         'city': preferences.cityId,
         'lang': ref.read(localeControllerProvider).languageCode,
         'brand_ids': preferences.brandIds,
+        'category_ids': preferences.categoryFollowIds,
       }),
       logger: ref.read(loggerProvider),
       mappers: const [backendErrorMapper],

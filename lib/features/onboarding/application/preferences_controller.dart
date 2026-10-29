@@ -123,6 +123,12 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
   Future<void> toggleBrand(String brandId) =>
       _update(state.copyWith(brandIds: _toggle(state.brandIds, brandId)));
 
+  Future<void> toggleCategoryFollow(String categoryId) => _update(
+    state.copyWith(
+      categoryFollowIds: _toggle(state.categoryFollowIds, categoryId),
+    ),
+  );
+
   Future<void> markAlertsAsked(DateTime at) =>
       _update(state.copyWith(alertsAskedAt: at));
 

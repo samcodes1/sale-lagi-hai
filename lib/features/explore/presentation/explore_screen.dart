@@ -1,17 +1,167 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sale_lagi_hai/app/router/routes.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
-import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
+import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
+import 'package:sale_lagi_hai/core/result/app_failure.dart';
+import 'package:sale_lagi_hai/design_system/icons/category_icons.dart';
+import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
+import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
+import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
+import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
+import 'package:sale_lagi_hai/features/follows/presentation/follow_button.dart';
 
-/// Explore tab. Categories, brands and search arrive in 4.5 and 4.6.
-class ExploreScreen extends StatelessWidget {
+/// Explore tab (screen S04): every category, then the brands to follow.
+/// Search arrives in 4.6.
+class ExploreScreen extends ConsumerWidget {
   const new({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
+    final interests = ref.watch(interestsProvider);
+    final brands = ref.watch(brandsForInterestsProvider(''));
+
+    Widget heading(String text) => Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        BrandSpacing.s5,
+        BrandSpacing.s6,
+        BrandSpacing.s5,
+        BrandSpacing.s3,
+      ),
+      child: Semantics(
+        header: true,
+        child: Text(text, style: theme.textTheme.titleLarge),
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navExplore)),
-      body: MessageView(icon: Icons.search, message: l10n.exploreHint),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: heading(l10n.exploreCategories)),
+          switch (interests) {
+            AsyncData(:final value) => SliverPadding(
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: BrandSpacing.s5,
+              ),
+              sliver: SliverToBoxAdapter(
+                child: Wrap(
+                  spacing: BrandSpacing.s3,
+                  runSpacing: BrandSpacing.s3,
+                  children: [
+                    for (final category in value)
+                      ActionChip(
+                        avatar: Icon(categoryIcon(category.icon)),
+                        label: Text(category.name(urdu: urdu)),
+                        onPressed: () =>
+                            CategoryRoute(slug: category.slug)
+                                .push<void>(context),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            AsyncError(:final error) => SliverToBoxAdapter(
+              child: InlineErrorBanner(
+                failure: error is AppFailure
+                    ? error
+                    : const UnexpectedFailure(),
+                onRetry: () => ref.invalidate(categoriesProvider),
+              ),
+            ),
+            _ => const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsetsDirectional.all(BrandSpacing.s5),
+                child: SkeletonBox(height: 40),
+              ),
+            ),
+          },
+          SliverToBoxAdapter(child: heading(l10n.exploreBrands)),
+          switch (brands) {
+            AsyncData(:final value) => SliverList.builder(
+              itemCount: value.length,
+              itemBuilder: (context, i) => _BrandRow(value[i], urdu: urdu),
+            ),
+            AsyncError(:final error) => SliverToBoxAdapter(
+              child: InlineErrorBanner(
+                failure: error is AppFailure
+                    ? error
+                    : const UnexpectedFailure(),
+                onRetry: () => ref.invalidate(brandsForInterestsProvider('')),
+              ),
+            ),
+            _ => const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsetsDirectional.all(BrandSpacing.s5),
+                child: SkeletonBox(height: 48),
+              ),
+            ),
+          },
+          const SliverToBoxAdapter(child: SizedBox(height: BrandSpacing.s8)),
+        ],
+      ),
+    );
+  }
+}
+
+/// A brand: tap the name to open its page; Follow beside it, or under it
+/// at large text sizes so neither is squeezed.
+class _BrandRow extends StatelessWidget {
+  const new(this.brand, {required this.urdu});
+
+  final Brand brand;
+  final bool urdu;
+
+  @override
+  Widget build(BuildContext context) {
+    final name = brand.displayName(urdu: urdu);
+    final stacked = MediaQuery.textScalerOf(context).scale(10) > 15;
+    final follow = FollowButton(
+      target: FollowTarget.brand,
+      id: brand.id,
+      name: name,
+    );
+    final open = InkWell(
+      onTap: () => BrandRoute(slug: brand.slug).push<void>(context),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Row(
+          children: [
+            ExcludeSemantics(
+              child: CircleAvatar(child: Text(name.characters.first)),
+            ),
+            const SizedBox(width: BrandSpacing.s4),
+            Expanded(
+              child: ContentText(
+                name,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsetsDirectional.symmetric(
+        horizontal: BrandSpacing.s5,
+        vertical: BrandSpacing.s2,
+      ),
+      child: stacked
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [open, follow],
+            )
+          : Row(
+              children: [
+                Expanded(child: open),
+                const SizedBox(width: BrandSpacing.s3),
+                follow,
+              ],
+            ),
     );
   }
 }

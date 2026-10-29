@@ -110,12 +110,16 @@ final class Brand {
     required this.categoryId,
     this.nameUr,
     this.logoPath,
+    this.website,
     this.isVerified = false,
   });
 
   final String id;
   final String slug;
   final String name;
+
+  /// The brand's own site (https), for "Visit website".
+  final String? website;
   final String? nameUr;
   final String categoryId;
   final String? logoPath;
@@ -141,4 +145,7 @@ abstract interface class CatalogRepository {
   /// Active brands, by name. [categoryIds] limits them to those categories
   /// (pass subcategories too: a brand belongs to one subcategory).
   Future<List<Brand>> brands({List<String>? categoryIds, int limit = 60});
+
+  /// An active brand by its slug, or `null`.
+  Future<Brand?> brandBySlug(String slug);
 }

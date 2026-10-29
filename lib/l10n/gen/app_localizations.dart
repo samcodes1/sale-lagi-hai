@@ -1297,6 +1297,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t open that. Try again later.'**
   String get linkFailed;
+
+  /// No description provided for @exploreCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get exploreCategories;
+
+  /// No description provided for @exploreBrands.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands'**
+  String get exploreBrands;
+
+  /// No description provided for @categoryAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get categoryAll;
+
+  /// No description provided for @brandVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified brand'**
+  String get brandVerified;
+
+  /// No description provided for @actionVisitWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit website'**
+  String get actionVisitWebsite;
+
+  /// No description provided for @brandNoDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'No live deals from this brand right now. Follow it to hear when the next one starts.'**
+  String get brandNoDeals;
+
+  /// No description provided for @categoryNoDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'No live deals here right now. Follow this category to hear when one starts.'**
+  String get categoryNoDeals;
+
+  /// No description provided for @followedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Following {name}. We\'ll tell you when a sale starts.'**
+  String followedToast(String name);
+
+  /// No description provided for @unfollowedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped following {name}.'**
+  String unfollowedToast(String name);
+
+  /// Screen-reader label of a follow button.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow {name}'**
+  String followLabel(String name);
+
+  /// No description provided for @listEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s every live deal here.'**
+  String get listEnd;
 }
 
 class _AppLocalizationsDelegate

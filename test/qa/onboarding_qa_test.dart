@@ -735,6 +735,8 @@ void main() {
         'city_id',
         'interest_ids',
         'brand_ids',
+        // 4.5: followed categories (ids of public rows, like brand_ids).
+        'category_follow_ids',
         'alerts_asked_at',
       });
     });

@@ -15,6 +15,7 @@ import 'package:sale_lagi_hai/app/router/routes.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
+import 'package:sale_lagi_hai/core/state/retry_policy.dart';
 import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
 import 'package:sale_lagi_hai/features/alerts/presentation/alerts_screen.dart';
 import 'package:sale_lagi_hai/features/brands/presentation/brand_screen.dart';
@@ -46,10 +47,13 @@ Future<GoRouter> _pumpApp(
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
   final container = ProviderContainer(
+    // The app's policy: only retryable failures are retried.
+    retry: appRetryPolicy,
     overrides: [
       onboardedShopper,
       guestAuth(),
       onlineNetwork(),
+      demoBackend(),
       appConfigProvider.overrideWithValue(_config(flavor)),
       deviceLocaleProvider.overrideWithValue(const Locale('en')),
       keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),

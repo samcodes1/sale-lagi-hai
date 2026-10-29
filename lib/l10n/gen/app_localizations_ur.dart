@@ -770,4 +770,45 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get linkFailed => 'یہ نہیں کھل سکا۔ بعد میں دوبارہ کوشش کریں۔';
+
+  @override
+  String get exploreCategories => 'کیٹیگریز';
+
+  @override
+  String get exploreBrands => 'برانڈز';
+
+  @override
+  String get categoryAll => 'سب';
+
+  @override
+  String get brandVerified => 'تصدیق شدہ برانڈ';
+
+  @override
+  String get actionVisitWebsite => 'ویب سائٹ دیکھیں';
+
+  @override
+  String get brandNoDeals =>
+      'اس برانڈ کی ابھی کوئی ڈیل نہیں۔ فالو کریں تاکہ اگلی سیل کی خبر ملے۔';
+
+  @override
+  String get categoryNoDeals =>
+      'یہاں ابھی کوئی ڈیل نہیں۔ فالو کریں تاکہ نئی ڈیل کی خبر ملے۔';
+
+  @override
+  String followedToast(String name) {
+    return '⁨$name⁩ کو فالو کر لیا۔ سیل شروع ہوتے ہی ہم بتائیں گے۔';
+  }
+
+  @override
+  String unfollowedToast(String name) {
+    return '⁨$name⁩ کو فالو کرنا بند کر دیا۔';
+  }
+
+  @override
+  String followLabel(String name) {
+    return '⁨$name⁩ کو فالو کریں';
+  }
+
+  @override
+  String get listEnd => 'یہاں کی تمام ڈیلز یہی ہیں۔';
 }

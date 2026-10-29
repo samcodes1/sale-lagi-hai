@@ -11,7 +11,7 @@ Profile → **Sign in** opens `/sign-in`, above the tabs.
 | Google | Native Google sign-in; Supabase checks the ID token (`signInWithIdToken`) | Shown only when the build has `GOOGLE_SERVER_CLIENT_ID` (the **web** OAuth client ID that Supabase's Google provider uses) and the platform is native |
 
 - **Errors.** A wrong or expired code, or a refused number, shows a message at the field. Rate limits (Supabase's own SMS limits) and network errors show their usual messages.
-- **Guest sync.** Straight after sign-in, `sync_guest_preferences(city, lang, brand_ids)` copies the on-phone city, language and followed brands into the account. It runs once, under the shopper's own RLS, and only follows active brands. If it fails, the choices stay on the phone and sync next time.
+- **Guest sync.** Straight after sign-in, `sync_guest_preferences(city, lang, brand_ids, category_ids)` copies the on-phone city, language, followed brands and followed categories (from Explore, 4.5) into the account, together with saved deals. It runs once, under the shopper's own RLS, only follows active brands and categories, and takes at most 200 follows in all. If it fails, the choices stay on the phone and sync next time.
 - **Sign out.** Signs out on this phone only. The on-phone choices stay.
 
 ## Deleting the account (UX flow F7, a Play requirement)

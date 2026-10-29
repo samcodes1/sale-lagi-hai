@@ -13,6 +13,7 @@ final class ShopperPreferences {
     this.cityId,
     this.interestIds = const [],
     this.brandIds = const [],
+    this.categoryFollowIds = const [],
     this.alertsAskedAt,
   });
 
@@ -34,6 +35,7 @@ final class ShopperPreferences {
       },
       interestIds: ids(json['interest_ids']),
       brandIds: ids(json['brand_ids']),
+      categoryFollowIds: ids(json['category_follow_ids']),
       alertsAskedAt: asked is String ? DateTime.tryParse(asked) : null,
     );
   }
@@ -47,7 +49,12 @@ final class ShopperPreferences {
   /// Top-level category ids.
   final List<String> interestIds;
 
+  /// Followed brands (onboarding step 4, or Follow on a brand page).
   final List<String> brandIds;
+
+  /// Followed categories (Follow on a category page): alerts, unlike
+  /// [interestIds], which only tune the feed.
+  final List<String> categoryFollowIds;
 
   /// When the notification priming screen was shown, so the app never asks
   /// again in a loop.
@@ -58,12 +65,14 @@ final class ShopperPreferences {
     String? Function()? cityId,
     List<String>? interestIds,
     List<String>? brandIds,
+    List<String>? categoryFollowIds,
     DateTime? alertsAskedAt,
   }) => ShopperPreferences(
     onboarded: onboarded ?? this.onboarded,
     cityId: cityId == null ? this.cityId : cityId(),
     interestIds: interestIds ?? this.interestIds,
     brandIds: brandIds ?? this.brandIds,
+    categoryFollowIds: categoryFollowIds ?? this.categoryFollowIds,
     alertsAskedAt: alertsAskedAt ?? this.alertsAskedAt,
   );
 
@@ -72,6 +81,7 @@ final class ShopperPreferences {
     'city_id': cityId,
     'interest_ids': interestIds,
     'brand_ids': brandIds,
+    'category_follow_ids': categoryFollowIds,
     'alerts_asked_at': alertsAskedAt?.toUtc().toIso8601String(),
   };
 
@@ -90,6 +100,7 @@ final class ShopperPreferences {
       other.cityId == cityId &&
       _same(other.interestIds, interestIds) &&
       _same(other.brandIds, brandIds) &&
+      _same(other.categoryFollowIds, categoryFollowIds) &&
       other.alertsAskedAt == alertsAskedAt;
 
   @override
@@ -98,6 +109,7 @@ final class ShopperPreferences {
     cityId,
     Object.hashAll(interestIds),
     Object.hashAll(brandIds),
+    Object.hashAll(categoryFollowIds),
     alertsAskedAt,
   );
 

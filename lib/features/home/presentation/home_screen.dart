@@ -21,6 +21,7 @@ import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
 import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
 import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
+import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
 import 'package:sale_lagi_hai/features/home/application/home_providers.dart';

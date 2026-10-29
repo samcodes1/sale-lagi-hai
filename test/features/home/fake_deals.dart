@@ -149,7 +149,10 @@ final class FakeDeals implements DealRepository {
     String brandSlug, {
     String? cityId,
     FeedCursor? after,
-  }) => throw UnimplementedError();
+  }) async {
+    calls.add('brand $brandSlug ${after == null ? 'first' : 'more'}');
+    return _or(DealPage.of(_all.take(5).toList(), pageSize: 20));
+  }
 
   @override
   Future<Result<Deal>> byId(String id) => throw UnimplementedError();

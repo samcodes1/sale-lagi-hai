@@ -6,10 +6,10 @@ import 'package:sale_lagi_hai/core/device/location_service.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
+import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_providers.dart';
 import 'package:sale_lagi_hai/features/deals/data/deal_row.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
-import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_repository.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 
@@ -125,45 +125,6 @@ final endingSoonProvider = FutureProvider<HomeSection>((ref) async {
 
 /// The "For you" list: newest live deals in the shopper's interests (all
 /// categories when none were picked), paged as they scroll.
-@immutable
-final class FeedState {
-  const new({
-    required this.deals,
-    this.next,
-    this.loadingMore = false,
-    this.moreFailure,
-    this.cachedAt,
-  });
-
-  final List<Deal> deals;
-
-  /// Where the next page starts; `null` at the end.
-  final FeedCursor? next;
-  final bool loadingMore;
-
-  /// The next page failed: shown as a retry row at the bottom, never as a
-  /// full-screen error.
-  final AppFailure? moreFailure;
-
-  /// Set when the first page came from the offline cache.
-  final DateTime? cachedAt;
-
-  bool get atEnd => next == null;
-
-  FeedState copyWith({
-    List<Deal>? deals,
-    FeedCursor? Function()? next,
-    bool? loadingMore,
-    AppFailure? Function()? moreFailure,
-  }) => FeedState(
-    deals: deals ?? this.deals,
-    next: next == null ? this.next : next(),
-    loadingMore: loadingMore ?? this.loadingMore,
-    moreFailure: moreFailure == null ? this.moreFailure : moreFailure(),
-    cachedAt: cachedAt,
-  );
-}
-
 final forYouProvider = AsyncNotifierProvider<ForYouController, FeedState>(
   ForYouController.new,
 );
