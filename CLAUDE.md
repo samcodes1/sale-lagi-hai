@@ -35,6 +35,16 @@ Copy `env/<flavor>.example.json` to `env/<flavor>.json` before the first run. Th
 - Every user-facing string goes in the ARB files (`en` + `ur`). No hard-coded text in widgets.
 - Every UI must work in light/dark, LTR/RTL (Urdu) and at 200% text size.
 
+## Stack notes (verified October 2026; see `docs/research/packages.md`)
+- Flutter 3.47 ships Material as the `material_ui` package; the in-SDK `package:flutter/material.dart` is being deprecated. We migrate in sub-phase 1.3, and new code uses `material_ui` from then on.
+- Pin `build_runner: ^2.16.2`. Version 2.17 needs `build` 5, which riverpod_generator and go_router_builder don't support yet.
+- go_router_builder's typed-route mixin is `$RouteName` (go_router's docs wrongly show `_$RouteName`).
+- Supabase is replacing the anon key with the **publishable** key: use `publishableKey:` in `Supabase.initialize`. The env field gets renamed to `SUPABASE_PUBLISHABLE_KEY` in Phase 2.
+- Golden tests use alchemist; widgets from `material_ui` need the wrapper documented in the `qa-testing` skill.
+- Discontinued, so don't add them: golden_toolkit, uni_links, firebase_dynamic_links, intl_utils, hive, isar.
+- Play requires target API 36.
+- The `ur` locale formats numbers with Western digits; Urdu numerals need a manual digit mapping.
+
 ## Security rules
 - The client only ever holds **public** config: the Supabase URL and the publishable/anon key. `AppConfig` rejects secret keys at startup.
 - Never commit `env/*.json`, keystores or `android/key.properties`.
