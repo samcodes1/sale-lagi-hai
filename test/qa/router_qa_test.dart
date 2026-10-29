@@ -44,6 +44,7 @@ Future<GoRouter> _pumpApp(
   final container = ProviderContainer(
     overrides: [
       onboardedShopper,
+      guestAuth(),
       appConfigProvider.overrideWithValue(
         AppConfig(
           flavor: flavor,

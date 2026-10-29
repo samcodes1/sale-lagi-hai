@@ -30,3 +30,9 @@ final page = await supabase.rpc('feed', params: {
   'page_size': 20,
 });
 ```
+
+## Accounts (4.2)
+| RPC | Who | What |
+|---|---|---|
+| `sync_guest_preferences(city, lang, brand_ids)` | Signed-in users | Copies a guest's on-phone city, language and followed brands (at most 200, active only) into the account. Nulls keep what the account has. |
+| `prepare_account_deletion(target)` | Service role only (the `delete-account` Edge Function) | Hands business-bucket uploads to the business, and lists the private files to delete. See `docs/app/ACCOUNTS.md`. |

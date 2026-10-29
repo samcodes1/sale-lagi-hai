@@ -16,6 +16,7 @@ final class AppConfig {
     required this.appName,
     required this.supabaseUrl,
     required this.supabasePublishableKey,
+    this.googleServerClientId = '',
   });
 
   /// Reads and validates the values compiled into this build.
@@ -25,6 +26,9 @@ final class AppConfig {
     'SUPABASE_URL': String.fromEnvironment('SUPABASE_URL'),
     'SUPABASE_PUBLISHABLE_KEY': String.fromEnvironment(
       'SUPABASE_PUBLISHABLE_KEY',
+    ),
+    'GOOGLE_SERVER_CLIENT_ID': String.fromEnvironment(
+      'GOOGLE_SERVER_CLIENT_ID',
     ),
   });
 
@@ -81,6 +85,18 @@ final class AppConfig {
       );
     }
 
+    // Optional: Google sign-in is offered only when it is set. A public
+    // OAuth client ID (never a client secret).
+    final googleServerClientId =
+        values['GOOGLE_SERVER_CLIENT_ID']?.trim() ?? '';
+    if (googleServerClientId.isNotEmpty &&
+        !_googleClientId.hasMatch(googleServerClientId)) {
+      problems.add(
+        'GOOGLE_SERVER_CLIENT_ID must be a Google OAuth client ID '
+        '(<number>-<id>.apps.googleusercontent.com).',
+      );
+    }
+
     if (problems.isNotEmpty) throw AppConfigException(problems);
 
     return AppConfig(
@@ -88,13 +104,24 @@ final class AppConfig {
       appName: appName,
       supabaseUrl: supabaseUrl,
       supabasePublishableKey: supabasePublishableKey,
+      googleServerClientId: googleServerClientId,
     );
   }
+
+  static final _googleClientId = RegExp(
+    r'^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$',
+  );
 
   final Flavor flavor;
   final String appName;
   final String supabaseUrl;
   final String supabasePublishableKey;
+
+  /// The web OAuth client ID that Google sign-in issues ID tokens for
+  /// (Supabase verifies them). Empty: Google sign-in is hidden.
+  final String googleServerClientId;
+
+  bool get hasGoogleSignIn => googleServerClientId.isNotEmpty;
 
   /// Whether a backend is configured for this build.
   bool get hasBackend => supabaseUrl.isNotEmpty;

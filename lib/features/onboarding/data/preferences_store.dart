@@ -24,6 +24,9 @@ final class PreferencesStore {
     }
   }
 
+  /// Forgets the saved preferences: the next launch is a first launch.
+  Future<void> clear() => _store.remove(key);
+
   Future<void> write(ShopperPreferences preferences) =>
       _store.setString(key, jsonEncode(preferences.toJson()));
 }

@@ -8,6 +8,7 @@ const envFileKeys = {
   'APP_NAME',
   'SUPABASE_URL',
   'SUPABASE_PUBLISHABLE_KEY',
+  'GOOGLE_SERVER_CLIENT_ID',
 };
 
 /// Template values from `env/*.example.json` that must be replaced before a

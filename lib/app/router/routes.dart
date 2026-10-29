@@ -9,6 +9,9 @@ import 'package:sale_lagi_hai/app/shell/app_shell.dart';
 import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
 import 'package:sale_lagi_hai/design_system/gallery/widget_gallery_page.dart';
 import 'package:sale_lagi_hai/features/alerts/presentation/alerts_screen.dart';
+import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
+import 'package:sale_lagi_hai/features/auth/presentation/delete_account_screen.dart';
+import 'package:sale_lagi_hai/features/auth/presentation/sign_in_screen.dart';
 import 'package:sale_lagi_hai/features/brands/presentation/brand_screen.dart';
 import 'package:sale_lagi_hai/features/categories/presentation/category_screen.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_detail_screen.dart';
@@ -59,6 +62,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
         TypedGoRoute<ProfileRoute>(
           path: '/profile',
           routes: [
+            TypedGoRoute<DeleteAccountRoute>(path: 'account/delete'),
             TypedGoRoute<ThemePreviewRoute>(path: 'dev/theme'),
             TypedGoRoute<WidgetGalleryRoute>(path: 'dev/gallery'),
           ],
@@ -190,6 +194,46 @@ final class CategoryRoute extends GoRouteData with $CategoryRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       CategoryScreen(slug: slug);
+}
+
+// ------------------------------------------------------------- account ---
+
+/// `/sign-in`: optional sign-in, above the tabs. Pops `true` once signed
+/// in. `?reauth=true` asks a signed-in shopper to sign in again before a
+/// sensitive action.
+@TypedGoRoute<SignInRoute>(path: '/sign-in')
+final class SignInRoute extends GoRouteData with $SignInRoute {
+  const new({this.reauth = false});
+
+  final bool reauth;
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      SignInScreen(reauth: reauth);
+}
+
+/// `/profile/account/delete`: account deletion, for signed-in shoppers
+/// only (guests go back to Profile).
+final class DeleteAccountRoute extends GoRouteData with $DeleteAccountRoute {
+  const new();
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
+      ProviderScope.containerOf(
+            context,
+            listen: false,
+          ).read(authRepositoryProvider).currentUser ==
+          null
+      ? const ProfileRoute().location
+      : null;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const DeleteAccountScreen();
 }
 
 // ------------------------------------------------------------ onboarding ---

@@ -240,6 +240,18 @@ final class DemoGateway implements BackendGateway {
             )
             .take(_pageSize(params['page_size']))
             .toList();
+      case 'sync_guest_preferences':
+        // Follows active brands the demo user doesn't follow yet.
+        for (final id in (params['brand_ids'] as List<Object?>?) ?? const []) {
+          final active = demoBrands.any(
+            (b) => b['id'] == id && b['is_active'] == true,
+          );
+          final already = _tables['follows']!.any((f) => f['brand_id'] == id);
+          if (active && !already) {
+            _tables['follows']!.add({'user_id': userId, 'brand_id': id});
+          }
+        }
+        return const [];
       case 'brand_deals':
         return _page(
           live.where(

@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:sale_lagi_hai/core/errors/crash_reporter.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/storage/secure_store.dart';
+import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
+import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 
@@ -10,6 +12,10 @@ import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dar
 final Override onboardedShopper = savedPreferencesProvider.overrideWithValue(
   const ShopperPreferences(onboarded: true),
 );
+
+/// A signed-out shopper on the demo sign-in (code 123456).
+Override guestAuth() =>
+    authRepositoryProvider.overrideWithValue(DemoAuthRepository());
 
 /// In-memory [KeyValueStore] for tests.
 final class InMemoryKeyValueStore implements KeyValueStore {

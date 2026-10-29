@@ -18,7 +18,11 @@ const _config = AppConfig(
 );
 
 Widget _app() => ProviderScope(
-  overrides: [onboardedShopper, appConfigProvider.overrideWithValue(_config)],
+  overrides: [
+    onboardedShopper,
+    guestAuth(),
+    appConfigProvider.overrideWithValue(_config),
+  ],
   child: const App(),
 );
 

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/app/app.dart';
 import 'package:sale_lagi_hai/app/config/app_config.dart';
 import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
-import 'package:sale_lagi_hai/core/backend/backend_gateway.dart';
 import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/errors/crash_reporter.dart';
@@ -17,9 +16,15 @@ import 'package:sale_lagi_hai/core/state/retry_policy.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/storage/secure_store.dart';
 import 'package:sale_lagi_hai/design_system/fonts/font_licenses.dart';
+import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
+import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
+import 'package:sale_lagi_hai/features/auth/data/google_id_token.dart';
+import 'package:sale_lagi_hai/features/auth/data/supabase_auth_repository.dart';
+import 'package:sale_lagi_hai/features/auth/domain/auth_repository.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 import 'package:sale_lagi_hai/features/onboarding/data/preferences_store.dart';
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show SupabaseClient;
 
 /// Validates the build config, installs error handling, connects the
 /// backend and starts the app.
@@ -48,7 +53,7 @@ Future<void> bootstrap() async {
   registerFontLicenses();
   final settings = await loadStartupSettings(logger);
 
-  final BackendGateway backend;
+  final Backend backend;
   try {
     backend = await createBackend(config, FlutterSecureStore(logger: logger));
   } on Object catch (error, stackTrace) {
@@ -72,11 +77,34 @@ Future<void> bootstrap() async {
           keyValueStoreProvider.overrideWithValue(store),
         savedLocaleProvider.overrideWithValue(settings.locale),
         savedPreferencesProvider.overrideWithValue(settings.preferences),
-        backendGatewayProvider.overrideWithValue(backend),
+        backendGatewayProvider.overrideWithValue(backend.gateway),
+        authRepositoryProvider.overrideWithValue(
+          createAuthRepository(config, backend.supabase, logger),
+        ),
         demoModeProvider.overrideWithValue(!config.hasBackend),
       ],
       child: const App(),
     ),
+  );
+}
+
+/// Supabase Auth when there is a backend, else the demo sign-in. Google is
+/// offered only when this build has its client ID and the platform has
+/// native sign-in.
+@visibleForTesting
+AuthRepository createAuthRepository(
+  AppConfig config,
+  SupabaseClient? supabase,
+  AppLogger logger,
+) {
+  final google = config.hasGoogleSignIn && PluginGoogleIdTokenSource.supported;
+  if (supabase == null) return DemoAuthRepository(googleAvailable: google);
+  return SupabaseAuthRepository(
+    supabase,
+    logger,
+    google: google
+        ? PluginGoogleIdTokenSource(config.googleServerClientId)
+        : null,
   );
 }
 

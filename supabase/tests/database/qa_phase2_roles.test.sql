@@ -12,9 +12,14 @@ grant select on w to anon, authenticated;
 select is(
   (select array_agg(p.proname::text order by p.proname) from pg_proc p
    join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.prokind = 'f'),
+  -- 4.2 added prepare_account_deletion (service role only) and
+  -- sync_guest_preferences (signed-in users), reviewed in
+  -- 800_accounts.test.sql; QA re-checks them in the 4.2 gate.
   array['approve_submission', 'brand_deals', 'custom_access_token_hook', 'deals_for_my_cards',
-        'featured_deals', 'feed', 'mark_submission_duplicate', 'nearby_deals', 'register_push_token',
-        'reject_submission', 'search_deals', 'submission_duplicates', 'trending_deals'],
+        'featured_deals', 'feed', 'mark_submission_duplicate', 'nearby_deals',
+        'prepare_account_deletion', 'register_push_token',
+        'reject_submission', 'search_deals', 'submission_duplicates', 'sync_guest_preferences',
+        'trending_deals'],
   'the public RPC surface is exactly the reviewed set');
 
 -- One pending submission per staff action, so each call has work to do.

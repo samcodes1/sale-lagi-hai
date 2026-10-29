@@ -462,4 +462,139 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get alertsBlocked =>
       'Alerts are blocked for this app. You can turn them on in settings.';
+
+  @override
+  String get signInTitle => 'Sign in to sync';
+
+  @override
+  String get signInBody =>
+      'Keep your saves and followed brands on any phone. No password: we text you a code.';
+
+  @override
+  String get reauthTitle => 'Confirm it\'s you';
+
+  @override
+  String get reauthBody =>
+      'For your safety, sign in again before deleting your account.';
+
+  @override
+  String get phoneLabel => 'Mobile number';
+
+  @override
+  String get phoneHint => '0300 1234567';
+
+  @override
+  String get phoneInvalid =>
+      'Enter a Pakistani mobile number, like 0300 1234567.';
+
+  @override
+  String get actionSendCode => 'Send code';
+
+  @override
+  String get signInOr => 'or';
+
+  @override
+  String get actionContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get codeTitle => 'Enter the code';
+
+  @override
+  String codeSentTo(String phone) {
+    return 'We sent a 6-digit code to $phone.';
+  }
+
+  @override
+  String get codeLabel => '6-digit code';
+
+  @override
+  String get codeInvalid =>
+      'That code is wrong or has expired. Check it, or send a new one.';
+
+  @override
+  String resendIn(int seconds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Send a new code in $seconds seconds',
+      one: 'Send a new code in 1 second',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get actionResendCode => 'Send a new code';
+
+  @override
+  String get actionChangeNumber => 'Change number';
+
+  @override
+  String get signInTerms =>
+      'By continuing, you agree to our Terms and Privacy Policy.';
+
+  @override
+  String get signedInToast => 'You\'re signed in.';
+
+  @override
+  String get profileGuestTitle => 'Sign in to keep your saves on any phone';
+
+  @override
+  String get actionSignIn => 'Sign in';
+
+  @override
+  String get profileSignedInPhone => 'Signed in with your phone';
+
+  @override
+  String get profileSignedInGoogle => 'Signed in with Google';
+
+  @override
+  String get actionSignOut => 'Sign out';
+
+  @override
+  String get signedOutToast => 'Signed out. Your choices stay on this phone.';
+
+  @override
+  String get settingsAccount => 'Account';
+
+  @override
+  String get actionDeleteAccount => 'Delete account';
+
+  @override
+  String get deleteTitle => 'Delete your account';
+
+  @override
+  String get deleteIntro =>
+      'This deletes your account and everything in it. It can\'t be undone.';
+
+  @override
+  String get deleteListTitle => 'What gets deleted';
+
+  @override
+  String get deleteItemProfile => 'Your profile and how you sign in';
+
+  @override
+  String get deleteItemSaves => 'Saved deals, followed brands and your cards';
+
+  @override
+  String get deleteItemAlerts => 'Alerts, notifications and your devices';
+
+  @override
+  String get deleteItemPhotos => 'Your profile picture and the photos you sent';
+
+  @override
+  String get deleteKept =>
+      'Deals you submitted stay up, without your name. Businesses keep their own pages.';
+
+  @override
+  String get actionDeleteForever => 'Delete my account';
+
+  @override
+  String get deleteConfirmTitle => 'Delete your account?';
+
+  @override
+  String get deleteConfirmBody =>
+      'You\'ll be signed out, and this phone starts fresh.';
+
+  @override
+  String get deletedToast => 'Your account was deleted.';
 }

@@ -255,6 +255,7 @@ void main() {
       final first = ProviderContainer(
         overrides: [
           onboardedShopper,
+          guestAuth(),
           keyValueStoreProvider.overrideWithValue(store),
           deviceLocaleProvider.overrideWithValue(const Locale('en', 'US')),
           loggerProvider.overrideWithValue(logger),
@@ -274,6 +275,7 @@ void main() {
       final second = ProviderContainer(
         overrides: [
           onboardedShopper,
+          guestAuth(),
           savedLocaleProvider.overrideWithValue(settings.locale),
           deviceLocaleProvider.overrideWithValue(const Locale('en', 'US')),
         ],
@@ -289,6 +291,7 @@ void main() {
         final c = ProviderContainer(
           overrides: [
             onboardedShopper,
+            guestAuth(),
             keyValueStoreProvider.overrideWithValue(store),
             deviceLocaleProvider.overrideWithValue(AppLocales.english),
             loggerProvider.overrideWithValue(AppLogger(sinks: [])),
@@ -312,6 +315,7 @@ void main() {
         ProviderScope(
           overrides: [
             onboardedShopper,
+            guestAuth(),
             appConfigProvider.overrideWithValue(
               const AppConfig(
                 flavor: Flavor.dev,

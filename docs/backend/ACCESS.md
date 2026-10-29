@@ -30,7 +30,7 @@ Notes:
 - `created_by`, `granted_by`, `reporter_id` and `submitter_id` default to the caller, and policies require them to equal the caller.
 - The Custom Access Token Hook adds `user_roles` to the JWT **for the apps' UI only**; policies always read the table. Enable it in the dashboard (Authentication → Hooks).
 - **A suspended business is read-only.** Its members still read their data, but every write (brands, outlets, deals, targets, card offers, placements, media) fails with 42501 until staff lift the suspension.
-- **Account deletion always succeeds.** If the user was a business's last owner, the business is left without an owner for staff to reassign.
+- **Account deletion** runs in the `delete-account` Edge Function, after a sign-in in the last 5 minutes (`docs/app/ACCOUNTS.md`). It always succeeds. If the user was a business's last owner, the business is left without an owner for staff to reassign.
 
 ## Storage
 Defined in `supabase/migrations/20261029150000_storage.sql`, tested in `300_storage.test.sql`.

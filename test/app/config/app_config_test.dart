@@ -186,6 +186,44 @@ void main() {
     });
   });
 
+  group('Google sign-in client ID', () {
+    test('optional: absent or empty hides Google sign-in', () {
+      expect(AppConfig.fromMap(validValues()).hasGoogleSignIn, isFalse);
+      expect(
+        AppConfig.fromMap({...validValues(), 'GOOGLE_SERVER_CLIENT_ID': '  '})
+            .hasGoogleSignIn,
+        isFalse,
+      );
+    });
+
+    test('a web OAuth client ID enables it', () {
+      const id = '1234567890-abc123def456.apps.googleusercontent.com';
+      final config = AppConfig.fromMap({
+        ...validValues(),
+        'GOOGLE_SERVER_CLIENT_ID': id,
+      });
+      expect(config.hasGoogleSignIn, isTrue);
+      expect(config.googleServerClientId, id);
+    });
+
+    test('anything else is rejected (a client secret never ships)', () {
+      for (final bad in [
+        'GOCSPX-abcdefghijklmnop',
+        'https://accounts.google.com',
+        '123-abc.apps.googleusercontent.com.evil.com',
+      ]) {
+        expect(
+          () => AppConfig.fromMap({
+            ...validValues(),
+            'GOOGLE_SERVER_CLIENT_ID': bad,
+          }),
+          throwsConfigProblem('GOOGLE_SERVER_CLIENT_ID'),
+          reason: bad,
+        );
+      }
+    });
+  });
+
   group('verifyBuildFlavor', () {
     final config = AppConfig.fromMap(validValues());
 

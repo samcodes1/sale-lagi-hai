@@ -2,5 +2,6 @@
   "FLAVOR": "prod",
   "APP_NAME": "Sale Lagi Hai!",
   "SUPABASE_URL": "https://YOUR-PROD-PROJECT.supabase.co",
-  "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_REPLACE_ME"
+  "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_REPLACE_ME",
+  "GOOGLE_SERVER_CLIENT_ID": ""
 }

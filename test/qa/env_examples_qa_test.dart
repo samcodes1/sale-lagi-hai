@@ -14,6 +14,8 @@ const _expectedKeys = {
   'APP_NAME',
   'SUPABASE_URL',
   'SUPABASE_PUBLISHABLE_KEY',
+  // Optional (4.2): empty hides Google sign-in.
+  'GOOGLE_SERVER_CLIENT_ID',
 };
 
 Map<String, String> _readExample(Flavor flavor) {

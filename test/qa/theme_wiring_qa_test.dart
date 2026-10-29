@@ -59,6 +59,7 @@ Future<ThemeData> _effectiveTheme(
     ProviderScope(
       overrides: [
         onboardedShopper,
+        guestAuth(),
         appConfigProvider.overrideWithValue(_config),
       ],
       child: const App(),

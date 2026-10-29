@@ -28,6 +28,7 @@ void main() {
       ProviderScope(
         overrides: [
           onboardedShopper,
+          guestAuth(),
           appConfigProvider.overrideWithValue(config),
         ],
         child: const App(),
@@ -44,7 +45,10 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      ProviderScope(overrides: [onboardedShopper], child: const App()),
+      ProviderScope(
+        overrides: [onboardedShopper, guestAuth()],
+        child: const App(),
+      ),
     );
 
     // Riverpod wraps provider errors, so check the message, not the type.
@@ -73,6 +77,7 @@ void main() {
       ProviderScope(
         overrides: [
           onboardedShopper,
+          guestAuth(),
           appConfigProvider.overrideWithValue(config),
         ],
         child: const App(),
@@ -102,6 +107,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           onboardedShopper,
+          guestAuth(),
           appConfigProvider.overrideWithValue(config),
           deviceLocaleProvider.overrideWithValue(device),
           keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),

@@ -17,6 +17,8 @@ import 'package:sale_lagi_hai/core/device/notification_permission.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
+import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
+import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 
@@ -99,8 +101,10 @@ final class Harness {
     LocationOutcome? location,
     AlertPermission alerts = AlertPermission.granted,
     BackendGateway? backend,
+    DemoAuthRepository? auth,
     this.saved = const ShopperPreferences(),
-  }) : location = FakeLocation(
+  }) : auth = auth ?? DemoAuthRepository(),
+       location = FakeLocation(
          location ?? const Located(24.8138, 67.03), // Clifton, Karachi
        ),
        alerts = FakeAlerts(alerts),
@@ -111,6 +115,7 @@ final class Harness {
   final BackendGateway backend;
   final ShopperPreferences saved;
   final store = InMemoryKeyValueStore();
+  final DemoAuthRepository auth;
   late ProviderContainer container;
 
   GoRouter get router => container.read(routerProvider);
@@ -140,6 +145,7 @@ final class Harness {
         savedPreferencesProvider.overrideWithValue(saved),
         locationServiceProvider.overrideWithValue(location),
         notificationPermissionProvider.overrideWithValue(alerts),
+        authRepositoryProvider.overrideWithValue(auth),
       ],
       retry: (_, _) => null,
     );

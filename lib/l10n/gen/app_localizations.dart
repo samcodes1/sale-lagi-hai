@@ -757,6 +757,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Alerts are blocked for this app. You can turn them on in settings.'**
   String get alertsBlocked;
+
+  /// No description provided for @signInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to sync'**
+  String get signInTitle;
+
+  /// No description provided for @signInBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your saves and followed brands on any phone. No password: we text you a code.'**
+  String get signInBody;
+
+  /// No description provided for @reauthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm it\'s you'**
+  String get reauthTitle;
+
+  /// No description provided for @reauthBody.
+  ///
+  /// In en, this message translates to:
+  /// **'For your safety, sign in again before deleting your account.'**
+  String get reauthBody;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get phoneLabel;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'0300 1234567'**
+  String get phoneHint;
+
+  /// No description provided for @phoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a Pakistani mobile number, like 0300 1234567.'**
+  String get phoneInvalid;
+
+  /// No description provided for @actionSendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get actionSendCode;
+
+  /// No description provided for @signInOr.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get signInOr;
+
+  /// No description provided for @actionContinueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get actionContinueWithGoogle;
+
+  /// No description provided for @codeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code'**
+  String get codeTitle;
+
+  /// No description provided for @codeSentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit code to {phone}.'**
+  String codeSentTo(String phone);
+
+  /// No description provided for @codeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get codeLabel;
+
+  /// No description provided for @codeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That code is wrong or has expired. Check it, or send a new one.'**
+  String get codeInvalid;
+
+  /// No description provided for @resendIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds, plural, =1{Send a new code in 1 second} other{Send a new code in {seconds} seconds}}'**
+  String resendIn(int seconds);
+
+  /// No description provided for @actionResendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code'**
+  String get actionResendCode;
+
+  /// No description provided for @actionChangeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Change number'**
+  String get actionChangeNumber;
+
+  /// No description provided for @signInTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing, you agree to our Terms and Privacy Policy.'**
+  String get signInTerms;
+
+  /// No description provided for @signedInToast.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re signed in.'**
+  String get signedInToast;
+
+  /// No description provided for @profileGuestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to keep your saves on any phone'**
+  String get profileGuestTitle;
+
+  /// No description provided for @actionSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get actionSignIn;
+
+  /// No description provided for @profileSignedInPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in with your phone'**
+  String get profileSignedInPhone;
+
+  /// No description provided for @profileSignedInGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in with Google'**
+  String get profileSignedInGoogle;
+
+  /// No description provided for @actionSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get actionSignOut;
+
+  /// No description provided for @signedOutToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed out. Your choices stay on this phone.'**
+  String get signedOutToast;
+
+  /// No description provided for @settingsAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get settingsAccount;
+
+  /// No description provided for @actionDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get actionDeleteAccount;
+
+  /// No description provided for @deleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account'**
+  String get deleteTitle;
+
+  /// No description provided for @deleteIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes your account and everything in it. It can\'t be undone.'**
+  String get deleteIntro;
+
+  /// No description provided for @deleteListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What gets deleted'**
+  String get deleteListTitle;
+
+  /// No description provided for @deleteItemProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile and how you sign in'**
+  String get deleteItemProfile;
+
+  /// No description provided for @deleteItemSaves.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved deals, followed brands and your cards'**
+  String get deleteItemSaves;
+
+  /// No description provided for @deleteItemAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts, notifications and your devices'**
+  String get deleteItemAlerts;
+
+  /// No description provided for @deleteItemPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile picture and the photos you sent'**
+  String get deleteItemPhotos;
+
+  /// No description provided for @deleteKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Deals you submitted stay up, without your name. Businesses keep their own pages.'**
+  String get deleteKept;
+
+  /// No description provided for @actionDeleteForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my account'**
+  String get actionDeleteForever;
+
+  /// No description provided for @deleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get deleteConfirmTitle;
+
+  /// No description provided for @deleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be signed out, and this phone starts fresh.'**
+  String get deleteConfirmBody;
+
+  /// No description provided for @deletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account was deleted.'**
+  String get deletedToast;
 }
 
 class _AppLocalizationsDelegate

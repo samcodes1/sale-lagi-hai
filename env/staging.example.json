@@ -2,5 +2,6 @@
   "FLAVOR": "staging",
   "APP_NAME": "SLH Staging",
   "SUPABASE_URL": "https://YOUR-STAGING-PROJECT.supabase.co",
-  "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_REPLACE_ME"
+  "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_REPLACE_ME",
+  "GOOGLE_SERVER_CLIENT_ID": ""
 }

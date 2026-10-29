@@ -57,6 +57,19 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
   Future<void> markAlertsAsked(DateTime at) =>
       _update(state.copyWith(alertsAskedAt: at));
 
+  /// Back to a first launch (after account deletion): everything chosen
+  /// is forgotten, and the router returns to onboarding.
+  Future<void> reset() async {
+    state = const ShopperPreferences();
+    try {
+      await ref.read(preferencesStoreProvider).clear();
+    } on Object catch (error) {
+      ref
+          .read(loggerProvider)
+          .warning('Could not clear the shopper preferences', error: error);
+    }
+  }
+
   /// Ends onboarding: from now on the app opens on Home.
   Future<void> completeOnboarding() => _update(state.copyWith(onboarded: true));
 

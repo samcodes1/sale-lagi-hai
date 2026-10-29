@@ -463,4 +463,141 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get alertsBlocked =>
       'اس ایپ کے الرٹس بند ہیں۔ آپ انہیں سیٹنگز میں آن کر سکتے ہیں۔';
+
+  @override
+  String get signInTitle => 'سنک کے لیے سائن اِن کریں';
+
+  @override
+  String get signInBody =>
+      'اپنی محفوظ ڈیلز اور فالو کیے برانڈز ہر فون پر رکھیں۔ پاس ورڈ نہیں: ہم آپ کو کوڈ بھیجیں گے۔';
+
+  @override
+  String get reauthTitle => 'تصدیق کریں کہ یہ آپ ہیں';
+
+  @override
+  String get reauthBody =>
+      'آپ کی حفاظت کے لیے، اکاؤنٹ ڈیلیٹ کرنے سے پہلے دوبارہ سائن اِن کریں۔';
+
+  @override
+  String get phoneLabel => 'موبائل نمبر';
+
+  @override
+  String get phoneHint => 'مثلاً ⁦0300 1234567⁩';
+
+  @override
+  String get phoneInvalid =>
+      'پاکستانی موبائل نمبر درج کریں، جیسے ⁦0300 1234567⁩۔';
+
+  @override
+  String get actionSendCode => 'کوڈ بھیجیں';
+
+  @override
+  String get signInOr => 'یا';
+
+  @override
+  String get actionContinueWithGoogle => 'گوگل کے ساتھ جاری رکھیں';
+
+  @override
+  String get codeTitle => 'کوڈ درج کریں';
+
+  @override
+  String codeSentTo(String phone) {
+    return 'ہم نے ⁦$phone⁩ پر چھ ہندسوں کا کوڈ بھیجا ہے۔';
+  }
+
+  @override
+  String get codeLabel => 'چھ ہندسوں کا کوڈ';
+
+  @override
+  String get codeInvalid =>
+      'یہ کوڈ غلط ہے یا اس کی میعاد ختم ہو گئی ہے۔ دوبارہ دیکھیں یا نیا کوڈ منگوائیں۔';
+
+  @override
+  String resendIn(int seconds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'نیا کوڈ ⁦$seconds⁩ سیکنڈ میں',
+      one: 'نیا کوڈ ایک سیکنڈ میں',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get actionResendCode => 'نیا کوڈ بھیجیں';
+
+  @override
+  String get actionChangeNumber => 'نمبر بدلیں';
+
+  @override
+  String get signInTerms =>
+      'جاری رکھ کر آپ ہماری شرائط اور پرائیویسی پالیسی سے اتفاق کرتے ہیں۔';
+
+  @override
+  String get signedInToast => 'آپ سائن اِن ہو گئے ہیں۔';
+
+  @override
+  String get profileGuestTitle =>
+      'اپنی محفوظ ڈیلز ہر فون پر رکھنے کے لیے سائن اِن کریں';
+
+  @override
+  String get actionSignIn => 'سائن اِن';
+
+  @override
+  String get profileSignedInPhone => 'آپ فون نمبر سے سائن اِن ہیں';
+
+  @override
+  String get profileSignedInGoogle => 'آپ گوگل سے سائن اِن ہیں';
+
+  @override
+  String get actionSignOut => 'سائن آؤٹ';
+
+  @override
+  String get signedOutToast =>
+      'سائن آؤٹ ہو گئے۔ آپ کی پسند اسی فون پر محفوظ ہے۔';
+
+  @override
+  String get settingsAccount => 'اکاؤنٹ';
+
+  @override
+  String get actionDeleteAccount => 'اکاؤنٹ ڈیلیٹ کریں';
+
+  @override
+  String get deleteTitle => 'اپنا اکاؤنٹ ڈیلیٹ کریں';
+
+  @override
+  String get deleteIntro =>
+      'اس سے آپ کا اکاؤنٹ اور اس میں موجود سب کچھ ڈیلیٹ ہو جائے گا۔ یہ واپس نہیں ہو سکتا۔';
+
+  @override
+  String get deleteListTitle => 'کیا ڈیلیٹ ہوگا';
+
+  @override
+  String get deleteItemProfile => 'آپ کی پروفائل اور سائن اِن';
+
+  @override
+  String get deleteItemSaves => 'محفوظ ڈیلز، فالو کیے برانڈز اور آپ کے کارڈز';
+
+  @override
+  String get deleteItemAlerts => 'الرٹس، نوٹیفکیشنز اور آپ کے فون';
+
+  @override
+  String get deleteItemPhotos => 'آپ کی پروفائل تصویر اور بھیجی گئی تصاویر';
+
+  @override
+  String get deleteKept =>
+      'آپ کی بھیجی ہوئی ڈیلز آپ کے نام کے بغیر برقرار رہیں گی۔ کاروبار اپنے صفحات رکھیں گے۔';
+
+  @override
+  String get actionDeleteForever => 'میرا اکاؤنٹ ڈیلیٹ کریں';
+
+  @override
+  String get deleteConfirmTitle => 'اپنا اکاؤنٹ ڈیلیٹ کریں؟';
+
+  @override
+  String get deleteConfirmBody =>
+      'آپ سائن آؤٹ ہو جائیں گے، اور یہ فون نئے سرے سے شروع ہوگا۔';
+
+  @override
+  String get deletedToast => 'آپ کا اکاؤنٹ ڈیلیٹ ہو گیا۔';
 }

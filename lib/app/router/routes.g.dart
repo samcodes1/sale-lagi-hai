@@ -6,7 +6,7 @@ part of 'routes.dart';
 // GoRouterGenerator
 // **************************************************************************
 
-List<RouteBase> get $appRoutes => [$appShellRoute, $welcomeRoute];
+List<RouteBase> get $appRoutes => [$appShellRoute, $signInRoute, $welcomeRoute];
 
 RouteBase get $appShellRoute => StatefulShellRouteData.$route(
   factory: $AppShellRouteExtension._fromState,
@@ -74,6 +74,12 @@ RouteBase get $appShellRoute => StatefulShellRouteData.$route(
           hasOverriddenOnExit: false,
           factory: $ProfileRoute._fromState,
           routes: [
+            GoRouteData.$route(
+              path: 'account/delete',
+              hasOverriddenOnExit: false,
+              parentNavigatorKey: DeleteAccountRoute.$parentNavigatorKey,
+              factory: $DeleteAccountRoute._fromState,
+            ),
             GoRouteData.$route(
               path: 'dev/theme',
               hasOverriddenOnExit: false,
@@ -267,6 +273,27 @@ mixin $ProfileRoute on GoRouteData {
   void replace(BuildContext context) => context.replace(location);
 }
 
+mixin $DeleteAccountRoute on GoRouteData {
+  static DeleteAccountRoute _fromState(GoRouterState state) =>
+      const DeleteAccountRoute();
+
+  @override
+  String get location => GoRouteData.$location('/profile/account/delete');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
 mixin $ThemePreviewRoute on GoRouteData {
   static ThemePreviewRoute _fromState(GoRouterState state) =>
       const ThemePreviewRoute();
@@ -307,6 +334,66 @@ mixin $WidgetGalleryRoute on GoRouteData {
 
   @override
   void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $signInRoute => GoRouteData.$route(
+  path: '/sign-in',
+  hasOverriddenOnExit: false,
+  parentNavigatorKey: SignInRoute.$parentNavigatorKey,
+  factory: $SignInRoute._fromState,
+);
+
+mixin $SignInRoute on GoRouteData {
+  static SignInRoute _fromState(GoRouterState state) => SignInRoute(
+    reauth:
+        _$convertMapValue(
+          'reauth',
+          state.uri.queryParameters,
+          _$boolConverter,
+        ) ??
+        false,
+  );
+
+  SignInRoute get _self => this as SignInRoute;
+
+  @override
+  String get location => GoRouteData.$location(
+    '/sign-in',
+    queryParams: {if (_self.reauth != false) 'reauth': _self.reauth.toString()},
+  );
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+T? _$convertMapValue<T>(
+  String key,
+  Map<String, String> map,
+  T? Function(String) converter,
+) {
+  final value = map[key];
+  return value == null ? null : converter(value);
+}
+
+bool _$boolConverter(String value) {
+  switch (value) {
+    case 'true':
+      return true;
+    case 'false':
+      return false;
+    default:
+      throw UnsupportedError('Cannot convert "$value" into a bool.');
+  }
 }
 
 RouteBase get $welcomeRoute => GoRouteData.$route(

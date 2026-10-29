@@ -96,6 +96,7 @@ Future<({GoRouter router, ProviderContainer container})> _boot(
         keyValueStoreProvider.overrideWithValue(s),
       savedLocaleProvider.overrideWithValue(settings.locale),
       savedPreferencesProvider.overrideWithValue(settings.preferences),
+      guestAuth(),
       deviceLocaleProvider.overrideWithValue(deviceLocale),
       clockProvider.overrideWithValue(() => _now),
     ],

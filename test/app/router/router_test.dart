@@ -48,6 +48,7 @@ Future<GoRouter> _pumpApp(
   final container = ProviderContainer(
     overrides: [
       onboardedShopper,
+      guestAuth(),
       appConfigProvider.overrideWithValue(_config(flavor)),
       deviceLocaleProvider.overrideWithValue(const Locale('en')),
       keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),
