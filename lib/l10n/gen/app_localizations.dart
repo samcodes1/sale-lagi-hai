@@ -553,6 +553,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark'**
   String get themeDark;
+
+  /// No description provided for @actionContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get actionContinue;
+
+  /// No description provided for @actionSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get actionSkip;
+
+  /// No description provided for @actionBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get actionBack;
+
+  /// Onboarding progress, read by screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}'**
+  String onboardingStep(int step, int total);
+
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every sale in Pakistan, in one place.'**
+  String get welcomeTitle;
+
+  /// Shown on the first screen under the logo, together with the other language's version.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your language'**
+  String get welcomeLanguagePrompt;
+
+  /// The language prompt in the OTHER language (Urdu in the English file, English in the Urdu file), so both readers understand the first screen.
+  ///
+  /// In en, this message translates to:
+  /// **'اپنی زبان منتخب کریں'**
+  String get welcomeLanguagePromptOther;
+
+  /// No description provided for @cityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you shop?'**
+  String get cityTitle;
+
+  /// No description provided for @cityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll show deals from your city. Nationwide and online deals show everywhere.'**
+  String get cityBody;
+
+  /// No description provided for @actionDetectCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Detect my city'**
+  String get actionDetectCity;
+
+  /// No description provided for @cityDetecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your city…'**
+  String get cityDetecting;
+
+  /// No description provided for @cityDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in {city}.'**
+  String cityDetected(String city);
+
+  /// No description provided for @cityNotCovered.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location isn\'t near a city we cover yet. Pick one below.'**
+  String get cityNotCovered;
+
+  /// No description provided for @cityLocationDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'No problem. Pick your city below.'**
+  String get cityLocationDenied;
+
+  /// No description provided for @cityLocationBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is off for this app. Turn it on in settings, or pick your city below.'**
+  String get cityLocationBlocked;
+
+  /// No description provided for @cityLocationOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone\'s location is off. Pick your city below.'**
+  String get cityLocationOff;
+
+  /// No description provided for @cityLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find your location. Pick your city below.'**
+  String get cityLocationUnavailable;
+
+  /// Under a city whose local deals are not live yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Local deals coming soon'**
+  String get cityLocalSoon;
+
+  /// No description provided for @interestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you into?'**
+  String get interestsTitle;
+
+  /// No description provided for @interestsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick 3 or more to tune your feed. You can change them later.'**
+  String get interestsBody;
+
+  /// No description provided for @interestsPicked.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{None picked yet} =1{1 picked} other{{count} picked}}'**
+  String interestsPicked(int count);
+
+  /// No description provided for @brandsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Favourite brands'**
+  String get brandsTitle;
+
+  /// No description provided for @brandsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow brands to hear first when their sale is on.'**
+  String get brandsBody;
+
+  /// No description provided for @brandsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No brands here yet. You can follow brands later from Explore.'**
+  String get brandsEmpty;
+
+  /// No description provided for @brandsFollowed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Following none yet} =1{Following 1 brand} other{Following {count} brands}}'**
+  String brandsFollowed(int count);
+
+  /// No description provided for @alertsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Be first to know'**
+  String get alertsTitle;
+
+  /// No description provided for @alertsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Get an alert when a brand you follow starts a sale.'**
+  String get alertsBody;
+
+  /// No description provided for @alertsExampleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Example alert'**
+  String get alertsExampleLabel;
+
+  /// No description provided for @alertsExampleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Threads: up to 50% off'**
+  String get alertsExampleTitle;
+
+  /// No description provided for @alertsExampleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Winter collection sale, ends Sunday'**
+  String get alertsExampleBody;
+
+  /// No description provided for @alertsPromiseCap.
+  ///
+  /// In en, this message translates to:
+  /// **'At most 3 alerts a day'**
+  String get alertsPromiseCap;
+
+  /// No description provided for @alertsPromiseQuiet.
+  ///
+  /// In en, this message translates to:
+  /// **'Never at night (10 pm to 8 am)'**
+  String get alertsPromiseQuiet;
+
+  /// No description provided for @alertsPromiseTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what you hear about in Settings'**
+  String get alertsPromiseTopics;
+
+  /// No description provided for @alertsBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts are blocked for this app. You can turn them on in settings.'**
+  String get alertsBlocked;
 }
 
 class _AppLocalizationsDelegate

@@ -78,7 +78,13 @@ void main() {
   test('Urdu strings are in Urdu script, not Roman Urdu', () {
     // Keys with no letters to translate: the English language name, and
     // the discount badge (a number and symbols).
-    const latinAllowed = {'languageEnglish', 'discountBadge'};
+    // welcomeLanguagePromptOther is the prompt in the other language, so
+    // the first screen speaks to both readers (checked below).
+    const latinAllowed = {
+      'languageEnglish',
+      'discountBadge',
+      'welcomeLanguagePromptOther',
+    };
     final urduLetters = RegExp('[؀-ۿ]');
     for (final key in _messageKeys(ur)) {
       if (key == '@@locale' || latinAllowed.contains(key)) continue;
@@ -94,5 +100,7 @@ void main() {
     expect(en['languageUrdu'], 'اردو');
     expect(ur['languageUrdu'], 'اردو');
     expect(ur['languageEnglish'], 'English');
+    expect(ur['welcomeLanguagePromptOther'], en['welcomeLanguagePrompt']);
+    expect(en['welcomeLanguagePromptOther'], ur['welcomeLanguagePrompt']);
   });
 }

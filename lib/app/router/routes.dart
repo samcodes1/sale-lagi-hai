@@ -14,6 +14,11 @@ import 'package:sale_lagi_hai/features/categories/presentation/category_screen.d
 import 'package:sale_lagi_hai/features/deals/presentation/deal_detail_screen.dart';
 import 'package:sale_lagi_hai/features/explore/presentation/explore_screen.dart';
 import 'package:sale_lagi_hai/features/home/presentation/home_screen.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/alerts_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/brands_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/city_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/interests_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/language_step.dart';
 import 'package:sale_lagi_hai/features/profile/presentation/profile_screen.dart';
 import 'package:sale_lagi_hai/features/saved/presentation/saved_screen.dart';
 
@@ -185,6 +190,62 @@ final class CategoryRoute extends GoRouteData with $CategoryRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       CategoryScreen(slug: slug);
+}
+
+// ------------------------------------------------------------ onboarding ---
+
+/// `/welcome`: first launch (UX flow F1). Each step pushes the next, so
+/// system back returns to the previous step. The router sends every other
+/// location here until onboarding is done, and away from here after.
+@TypedGoRoute<WelcomeRoute>(
+  path: '/welcome',
+  routes: [
+    TypedGoRoute<WelcomeCityRoute>(path: 'city'),
+    TypedGoRoute<WelcomeInterestsRoute>(path: 'interests'),
+    TypedGoRoute<WelcomeBrandsRoute>(path: 'brands'),
+    TypedGoRoute<WelcomeAlertsRoute>(path: 'alerts'),
+  ],
+)
+final class WelcomeRoute extends GoRouteData with $WelcomeRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const LanguageStep();
+}
+
+/// `/welcome/city`.
+final class WelcomeCityRoute extends GoRouteData with $WelcomeCityRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const CityStep();
+}
+
+/// `/welcome/interests`.
+final class WelcomeInterestsRoute extends GoRouteData
+    with $WelcomeInterestsRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const InterestsStep();
+}
+
+/// `/welcome/brands`.
+final class WelcomeBrandsRoute extends GoRouteData with $WelcomeBrandsRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const BrandsStep();
+}
+
+/// `/welcome/alerts`.
+final class WelcomeAlertsRoute extends GoRouteData with $WelcomeAlertsRoute {
+  const new();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const AlertsStep();
 }
 
 // -------------------------------------------------------------- dev only ---

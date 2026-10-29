@@ -43,6 +43,7 @@ Future<GoRouter> _pumpApp(
   addTearDown(tester.view.reset);
   final container = ProviderContainer(
     overrides: [
+      onboardedShopper,
       appConfigProvider.overrideWithValue(
         AppConfig(
           flavor: flavor,

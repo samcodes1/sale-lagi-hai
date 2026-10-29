@@ -1,6 +1,15 @@
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:sale_lagi_hai/core/errors/crash_reporter.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/storage/secure_store.dart';
+import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
+import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
+
+/// For tests of the app past first launch: onboarding already done, so the
+/// router opens on Home instead of `/welcome`.
+final Override onboardedShopper = savedPreferencesProvider.overrideWithValue(
+  const ShopperPreferences(onboarded: true),
+);
 
 /// In-memory [KeyValueStore] for tests.
 final class InMemoryKeyValueStore implements KeyValueStore {

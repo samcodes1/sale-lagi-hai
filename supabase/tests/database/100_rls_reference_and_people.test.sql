@@ -1,6 +1,6 @@
 -- Access: reference data, profiles, user roles and the access token hook.
 begin;
-select plan(20);
+select plan(21);
 
 create temp table w as select * from tests.make_world();
 grant select on w to anon, authenticated;
@@ -10,6 +10,8 @@ update public.categories set is_active = false where slug = 'hidden';
 -- anon
 select tests.authenticate_as_anon();
 select ok((select count(*) from public.cities) >= 1, 'anon reads cities');
+select is((select (round(center_lat::numeric, 4), round(center_lng::numeric, 4)) from public.cities where slug = 'karachi'),
+  (24.8607::numeric, 67.0011::numeric), 'cities expose their centre as numbers (nearest city on the phone)');
 select is((select count(*)::int from public.categories where slug = 'hidden'), 0,
   'anon does not see inactive categories');
 select throws_ok($$ insert into public.cities (slug, name_en, name_ur, province, center)

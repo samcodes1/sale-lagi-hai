@@ -329,4 +329,138 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get themeDark => 'ڈارک';
+
+  @override
+  String get actionContinue => 'آگے چلیں';
+
+  @override
+  String get actionSkip => 'چھوڑیں';
+
+  @override
+  String get actionBack => 'واپس';
+
+  @override
+  String onboardingStep(int step, int total) {
+    return 'مرحلہ ⁦$step⁩ از ⁦$total⁩';
+  }
+
+  @override
+  String get welcomeTitle => 'پاکستان کی ہر سیل، ایک ہی جگہ۔';
+
+  @override
+  String get welcomeLanguagePrompt => 'اپنی زبان منتخب کریں';
+
+  @override
+  String get welcomeLanguagePromptOther => 'Choose your language';
+
+  @override
+  String get cityTitle => 'آپ کہاں شاپنگ کرتے ہیں؟';
+
+  @override
+  String get cityBody =>
+      'ہم آپ کے شہر کی ڈیلز دکھائیں گے۔ ملک بھر اور آن لائن ڈیلز ہر جگہ نظر آتی ہیں۔';
+
+  @override
+  String get actionDetectCity => 'میرا شہر معلوم کریں';
+
+  @override
+  String get cityDetecting => 'آپ کا شہر ڈھونڈ رہے ہیں…';
+
+  @override
+  String cityDetected(String city) {
+    return 'آپ ⁨$city⁩ میں ہیں۔';
+  }
+
+  @override
+  String get cityNotCovered =>
+      'آپ کا مقام ابھی ہمارے کسی شہر کے قریب نہیں۔ نیچے سے شہر چنیں۔';
+
+  @override
+  String get cityLocationDenied => 'کوئی بات نہیں۔ نیچے سے اپنا شہر چنیں۔';
+
+  @override
+  String get cityLocationBlocked =>
+      'اس ایپ کے لیے لوکیشن بند ہے۔ سیٹنگز میں آن کریں یا نیچے سے اپنا شہر چنیں۔';
+
+  @override
+  String get cityLocationOff =>
+      'آپ کے فون کی لوکیشن بند ہے۔ نیچے سے اپنا شہر چنیں۔';
+
+  @override
+  String get cityLocationUnavailable =>
+      'ہم آپ کا مقام معلوم نہیں کر سکے۔ نیچے سے اپنا شہر چنیں۔';
+
+  @override
+  String get cityLocalSoon => 'مقامی ڈیلز جلد آ رہی ہیں';
+
+  @override
+  String get interestsTitle => 'آپ کو کیا پسند ہے؟';
+
+  @override
+  String get interestsBody =>
+      'اپنی فیڈ کے لیے کم از کم تین چنیں۔ آپ بعد میں بدل سکتے ہیں۔';
+
+  @override
+  String interestsPicked(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '⁦$count⁩ چنے',
+      one: 'ایک چنا',
+      zero: 'ابھی کوئی نہیں چنا',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get brandsTitle => 'پسندیدہ برانڈز';
+
+  @override
+  String get brandsBody =>
+      'برانڈز کو فالو کریں تاکہ ان کی سیل کی خبر سب سے پہلے آپ کو ملے۔';
+
+  @override
+  String get brandsEmpty =>
+      'یہاں ابھی کوئی برانڈ نہیں۔ آپ بعد میں ایکسپلور سے برانڈز فالو کر سکتے ہیں۔';
+
+  @override
+  String brandsFollowed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '⁦$count⁩ برانڈز فالو کیے',
+      one: 'ایک برانڈ فالو کیا',
+      zero: 'ابھی کسی کو فالو نہیں کیا',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get alertsTitle => 'سب سے پہلے جانیں';
+
+  @override
+  String get alertsBody =>
+      'جب آپ کا فالو کیا ہوا برانڈ سیل شروع کرے تو الرٹ پائیں۔';
+
+  @override
+  String get alertsExampleLabel => 'مثالی الرٹ';
+
+  @override
+  String get alertsExampleTitle => 'تھریڈز: ⁦50%⁩ تک رعایت';
+
+  @override
+  String get alertsExampleBody => 'ونٹر کلیکشن سیل، اتوار تک';
+
+  @override
+  String get alertsPromiseCap => 'دن میں زیادہ سے زیادہ تین الرٹس';
+
+  @override
+  String get alertsPromiseQuiet => 'رات کو کبھی نہیں (رات 10 سے صبح 8 بجے تک)';
+
+  @override
+  String get alertsPromiseTopics => 'سیٹنگز میں چنیں کہ کن چیزوں کے الرٹس آئیں';
+
+  @override
+  String get alertsBlocked =>
+      'اس ایپ کے الرٹس بند ہیں۔ آپ انہیں سیٹنگز میں آن کر سکتے ہیں۔';
 }

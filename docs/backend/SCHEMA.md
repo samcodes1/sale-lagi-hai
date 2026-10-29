@@ -17,7 +17,7 @@ tool/db_test.sh --keep               # leave the database running to poke at it
 ## Tables
 | Area | Tables | Notes |
 |---|---|---|
-| Places | `cities`, `areas` | Bilingual names, PostGIS centres. `cities.is_live` controls the city-by-city rollout; nationwide deals show everywhere |
+| Places | `cities`, `areas` | Bilingual names, PostGIS centres (also as generated `center_lat`/`center_lng`, so the app finds the nearest city on the phone). `cities.is_live` controls the city-by-city rollout; nationwide deals show everywhere |
 | Catalogue | `categories` (two levels), `banks`, `card_products` | Data, not code: staff add them without an app update |
 | People | `profiles`, `user_roles` | A profile and alert prefs are created by trigger on sign-up. Roles: `business_owner`, `moderator`, `admin`; plain shoppers have no row |
 | Businesses | `businesses`, `business_members`, `brands`, `outlets` | A business is the portal account; brands are what shoppers see and follow. A brand can exist before a business claims it (ingested deals) |

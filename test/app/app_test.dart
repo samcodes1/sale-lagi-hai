@@ -26,7 +26,10 @@ void main() {
   testWidgets('App boots with the config it is given', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appConfigProvider.overrideWithValue(config)],
+        overrides: [
+          onboardedShopper,
+          appConfigProvider.overrideWithValue(config),
+        ],
         child: const App(),
       ),
     );
@@ -40,7 +43,9 @@ void main() {
   testWidgets('App fails loudly if the config was never provided', (
     tester,
   ) async {
-    await tester.pumpWidget(const ProviderScope(child: App()));
+    await tester.pumpWidget(
+      ProviderScope(overrides: [onboardedShopper], child: const App()),
+    );
 
     // Riverpod wraps provider errors, so check the message, not the type.
     expect(
@@ -66,7 +71,10 @@ void main() {
   ) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appConfigProvider.overrideWithValue(config)],
+        overrides: [
+          onboardedShopper,
+          appConfigProvider.overrideWithValue(config),
+        ],
         child: const App(),
       ),
     );
@@ -93,6 +101,7 @@ void main() {
     ) async {
       final container = ProviderContainer(
         overrides: [
+          onboardedShopper,
           appConfigProvider.overrideWithValue(config),
           deviceLocaleProvider.overrideWithValue(device),
           keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),

@@ -93,24 +93,36 @@ void main() {
       );
     });
 
-    test('permissions: INTERNET only; unused SDK permissions stripped', () {
-      final permissions = manifest.findAllElements('uses-permission');
-      final requested = permissions
-          .where((p) => _attr(p, 'node', ns: _tools) != 'remove')
-          .map((p) => _attr(p, 'name'))
-          .toList();
-      expect(requested, ['android.permission.INTERNET']);
-      final removed = permissions
-          .where((p) => _attr(p, 'node', ns: _tools) == 'remove')
-          .map((p) => _attr(p, 'name'));
-      expect(
-        removed,
-        containsAll([
-          'android.permission.READ_PHONE_STATE',
-          'com.google.android.gms.permission.AD_ID',
-        ]),
-      );
-    });
+    test(
+      'permissions: an explicit allowlist; unused and risky ones stripped',
+      () {
+        final permissions = manifest.findAllElements('uses-permission');
+        final requested = permissions
+            .where((p) => _attr(p, 'node', ns: _tools) != 'remove')
+            .map((p) => _attr(p, 'name'))
+            .toList();
+        // Every addition needs a reason in the manifest and a line in the
+        // Play Data safety form (docs/security/CHECKLIST.md).
+        expect(requested, [
+          'android.permission.INTERNET',
+          'android.permission.ACCESS_COARSE_LOCATION',
+          'android.permission.POST_NOTIFICATIONS',
+        ]);
+        final removed = permissions
+            .where((p) => _attr(p, 'node', ns: _tools) == 'remove')
+            .map((p) => _attr(p, 'name'));
+        expect(
+          removed,
+          containsAll([
+            'android.permission.READ_PHONE_STATE',
+            'com.google.android.gms.permission.AD_ID',
+            // Approximate location is enough for cities and "Near me".
+            'android.permission.ACCESS_FINE_LOCATION',
+            'android.permission.ACCESS_BACKGROUND_LOCATION',
+          ]),
+        );
+      },
+    );
 
     test('debug and profile manifests add nothing beyond INTERNET', () {
       for (final variant in ['debug', 'profile']) {
@@ -269,6 +281,77 @@ void main() {
           path,
         ]);
         expect(tracked.exitCode, isNot(0), reason: '$path is tracked by git');
+      }
+    });
+  });
+
+  // Not security, but the same manifest and resources: the brand icon and
+  // splash (4.1) must stay wired up.
+  group('icon and splash', () {
+    const res = '$_main/res';
+
+    test('adaptive icon with a monochrome layer for themed icons', () {
+      final icon = _xml('$res/mipmap-anydpi-v26/ic_launcher.xml');
+      for (final layer in ['background', 'foreground', 'monochrome']) {
+        expect(icon.findAllElements(layer), hasLength(1), reason: layer);
+      }
+      expect(_attr(application, 'roundIcon'), '@mipmap/ic_launcher_round');
+      for (final density in ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']) {
+        for (final name in ['ic_launcher', 'ic_launcher_round']) {
+          expect(
+            File('$res/mipmap-$density/$name.png').existsSync(),
+            isTrue,
+            reason: '$density/$name',
+          );
+        }
+      }
+    });
+
+    test('Android 12+ splash: brand background and mark, light and dark', () {
+      for (final (dir, color, icon) in const [
+        ('values-v31', '@color/brand_haldi', '@drawable/splash_icon'),
+        (
+          'values-night-v31',
+          '@color/brand_surma',
+          '@drawable/splash_icon_dark',
+        ),
+      ]) {
+        final items = {
+          for (final item
+              in _xml('$res/$dir/styles.xml')
+                  .findAllElements('style')
+                  .singleWhere((s) => s.getAttribute('name') == 'LaunchTheme')
+                  .findElements('item'))
+            item.getAttribute('name'): item.innerText.trim(),
+        };
+        expect(
+          items['android:windowSplashScreenBackground'],
+          color,
+          reason: dir,
+        );
+        expect(
+          items['android:windowSplashScreenAnimatedIcon'],
+          icon,
+          reason: dir,
+        );
+      }
+    });
+
+    test('older Androids show the same mark on the brand colour', () {
+      for (final (dir, color) in const [
+        ('drawable', '@color/brand_haldi'),
+        ('drawable-night', '@color/brand_surma'),
+      ]) {
+        final drawables = _xml('$res/$dir/launch_background.xml')
+            .findAllElements('item')
+            .map((i) => _attr(i, 'drawable'))
+            .toList();
+        expect(drawables.first, color, reason: dir);
+        expect(
+          drawables.last,
+          startsWith('@drawable/splash_icon'),
+          reason: dir,
+        );
       }
     });
   });

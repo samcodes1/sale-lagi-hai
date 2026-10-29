@@ -17,6 +17,9 @@ import 'package:sale_lagi_hai/core/state/retry_policy.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/storage/secure_store.dart';
 import 'package:sale_lagi_hai/design_system/fonts/font_licenses.dart';
+import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
+import 'package:sale_lagi_hai/features/onboarding/data/preferences_store.dart';
+import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 
 /// Validates the build config, installs error handling, connects the
 /// backend and starts the app.
@@ -68,6 +71,7 @@ Future<void> bootstrap() async {
         if (settings.store case final store?)
           keyValueStoreProvider.overrideWithValue(store),
         savedLocaleProvider.overrideWithValue(settings.locale),
+        savedPreferencesProvider.overrideWithValue(settings.preferences),
         backendGatewayProvider.overrideWithValue(backend),
         demoModeProvider.overrideWithValue(!config.hasBackend),
       ],
@@ -91,8 +95,12 @@ AppLogger createLogger({
 );
 
 /// Settings needed before the first frame, so the app opens in the right
-/// language without a flash.
-typedef StartupSettings = ({KeyValueStore? store, Locale? locale});
+/// language, and on the right screen (onboarding or Home), without a flash.
+typedef StartupSettings = ({
+  KeyValueStore? store,
+  Locale? locale,
+  ShopperPreferences preferences,
+});
 
 /// Reads [StartupSettings]. Never throws: if storage is unavailable the app
 /// starts with defaults (and the error is logged).
@@ -107,9 +115,10 @@ Future<StartupSettings> loadStartupSettings(
     return (
       store: store,
       locale: code == null ? null : AppLocales.resolve(Locale(code)),
+      preferences: await PreferencesStore(store).read(),
     );
   } on Object catch (error) {
     logger.warning('Could not read saved settings', error: error);
-    return (store: null, locale: null);
+    return (store: null, locale: null, preferences: const ShopperPreferences());
   }
 }

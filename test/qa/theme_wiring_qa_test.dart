@@ -19,6 +19,8 @@ import 'package:sale_lagi_hai/design_system/theme/deal_colors.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/features/home/presentation/home_screen.dart';
 
+import '../helpers/fakes.dart';
+
 double _channel(double v) {
   final c = (v * 255).round() / 255;
   return c <= 0.04045
@@ -55,7 +57,10 @@ Future<ThemeData> _effectiveTheme(
   });
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [appConfigProvider.overrideWithValue(_config)],
+      overrides: [
+        onboardedShopper,
+        appConfigProvider.overrideWithValue(_config),
+      ],
       child: const App(),
     ),
   );

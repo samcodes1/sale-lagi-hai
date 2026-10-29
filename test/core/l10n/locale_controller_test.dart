@@ -7,6 +7,7 @@ import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/core/logging/log_sinks.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
+import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 
 import '../../helpers/fakes.dart';
 
@@ -179,8 +180,13 @@ void main() {
         openStore: () => throw StateError('no plugin'),
       );
 
-      expect(failing, (store: null, locale: null));
-      expect(throwing, (store: null, locale: null));
+      const defaults = (
+        store: null,
+        locale: null,
+        preferences: ShopperPreferences(),
+      );
+      expect(failing, defaults);
+      expect(throwing, defaults);
       expect(sink.records, hasLength(2));
     });
   });

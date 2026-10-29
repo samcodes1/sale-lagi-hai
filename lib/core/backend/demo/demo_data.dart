@@ -21,6 +21,8 @@ final demoCities = <Map<String, Object?>>[
     'name_ur': 'کراچی',
     'province': 'sindh',
     'is_live': true,
+    'center_lat': 24.8607,
+    'center_lng': 67.0011,
     'sort_order': 1,
   },
   {
@@ -30,6 +32,8 @@ final demoCities = <Map<String, Object?>>[
     'name_ur': 'لاہور',
     'province': 'punjab',
     'is_live': false,
+    'center_lat': 31.5204,
+    'center_lng': 74.3587,
     'sort_order': 2,
   },
   {
@@ -39,6 +43,8 @@ final demoCities = <Map<String, Object?>>[
     'name_ur': 'اسلام آباد',
     'province': 'islamabad',
     'is_live': false,
+    'center_lat': 33.6844,
+    'center_lng': 73.0479,
     'sort_order': 3,
   },
   {
@@ -48,6 +54,8 @@ final demoCities = <Map<String, Object?>>[
     'name_ur': 'راولپنڈی',
     'province': 'punjab',
     'is_live': false,
+    'center_lat': 33.5651,
+    'center_lng': 73.0169,
     'sort_order': 4,
   },
   {
@@ -57,6 +65,8 @@ final demoCities = <Map<String, Object?>>[
     'name_ur': 'فیصل آباد',
     'province': 'punjab',
     'is_live': false,
+    'center_lat': 31.4504,
+    'center_lng': 73.135,
     'sort_order': 5,
   },
   {
@@ -66,6 +76,8 @@ final demoCities = <Map<String, Object?>>[
     'name_ur': 'ملتان',
     'province': 'punjab',
     'is_live': false,
+    'center_lat': 30.1575,
+    'center_lng': 71.5249,
     'sort_order': 6,
   },
   {
@@ -75,6 +87,8 @@ final demoCities = <Map<String, Object?>>[
     'name_ur': 'پشاور',
     'province': 'khyber_pakhtunkhwa',
     'is_live': false,
+    'center_lat': 34.0151,
+    'center_lng': 71.5785,
     'sort_order': 7,
   },
   {
@@ -84,6 +98,8 @@ final demoCities = <Map<String, Object?>>[
     'name_ur': 'حیدرآباد',
     'province': 'sindh',
     'is_live': false,
+    'center_lat': 25.396,
+    'center_lng': 68.3578,
     'sort_order': 9,
   },
 ];

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon foreground. Mark max radius 27.2dp inside the 33dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#1A1433" android:pathData="M51.85 37.82L65.38 29C64.2 43.71 57.73 56.06 54.2 61.65L52.44 61.82C50.96 54.29 50.96 45.47 51.85 37.82ZM50.16 66.09Q50.79 65.47 51.41 66.09L56.93 71.61Q57.55 72.24 56.93 72.86L51.41 78.38Q50.79 79 50.16 78.38L44.65 72.86Q44.02 72.24 44.65 71.61Z"/>
+</vector>

@@ -1,0 +1,144 @@
+import 'dart:math' as math;
+
+import 'package:meta/meta.dart';
+
+/// A city the app covers. Local deals go live city by city ([isLive]);
+/// nationwide and online deals show in every city.
+@immutable
+final class City {
+  const new({
+    required this.id,
+    required this.slug,
+    required this.nameEn,
+    required this.nameUr,
+    required this.isLive,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  final String id;
+  final String slug;
+  final String nameEn;
+  final String nameUr;
+  final bool isLive;
+  final double latitude;
+  final double longitude;
+
+  String name({required bool urdu}) => urdu ? nameUr : nameEn;
+
+  /// Great-circle distance from this city's centre, in kilometres.
+  double distanceKm(double latitude, double longitude) {
+    const earthKm = 6371.0;
+    double rad(double degrees) => degrees * math.pi / 180;
+    final dLat = rad(latitude - this.latitude);
+    final dLng = rad(longitude - this.longitude);
+    final h =
+        math.pow(math.sin(dLat / 2), 2) +
+        math.cos(rad(this.latitude)) *
+            math.cos(rad(latitude)) *
+            math.pow(math.sin(dLng / 2), 2);
+    return 2 * earthKm * math.asin(math.min(1, math.sqrt(h)));
+  }
+
+  @override
+  bool operator ==(Object other) => other is City && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// The city whose centre is nearest, if one is within [maxKm] (a location
+/// outside every covered city returns `null`).
+City? nearestCity(
+  List<City> cities,
+  double latitude,
+  double longitude, {
+  double maxKm = 60,
+}) {
+  City? best;
+  var bestKm = double.infinity;
+  for (final city in cities) {
+    final km = city.distanceKm(latitude, longitude);
+    if (km < bestKm) {
+      best = city;
+      bestKm = km;
+    }
+  }
+  return bestKm <= maxKm ? best : null;
+}
+
+/// A deal category. Top-level categories ([parentId] null) are the
+/// interests shoppers pick; subcategories belong to one of them.
+@immutable
+final class Category {
+  const new({
+    required this.id,
+    required this.slug,
+    required this.nameEn,
+    required this.nameUr,
+    required this.icon,
+    this.parentId,
+  });
+
+  final String id;
+  final String slug;
+  final String? parentId;
+  final String nameEn;
+  final String nameUr;
+
+  /// A Material Symbols name ("restaurant"); the app maps it to an icon.
+  final String icon;
+
+  bool get isTopLevel => parentId == null;
+
+  String name({required bool urdu}) => urdu ? nameUr : nameEn;
+
+  @override
+  bool operator ==(Object other) => other is Category && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// A brand shoppers can follow.
+@immutable
+final class Brand {
+  const new({
+    required this.id,
+    required this.slug,
+    required this.name,
+    required this.categoryId,
+    this.nameUr,
+    this.logoPath,
+    this.isVerified = false,
+  });
+
+  final String id;
+  final String slug;
+  final String name;
+  final String? nameUr;
+  final String categoryId;
+  final String? logoPath;
+  final bool isVerified;
+
+  String displayName({required bool urdu}) => urdu ? (nameUr ?? name) : name;
+
+  @override
+  bool operator ==(Object other) => other is Brand && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// Reference data: cities, categories and brands.
+abstract interface class CatalogRepository {
+  /// Every city, live ones first, then in the backend's order.
+  Future<List<City>> cities();
+
+  /// Active categories, top-level and sub, in the backend's order.
+  Future<List<Category>> categories();
+
+  /// Active brands, by name. [categoryIds] limits them to those categories
+  /// (pass subcategories too: a brand belongs to one subcategory).
+  Future<List<Brand>> brands({List<String>? categoryIds, int limit = 60});
+}

@@ -8,6 +8,8 @@ import 'package:sale_lagi_hai/app/config/app_config.dart';
 import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
 import 'package:sale_lagi_hai/app/config/flavor.dart';
 
+import '../helpers/fakes.dart';
+
 const _config = AppConfig(
   flavor: Flavor.dev,
   appName: 'SLH Dev',
@@ -16,7 +18,7 @@ const _config = AppConfig(
 );
 
 Widget _app() => ProviderScope(
-  overrides: [appConfigProvider.overrideWithValue(_config)],
+  overrides: [onboardedShopper, appConfigProvider.overrideWithValue(_config)],
   child: const App(),
 );
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed icon (Android 13+). System tints it; only alpha matters. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FF000000" android:pathData="M52.02 39.12L64.47 31C63.38 44.53 57.43 55.89 54.18 61.04L52.56 61.2C51.21 54.27 51.21 46.15 52.02 39.12ZM50.47 65.13Q51.05 64.55 51.62 65.13L56.69 70.2Q57.27 70.78 56.69 71.35L51.62 76.43Q51.05 77 50.47 76.43L45.4 71.35Q44.82 70.78 45.4 70.2Z"/>
+</vector>

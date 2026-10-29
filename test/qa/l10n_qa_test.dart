@@ -254,6 +254,7 @@ void main() {
       final logger = AppLogger(sinks: []);
       final first = ProviderContainer(
         overrides: [
+          onboardedShopper,
           keyValueStoreProvider.overrideWithValue(store),
           deviceLocaleProvider.overrideWithValue(const Locale('en', 'US')),
           loggerProvider.overrideWithValue(logger),
@@ -272,6 +273,7 @@ void main() {
 
       final second = ProviderContainer(
         overrides: [
+          onboardedShopper,
           savedLocaleProvider.overrideWithValue(settings.locale),
           deviceLocaleProvider.overrideWithValue(const Locale('en', 'US')),
         ],
@@ -286,6 +288,7 @@ void main() {
         final store = InMemoryKeyValueStore();
         final c = ProviderContainer(
           overrides: [
+            onboardedShopper,
             keyValueStoreProvider.overrideWithValue(store),
             deviceLocaleProvider.overrideWithValue(AppLocales.english),
             loggerProvider.overrideWithValue(AppLogger(sinks: [])),
@@ -308,6 +311,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            onboardedShopper,
             appConfigProvider.overrideWithValue(
               const AppConfig(
                 flavor: Flavor.dev,

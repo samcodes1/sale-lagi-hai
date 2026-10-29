@@ -47,6 +47,7 @@ Future<GoRouter> _pumpApp(
   addTearDown(tester.view.reset);
   final container = ProviderContainer(
     overrides: [
+      onboardedShopper,
       appConfigProvider.overrideWithValue(_config(flavor)),
       deviceLocaleProvider.overrideWithValue(const Locale('en')),
       keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),

@@ -329,4 +329,137 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeDark => 'Dark';
+
+  @override
+  String get actionContinue => 'Continue';
+
+  @override
+  String get actionSkip => 'Skip';
+
+  @override
+  String get actionBack => 'Back';
+
+  @override
+  String onboardingStep(int step, int total) {
+    return 'Step $step of $total';
+  }
+
+  @override
+  String get welcomeTitle => 'Every sale in Pakistan, in one place.';
+
+  @override
+  String get welcomeLanguagePrompt => 'Choose your language';
+
+  @override
+  String get welcomeLanguagePromptOther => 'اپنی زبان منتخب کریں';
+
+  @override
+  String get cityTitle => 'Where do you shop?';
+
+  @override
+  String get cityBody =>
+      'We\'ll show deals from your city. Nationwide and online deals show everywhere.';
+
+  @override
+  String get actionDetectCity => 'Detect my city';
+
+  @override
+  String get cityDetecting => 'Finding your city…';
+
+  @override
+  String cityDetected(String city) {
+    return 'You\'re in $city.';
+  }
+
+  @override
+  String get cityNotCovered =>
+      'Your location isn\'t near a city we cover yet. Pick one below.';
+
+  @override
+  String get cityLocationDenied => 'No problem. Pick your city below.';
+
+  @override
+  String get cityLocationBlocked =>
+      'Location is off for this app. Turn it on in settings, or pick your city below.';
+
+  @override
+  String get cityLocationOff =>
+      'Your phone\'s location is off. Pick your city below.';
+
+  @override
+  String get cityLocationUnavailable =>
+      'We couldn\'t find your location. Pick your city below.';
+
+  @override
+  String get cityLocalSoon => 'Local deals coming soon';
+
+  @override
+  String get interestsTitle => 'What are you into?';
+
+  @override
+  String get interestsBody =>
+      'Pick 3 or more to tune your feed. You can change them later.';
+
+  @override
+  String interestsPicked(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count picked',
+      one: '1 picked',
+      zero: 'None picked yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get brandsTitle => 'Favourite brands';
+
+  @override
+  String get brandsBody => 'Follow brands to hear first when their sale is on.';
+
+  @override
+  String get brandsEmpty =>
+      'No brands here yet. You can follow brands later from Explore.';
+
+  @override
+  String brandsFollowed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Following $count brands',
+      one: 'Following 1 brand',
+      zero: 'Following none yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get alertsTitle => 'Be first to know';
+
+  @override
+  String get alertsBody =>
+      'Get an alert when a brand you follow starts a sale.';
+
+  @override
+  String get alertsExampleLabel => 'Example alert';
+
+  @override
+  String get alertsExampleTitle => 'Threads: up to 50% off';
+
+  @override
+  String get alertsExampleBody => 'Winter collection sale, ends Sunday';
+
+  @override
+  String get alertsPromiseCap => 'At most 3 alerts a day';
+
+  @override
+  String get alertsPromiseQuiet => 'Never at night (10 pm to 8 am)';
+
+  @override
+  String get alertsPromiseTopics => 'Choose what you hear about in Settings';
+
+  @override
+  String get alertsBlocked =>
+      'Alerts are blocked for this app. You can turn them on in settings.';
 }

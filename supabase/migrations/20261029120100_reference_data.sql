@@ -12,6 +12,10 @@ create table public.cities (
   -- everywhere regardless.
   is_live boolean not null default false,
   center extensions.geography(point, 4326) not null,
+  -- The centre as plain numbers, so the app finds the nearest city on the
+  -- phone: a detected location never leaves the device.
+  center_lat double precision generated always as (extensions.st_y(center::extensions.geometry)) stored,
+  center_lng double precision generated always as (extensions.st_x(center::extensions.geometry)) stored,
   sort_order smallint not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

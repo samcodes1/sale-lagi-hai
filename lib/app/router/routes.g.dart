@@ -6,7 +6,7 @@ part of 'routes.dart';
 // GoRouterGenerator
 // **************************************************************************
 
-List<RouteBase> get $appRoutes => [$appShellRoute];
+List<RouteBase> get $appRoutes => [$appShellRoute, $welcomeRoute];
 
 RouteBase get $appShellRoute => StatefulShellRouteData.$route(
   factory: $AppShellRouteExtension._fromState,
@@ -294,6 +294,138 @@ mixin $WidgetGalleryRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/profile/dev/gallery');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $welcomeRoute => GoRouteData.$route(
+  path: '/welcome',
+  hasOverriddenOnExit: false,
+  factory: $WelcomeRoute._fromState,
+  routes: [
+    GoRouteData.$route(
+      path: 'city',
+      hasOverriddenOnExit: false,
+      factory: $WelcomeCityRoute._fromState,
+    ),
+    GoRouteData.$route(
+      path: 'interests',
+      hasOverriddenOnExit: false,
+      factory: $WelcomeInterestsRoute._fromState,
+    ),
+    GoRouteData.$route(
+      path: 'brands',
+      hasOverriddenOnExit: false,
+      factory: $WelcomeBrandsRoute._fromState,
+    ),
+    GoRouteData.$route(
+      path: 'alerts',
+      hasOverriddenOnExit: false,
+      factory: $WelcomeAlertsRoute._fromState,
+    ),
+  ],
+);
+
+mixin $WelcomeRoute on GoRouteData {
+  static WelcomeRoute _fromState(GoRouterState state) => const WelcomeRoute();
+
+  @override
+  String get location => GoRouteData.$location('/welcome');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $WelcomeCityRoute on GoRouteData {
+  static WelcomeCityRoute _fromState(GoRouterState state) =>
+      const WelcomeCityRoute();
+
+  @override
+  String get location => GoRouteData.$location('/welcome/city');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $WelcomeInterestsRoute on GoRouteData {
+  static WelcomeInterestsRoute _fromState(GoRouterState state) =>
+      const WelcomeInterestsRoute();
+
+  @override
+  String get location => GoRouteData.$location('/welcome/interests');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $WelcomeBrandsRoute on GoRouteData {
+  static WelcomeBrandsRoute _fromState(GoRouterState state) =>
+      const WelcomeBrandsRoute();
+
+  @override
+  String get location => GoRouteData.$location('/welcome/brands');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $WelcomeAlertsRoute on GoRouteData {
+  static WelcomeAlertsRoute _fromState(GoRouterState state) =>
+      const WelcomeAlertsRoute();
+
+  @override
+  String get location => GoRouteData.$location('/welcome/alerts');
 
   @override
   void go(BuildContext context) => context.go(location);
