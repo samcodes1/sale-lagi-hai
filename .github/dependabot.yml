@@ -1,0 +1,41 @@
+# Dependency updates. Security updates are opened as soon as an advisory is
+# published; version updates are batched weekly so CI runs stay few.
+version: 2
+updates:
+  - package-ecosystem: pub
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Karachi
+    open-pull-requests-limit: 5
+    groups:
+      # Minor and patch updates in one PR; majors one by one, since they
+      # need code changes (and build_runner is pinned below 2.17).
+      pub-minor:
+        update-types: [minor, patch]
+    ignore:
+      # build_runner 2.17 needs build 5, which riverpod_generator and
+      # go_router_builder don't support yet (CLAUDE.md, stack notes).
+      - dependency-name: build_runner
+        versions: [">=2.17.0"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Karachi
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Karachi
+    groups:
+      gradle:
+        patterns: ["*"]

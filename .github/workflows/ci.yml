@@ -33,6 +33,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # Known vulnerabilities in the locked dependencies (OSV database), plus
+  # pub.dev's own checks: advisories, retracted versions, discontinued or
+  # banned packages and non-pub.dev sources (tool/audit_deps.dart).
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: google/osv-scanner-action/osv-scanner-action@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+        with:
+          scan-args: |-
+            --lockfile=pubspec.lock
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run tool/audit_deps.dart pubspec.lock --online
+
   quality:
     runs-on: ubuntu-latest
     steps:
@@ -103,6 +122,32 @@ jobs:
           flutter build apk --debug
           --flavor ${{ matrix.flavor }}
           --dart-define-from-file=env/${{ matrix.flavor }}.json
+
+  # A release build exercises R8 (shrinking and obfuscation) and Dart
+  # obfuscation, which debug builds skip. It is signed with the debug key
+  # (no secrets in CI yet) and is not uploaded; see docs/RELEASE.md.
+  build-android-release:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: cp env/prod.example.json env/prod.json
+      - run: >-
+          flutter build appbundle --release
+          --flavor prod
+          --dart-define-from-file=env/prod.json
+          --obfuscate --split-debug-info=build/symbols
+      - name: Symbols were split out
+        run: test -n "$(ls -A build/symbols)"
 
   build-web:
     needs: quality

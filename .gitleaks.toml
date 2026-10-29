@@ -1,0 +1,47 @@
+# Secret scanning (gitleaks, run in CI by .github/workflows/ci.yml).
+# The default rules plus the secrets specific to this project. A finding
+# fails CI: rotate the secret first, then remove it from history.
+title = "Sale Lagi Hai! secret scanning"
+
+[extend]
+useDefault = true
+
+# Supabase server keys must never reach the client or the repository. The
+# publishable key (sb_publishable_...) and the legacy anon JWT are public.
+[[rules]]
+id = "supabase-secret-key"
+description = "Supabase secret API key (server-only)"
+regex = '''\bsb_secret_[A-Za-z0-9_-]{20,}'''
+keywords = ["sb_secret_"]
+
+[[rules]]
+id = "supabase-service-role-key"
+description = "Supabase service_role JWT assigned in config or code"
+regex = '''(?i)service[_-]?role[A-Za-z0-9_"' ]{0,20}[:=]\s*["']?(eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,})'''
+secretGroup = 1
+keywords = ["service_role", "service-role", "servicerole"]
+
+[[rules]]
+id = "supabase-db-connection-string"
+description = "Postgres connection string with a password"
+regex = '''postgres(?:ql)?://[^:\s/]+:([^@\s]{8,})@[^\s]+'''
+secretGroup = 1
+keywords = ["postgres://", "postgresql://"]
+
+# android/key.properties is gitignored; this catches a copy pasted elsewhere.
+[[rules]]
+id = "android-signing-password"
+description = "Android keystore or key password"
+regex = '''(?im)^\s*(?:store|key)Password\s*=\s*([^\s$()"']{6,})\s*$'''
+secretGroup = 1
+keywords = ["storepassword", "keypassword"]
+
+# Test fixtures: short, obviously fake values that the default JWT rule
+# matches. Listed by value so a real token in a test still fails.
+[[allowlists]]
+description = "Fake JWTs in log-redaction tests"
+regexTarget = "match"
+regexes = [
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJyb2xlIjoiYW5vbiJ9\.abc-_123''',
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJwaG9uZSI6IjkyMzAwIn0''',
+]
