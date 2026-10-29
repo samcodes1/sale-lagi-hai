@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:alchemist/alchemist.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
-import 'package:sale_lagi_hai/design_system/theme/app_theme.dart';
 
 import '../helpers/golden_host.dart';
+import '../helpers/test_app.dart';
 
 void main() {
   // goldenTest registers its test synchronously; the Future only tracks
@@ -28,11 +29,37 @@ void main() {
               name: name,
               child: SizedBox(
                 width: 412,
-                height: 1650,
+                height: 1900,
                 child: goldenHost(
                   const ThemePreviewPage(),
                   brightness: brightness,
                   highContrast: highContrast,
+                ),
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+
+  unawaited(
+    goldenTest(
+      'Theme preview in Urdu (right to left)',
+      fileName: 'theme_preview_urdu',
+      constraints: const BoxConstraints.tightFor(width: 870),
+      builder: () => GoldenTestGroup(
+        columns: 2,
+        children: [
+          for (final brightness in Brightness.values)
+            GoldenTestScenario(
+              name: 'ur ${brightness.name}',
+              child: SizedBox(
+                width: 412,
+                height: 1900,
+                child: goldenHost(
+                  const ThemePreviewPage(),
+                  locale: AppLocales.urdu,
+                  brightness: brightness,
                 ),
               ),
             ),
@@ -52,10 +79,7 @@ void main() {
         addTearDown(tester.view.reset);
 
         await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.build(brightness: brightness),
-            home: const ThemePreviewPage(),
-          ),
+          testApp(const ThemePreviewPage(), brightness: brightness),
         );
 
         await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
@@ -78,10 +102,7 @@ void main() {
             size: Size(360, 800),
             textScaler: TextScaler.linear(2),
           ),
-          child: MaterialApp(
-            theme: AppTheme.light(),
-            home: const ThemePreviewPage(),
-          ),
+          child: testApp(const ThemePreviewPage()),
         ),
       );
       // Scroll through the whole page so every section lays out.

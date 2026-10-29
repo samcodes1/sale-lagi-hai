@@ -5,8 +5,14 @@ import 'package:sale_lagi_hai/app/app.dart';
 import 'package:sale_lagi_hai/app/config/app_config.dart';
 import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
 import 'package:sale_lagi_hai/app/config/flavor.dart';
+import 'package:sale_lagi_hai/core/core_providers.dart';
+import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
+import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
 import 'package:sale_lagi_hai/design_system/theme/deal_colors.dart';
+import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+
+import '../helpers/fakes.dart';
 
 void main() {
   const config = AppConfig(
@@ -77,5 +83,73 @@ void main() {
     expect(app.theme!.brightness, Brightness.light);
     expect(app.darkTheme!.brightness, Brightness.dark);
     expect(app.highContrastDarkTheme!.brightness, Brightness.dark);
+  });
+
+  group('language and direction', () {
+    Future<ProviderContainer> pumpApp(
+      WidgetTester tester,
+      Locale device,
+    ) async {
+      final container = ProviderContainer(
+        overrides: [
+          appConfigProvider.overrideWithValue(config),
+          deviceLocaleProvider.overrideWithValue(device),
+          keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),
+          loggerProvider.overrideWithValue(AppLogger(sinks: [])),
+        ],
+      );
+      addTearDown(container.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(container: container, child: const App()),
+      );
+      await tester.pumpAndSettle();
+      return container;
+    }
+
+    testWidgets('an English phone gets English, left to right', (tester) async {
+      await pumpApp(tester, const Locale('en', 'PK'));
+      final context = tester.element(find.byType(ThemePreviewPage));
+
+      expect(Localizations.localeOf(context), AppLocales.english);
+      expect(Directionality.of(context), TextDirection.ltr);
+      expect(
+        Theme.of(context).textTheme.headlineMedium!.fontFamily,
+        BrandFonts.display,
+      );
+    });
+
+    testWidgets('an Urdu phone gets Urdu, right to left, Urdu type', (
+      tester,
+    ) async {
+      await pumpApp(tester, const Locale('ur', 'PK'));
+      final context = tester.element(find.byType(ThemePreviewPage));
+
+      expect(Localizations.localeOf(context), AppLocales.urdu);
+      expect(Directionality.of(context), TextDirection.rtl);
+      expect(
+        Theme.of(context).textTheme.headlineMedium!.fontFamily,
+        BrandFonts.urdu,
+      );
+      // The toggle offers the other language, labelled in that language.
+      expect(find.text('English'), findsOneWidget);
+    });
+
+    testWidgets('switching language re-renders the whole app', (tester) async {
+      final container = await pumpApp(tester, const Locale('en'));
+
+      await tester.tap(find.text('اردو'));
+      await tester.pumpAndSettle();
+
+      expect(container.read(localeControllerProvider), AppLocales.urdu);
+      expect(
+        Directionality.of(tester.element(find.byType(ThemePreviewPage))),
+        TextDirection.rtl,
+      );
+
+      await tester.tap(find.text('English'));
+      await tester.pumpAndSettle();
+
+      expect(container.read(localeControllerProvider), AppLocales.english);
+    });
   });
 }

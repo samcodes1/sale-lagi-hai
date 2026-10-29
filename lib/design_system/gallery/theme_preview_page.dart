@@ -1,4 +1,11 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sale_lagi_hai/core/l10n/deal_time_labels.dart';
+import 'package:sale_lagi_hai/core/l10n/failure_messages.dart';
+import 'package:sale_lagi_hai/core/l10n/formatters.dart';
+import 'package:sale_lagi_hai/core/l10n/l10n.dart';
+import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
+import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/design_system/theme/app_theme.dart';
 import 'package:sale_lagi_hai/design_system/theme/deal_colors.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
@@ -15,13 +22,17 @@ class ThemePreviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Theme preview')),
+      appBar: AppBar(
+        title: const Text('Theme preview'),
+        actions: const [_LanguageToggle()],
+      ),
       body: ListView(
         padding: const EdgeInsetsDirectional.all(BrandSpacing.screenGutter),
         children: [
           const _Section(title: 'Type scale', child: _TypeScale()),
           const _Section(title: 'Colour roles', child: _ColourRoles()),
           const _Section(title: 'Components', child: _Components()),
+          const _Section(title: 'Localization', child: _LocalizationSample()),
           _Section(
             title: 'Urdu (Nastaliq, RTL)',
             child: Theme(
@@ -254,6 +265,72 @@ class _UrduSample extends StatelessWidget {
             OutlinedButton(onPressed: () {}, child: const Text('شیئر کریں')),
           ],
         ),
+      ],
+    );
+  }
+}
+
+/// Switches the whole app between English and Urdu.
+class _LanguageToggle extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(localeControllerProvider);
+    final l10n = context.l10n;
+    final next = AppLocales.isRtl(locale)
+        ? AppLocales.english
+        : AppLocales.urdu;
+    return TextButton.icon(
+      onPressed: () => ref.read(localeControllerProvider.notifier).select(next),
+      icon: const Icon(Icons.translate),
+      label: Text(
+        AppLocales.isRtl(locale) ? l10n.languageEnglish : l10n.languageUrdu,
+      ),
+    );
+  }
+}
+
+/// Real strings and formatters in the current language.
+class _LocalizationSample extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final format = AppFormatters.of(context);
+    final labels = DealTimeLabels(l10n, format);
+    final text = Theme.of(context).textTheme;
+    final now = DateTime(2026, 10, 29, 12);
+    final lines = [
+      [
+        l10n.navHome,
+        l10n.navExplore,
+        l10n.navAlerts,
+        l10n.navSaved,
+        l10n.navProfile,
+      ].join(' · '),
+      [
+        format.price(2999),
+        format.discount(40),
+        l10n.flatPercentOff(30),
+      ].join(' · '),
+      labels.expiry(now.add(const Duration(hours: 3)), now: now),
+      labels.expiry(DateTime(2026, 10, 30, 20), now: now),
+      labels.expiry(DateTime(2026, 11, 3), now: now),
+      labels.verified(now.subtract(const Duration(hours: 3)), now: now),
+      l10n.featuredLabel,
+      const OfflineFailure().message(l10n),
+      l10n.emptySaved,
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final line in lines)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(bottom: BrandSpacing.s2),
+            child: Text(line, style: text.bodyMedium),
+          ),
       ],
     );
   }

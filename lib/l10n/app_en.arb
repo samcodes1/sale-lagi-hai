@@ -91,6 +91,7 @@
   "errorStorage": "Couldn't save on this phone. Free up some space and try again.",
   "errorUnexpected": "Something went wrong. Try again.",
 
+  "settingsLanguage": "Language",
   "languageEnglish": "English",
   "languageUrdu": "اردو",
   "@languageUrdu": { "description": "Always shown in its own script in both languages." },

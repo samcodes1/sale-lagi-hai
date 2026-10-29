@@ -31,8 +31,11 @@ dependencies:
   connectivity_plus: ^7.3.2
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_riverpod: ^3.4.3
   flutter_secure_storage: ^11.2.0
+  intl: ^0.20.3
   material_ui: ^1.8.0
   meta: ^1.19.0
   shared_preferences: ^2.5.6
@@ -54,6 +57,7 @@ dev_dependencies:
   # rules and activating additional ones.
 flutter:
   uses-material-design: true
+  generate: true
 
   # Brand fonts are bundled (never fetched at runtime). Licences (SIL OFL)
   # are in assets/fonts/licenses and registered with LicenseRegistry.
