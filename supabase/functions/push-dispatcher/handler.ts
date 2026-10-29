@@ -28,7 +28,13 @@ export async function handle(
 
   try {
     // Counts only: no tokens, titles or user ids in the response or logs.
-    return json(200, await dispatch(deps()));
+    const summary = await dispatch(deps());
+    if (summary.breakerTripped) {
+      // Loud, so monitoring catches it: FCM_SERVICE_ACCOUNT is probably for
+      // another Firebase project. Counts only.
+      console.error('push-dispatcher: most tokens reported dead; none dropped', summary.claimed);
+    }
+    return json(200, summary);
   } catch (error) {
     console.error('push-dispatcher run failed', error instanceof Error ? error.name : 'error');
     return json(500, { error: 'dispatch_failed' });

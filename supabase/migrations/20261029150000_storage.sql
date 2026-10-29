@@ -41,8 +41,9 @@ $$;
 -- May the caller write `<owner>/<item>/<file>` in deal-images (kind
 -- 'deal') or brand-logos (kind 'brand')? Members write in their business's
 -- folder, for that business's own deals or brands; staff (with MFA) also
--- write in `staff/` and in any business folder.
-create function private.can_write_media(kind text, path text) returns boolean
+-- write in `staff/` and in any business folder. A suspended business
+-- can't write, but still sees its files (for_write => false).
+create function private.can_write_media(kind text, path text, for_write boolean default true) returns boolean
 language sql stable security definer set search_path = '' as $$
   with p as (select storage.foldername(path) as folders)
   select private.is_image_name(path)
@@ -52,7 +53,10 @@ language sql stable security definer set search_path = '' as $$
           p.folders[1] = 'staff'
           or p.folders[1] in (select b.id::text from public.businesses b)))
        or (
-         p.folders[1] in (select id::text from private.my_active_business_ids() id)
+         p.folders[1] in (
+           select id::text from private.my_active_business_ids() id where for_write
+           union all
+           select id::text from private.my_business_ids() id where not for_write)
          and case kind
            when 'deal' then p.folders[2] in (
              select d.id::text from public.deals d
@@ -73,9 +77,9 @@ language sql stable security definer set search_path = '' as $$
   where o.owner = (select auth.uid()) and o.created_at > now() - interval '1 hour';
 $$;
 
-revoke execute on function private.is_image_name(text), private.can_write_media(text, text),
+revoke execute on function private.is_image_name(text), private.can_write_media(text, text, boolean),
   private.my_recent_uploads() from public;
-grant execute on function private.is_image_name(text), private.can_write_media(text, text),
+grant execute on function private.is_image_name(text), private.can_write_media(text, text, boolean),
   private.my_recent_uploads() to authenticated, service_role;
 
 -- ---------------------------------------------------------------------------
@@ -92,8 +96,8 @@ create policy "media: members and staff upload" on storage.objects
 create policy "media: members and staff see their files" on storage.objects
   for select to authenticated
   using (
-    (bucket_id = 'deal-images' and (select private.can_write_media('deal', name)))
-    or (bucket_id = 'brand-logos' and (select private.can_write_media('brand', name))));
+    (bucket_id = 'deal-images' and (select private.can_write_media('deal', name, false)))
+    or (bucket_id = 'brand-logos' and (select private.can_write_media('brand', name, false))));
 
 create policy "media: members and staff replace" on storage.objects
   for update to authenticated

@@ -135,3 +135,57 @@ test('QA 2.5-F5 (S4): SENDER_ID_MISMATCH (token of another Firebase project) dro
   const body = { error: { status: 'PERMISSION_DENIED', details: [{ errorCode: 'SENDER_ID_MISMATCH' }] } };
   assert.equal(classify(403, body).kind, 'dead-token');
 });
+
+// ---------------------------------------------------------------------------
+// Round 2 (commit 50a4ac6).
+// ---------------------------------------------------------------------------
+
+// QA BUG 2.5-F6 (S3): SENDER_ID_MISMATCH now drops the token (F5, which
+// QA suggested in round 1). If the deployed FCM_SERVICE_ACCOUNT belongs to
+// another Firebase project (a staging key on prod: one project per
+// flavor), every token answers SENDER_ID_MISMATCH and one run deletes
+// every user's devices. Expected: a run where (nearly) every send comes
+// back dead drops nothing and fails loudly, because that signals our
+// configuration, not the devices.
+test('QA BUG 2.5-F6: a run where every send is a dead token drops nothing', async () => {
+  const rows: ClaimedPush[] = Array.from({ length: 50 }, (_, i) => ({
+    outbox_id: i, token: `device-token-${i}-xxxxxxxxxxxx`, platform: 'android', title: 't', body: null, deal_id: null,
+  }));
+  const dropped: string[] = [];
+  const deps: DispatchDeps = {
+    claim: async () => rows,
+    markSent: async (ids) => ids.length,
+    dropTokens: async (tokens) => { dropped.push(...tokens); return tokens.length; },
+    send: async () => classify(403, { error: { status: 'PERMISSION_DENIED', details: [{ errorCode: 'SENDER_ID_MISMATCH' }] } }),
+  };
+  try {
+    await dispatch(deps);
+  } catch {
+    // Failing the run loudly is fine too.
+  }
+  assert.equal(dropped.length, 0, `dropped ${dropped.length} of 50 tokens in one run`);
+});
+
+// Checked in round 2: a burst of concurrent 401s shares one token refresh.
+test('a burst of 401s refreshes the access token once', async () => {
+  let oauthCalls = 0;
+  let rejected = 0;
+  const http = (async (url: string | URL) => {
+    if (String(url).includes('oauth2')) {
+      oauthCalls++;
+      await new Promise((r) => setTimeout(r, 2));
+      return new Response(JSON.stringify({ access_token: `tok${oauthCalls}`, expires_in: 3600 }), { status: 200 });
+    }
+    await new Promise((r) => setTimeout(r, 2));
+    if (rejected < 10) {
+      rejected++;
+      return new Response(JSON.stringify({ error: { status: 'UNAUTHENTICATED' } }), { status: 401 });
+    }
+    return new Response('{}', { status: 200 });
+  }) as typeof fetch;
+  const client = new FcmClient(await account(), http);
+  await client.send(push); // warm the cache
+  oauthCalls = 0;
+  await Promise.all(Array.from({ length: 10 }, () => client.send(push)));
+  assert.equal(oauthCalls, 1);
+});

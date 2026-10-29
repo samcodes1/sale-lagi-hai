@@ -2,7 +2,7 @@
 -- wall-clock time so the check is stable. "QA BUG" assertions FAIL until
 -- the bug in docs/qa/2.3.md is fixed.
 begin;
-select plan(3);
+select plan(5);
 
 -- 50 brands x 20 live deals, 1,000 outlets within 20 km of one point.
 create temp table x as select tests.make_city('qa-cost-city') as city, tests.make_category('qa-cost-food') as food;
@@ -33,7 +33,7 @@ begin
   return coalesce(worst, 0);
 end $$;
 grant execute on function pg_temp.card_banks_loops(text) to anon;
-grant select on x to anon;
+grant select on x to anon, authenticated;
 
 select tests.authenticate_as_anon();
 select is((select count(*) from public.nearby_deals(24.93, 67.04, 20000, 50)), 50::bigint,
@@ -44,6 +44,28 @@ select cmp_ok(pg_temp.card_banks_loops('select * from public.nearby_deals(24.93,
 select cmp_ok(pg_temp.card_banks_loops('select * from public.feed((select city from x))'), '<=', 50::bigint,
   'the feed builds cards for its page only');
 select tests.clear_authentication();
+
+-- ---------------------------------------------------------------------------
+-- QA BUG 2.3-R10 (S3, round 2): the following-only feed got slower. The
+-- new follows_deal isn't inlined (PostgreSQL never inlines a scalar SQL
+-- function whose body has a subquery), so it runs per candidate row, and
+-- each call runs my_follows() up to five times. At 20,000 deals it takes
+-- 857 ms against 196 ms for the round-1 version. Expected, as the
+-- migration says: my_follows() runs once per query.
+-- ---------------------------------------------------------------------------
+set local track_functions = 'all';
+create temp table follower as select tests.create_user() as uid;
+insert into public.follows (user_id, brand_id)
+  select uid, (select id from public.brands where slug = 'qa-cost-brand-1') from follower;
+select uid as follower_id from follower \gset
+select tests.authenticate_as(:'follower_id');
+select count(*) as followed_rows from public.feed((select city from x), null, true) \gset
+select tests.clear_authentication();
+select is(:'followed_rows'::bigint, 20::bigint, 'the following-only feed returns the followed brand''s 20 deals');
+select cmp_ok(
+  coalesce((select f.calls from pg_stat_xact_user_functions f join pg_proc p on p.oid = f.funcid
+            where p.proname = 'my_follows'), 0), '<=', 5::bigint,
+  'QA BUG 2.3-R10: my_follows() runs a bounded number of times per query, not per candidate deal');
 
 select * from finish();
 rollback;

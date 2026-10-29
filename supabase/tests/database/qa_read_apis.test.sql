@@ -2,7 +2,7 @@
 -- the city rollout. "QA BUG" assertions FAIL until the bug in
 -- docs/qa/2.3.md is fixed; TODO assertions are S4 findings.
 begin;
-select plan(15);
+select plan(18);
 
 create temp table w as select * from tests.make_world();
 grant select on w to anon, authenticated;
@@ -119,10 +119,71 @@ select is((select count(*) from public.feed(null, null, true) where id = (select
   'QA BUG 2.3-R2: following a category includes its subcategories');
 select tests.clear_authentication();
 
+-- ===========================================================================
+-- Round 2 (commit 50a4ac6).
+-- ===========================================================================
+
 -- ---------------------------------------------------------------------------
--- S4 findings (TODO).
+-- QA BUG 2.3-R8 (S2, regression from the R5 fix): search_hits keeps the
+-- best 250 hits before search_deals applies the city and category
+-- filters, so a filtered search misses matches whenever 250 better ones
+-- exist elsewhere. Expected: the filters apply before the cap.
 -- ---------------------------------------------------------------------------
-select todo('QA 2.3-R3 (S4): a deal with two live placements in one slot is featured twice', 1);
+create temp table r8 as select tests.make_category('qa-r8-a') as a, tests.make_category('qa-r8-b') as b,
+  tests.make_city('qa-r8-other', true) as other_city;
+grant select on r8 to anon;
+-- 300 strong matches in category A; 10 weaker ones in category B.
+insert into public.deals (brand_id, category_id, kind, scope, status, source, title_en, offer_kind, percent)
+select (select brand_b from w), (select a from r8), 'brand_sale', 'nationwide', 'published', 'staff',
+       'Zebra zebra print sale ' || g, 'percent_off', 10 from generate_series(1, 300) g;
+insert into public.deals (brand_id, category_id, kind, scope, status, source, title_en, offer_kind, percent, description_en)
+select (select brand_b from w), (select b from r8), 'brand_sale', 'nationwide', 'published', 'staff',
+       'Striped scarf ' || g, 'percent_off', 10, 'with a zebra pattern' from generate_series(1, 10) g;
+-- 300 strong local matches in another live city; 5 weaker ones in ours.
+insert into public.deals (brand_id, category_id, kind, scope, status, source, title_en, offer_kind, percent)
+select (select brand_b from w), (select a from r8), 'food_deal', 'local', 'draft', 'staff',
+       'Karahi karahi night ' || g, 'percent_off', 10 from generate_series(1, 300) g;
+insert into public.deals (brand_id, category_id, kind, scope, status, source, title_en, offer_kind, percent, description_en)
+select (select brand_b from w), (select a from r8), 'food_deal', 'local', 'draft', 'staff',
+       'Dinner deal ' || g, 'percent_off', 10, 'karahi for two' from generate_series(1, 5) g;
+insert into public.deal_targets (deal_id, city_id)
+  select id, (select other_city from r8) from public.deals where title_en like 'Karahi karahi night%';
+insert into public.deal_targets (deal_id, city_id)
+  select id, (select city from w) from public.deals where title_en like 'Dinner deal%';
+update public.deals set status = 'published'
+  where status = 'draft' and (title_en like 'Karahi karahi night%' or title_en like 'Dinner deal%');
+set constraints all immediate;
+select tests.authenticate_as_anon();
+select is((select count(*) from public.search_deals('zebra', null, array[(select b from r8)], 0, 50)), 10::bigint,
+  'QA BUG 2.3-R8: a category-filtered search finds all 10 matches in the category');
+select is((select count(*) from public.search_deals('karahi', (select city from w), null, 0, 50)), 5::bigint,
+  'QA BUG 2.3-R8: a city search finds the city''s 5 local matches');
+select tests.clear_authentication();
+
+-- ---------------------------------------------------------------------------
+-- QA BUG 2.3-R9 (S3, regression from the R5 fix): trending and nearby
+-- rank and LIMIT on deals, then join deal_cards, which also drops deals
+-- whose category is inactive. If the top-ranked deals are in a category
+-- staff switched off, the page comes back short or empty.
+-- ---------------------------------------------------------------------------
+create temp table r9 as select tests.make_category('qa-r9-off') as off_cat;
+grant select on r9 to anon;
+insert into public.deals (brand_id, category_id, kind, scope, status, source, title_en, offer_kind, percent)
+select (select brand_b from w), (select off_cat from r9), 'brand_sale', 'nationwide', 'published', 'staff',
+       'Hidden category deal ' || g, 'percent_off', 10 from generate_series(1, 30) g;
+insert into public.saves (user_id, deal_id)
+  select u, d.id from public.deals d, (select tests.create_user() as u from generate_series(1, 3)) x
+  where d.title_en like 'Hidden category deal%';
+update public.categories set is_active = false where id = (select off_cat from r9);
+select tests.authenticate_as_anon();
+select is((select count(*) from public.trending_deals(null, 7, 20)), 20::bigint,
+  'QA BUG 2.3-R9: trending still fills its page when its top deals are in an inactive category');
+select tests.clear_authentication();
+
+-- ---------------------------------------------------------------------------
+-- Round 1 S4 findings, fixed in round 2 (kept as regression checks).
+-- ---------------------------------------------------------------------------
+-- QA 2.3-R3 (S4, fixed in round 2): a deal with two live placements is featured once.
 insert into public.placements (business_id, deal_id, slot, starts_at, ends_at, status, city_id)
   select biz_b, live_b, 'home_featured', now() - interval '1 hour', now() + interval '1 hour', 'active', c
   from w, unnest(array[null, (select city from w)]) c;
@@ -131,7 +192,7 @@ select is((select count(*) - count(distinct id) from public.featured_deals('home
   0::bigint, 'featured_deals lists each deal once');
 select tests.clear_authentication();
 
-select todo('QA 2.3-R4 (S4): an empty category list returns nothing instead of every category', 1);
+-- QA 2.3-R4 (S4, fixed in round 2): an empty category list means no filter.
 select tests.authenticate_as_anon();
 select is((select count(*) from public.feed(null, '{}')), (select count(*) from public.feed(null, null)),
   'category_ids = {} means no filter');

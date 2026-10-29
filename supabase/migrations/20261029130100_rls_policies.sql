@@ -158,15 +158,19 @@ create policy "members: read own team" on public.business_members
   for select to authenticated using (business_id in (select private.my_business_ids()));
 create policy "members: staff read" on public.business_members
   for select to authenticated using ((select private.is_moderator()));
+-- A suspended business's team is frozen too (anyone may still leave).
 create policy "members: owners add" on public.business_members
   for insert to authenticated
-  with check (business_id in (select private.my_owned_business_ids()));
+  with check (business_id in (select private.my_owned_business_ids())
+              and business_id in (select private.my_active_business_ids()));
 create policy "members: owners change roles" on public.business_members
   for update to authenticated using (business_id in (select private.my_owned_business_ids()))
-  with check (business_id in (select private.my_owned_business_ids()));
+  with check (business_id in (select private.my_owned_business_ids())
+              and business_id in (select private.my_active_business_ids()));
 create policy "members: owners remove, or leave" on public.business_members
   for delete to authenticated
-  using (business_id in (select private.my_owned_business_ids())
+  using ((business_id in (select private.my_owned_business_ids())
+          and business_id in (select private.my_active_business_ids()))
          or user_id = (select auth.uid()));
 select pg_temp.staff_writes('business_members', 'is_admin');
 
@@ -241,6 +245,11 @@ begin
   if old.is_active and (new.name, new.name_ur) is distinct from (old.name, old.name_ur)
      and not private.is_trusted_caller() and not private.is_moderator() then
     raise exception 'ask staff to rename a live brand' using errcode = '42501';
+  end if;
+  -- A renamed hidden brand is checked again before it gets its badge back.
+  if (new.name, new.name_ur) is distinct from (old.name, old.name_ur)
+     and not private.is_trusted_caller() and not private.is_moderator() then
+    new.is_verified := false;
   end if;
   return new;
 end $$;

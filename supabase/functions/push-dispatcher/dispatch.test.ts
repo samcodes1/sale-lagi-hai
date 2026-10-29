@@ -24,7 +24,7 @@ test('sends every claimed push and marks them sent', async () => {
   const summary = await dispatch(deps);
   assert.deepEqual(calls.sent.sort(), ['a', 'b']);
   assert.deepEqual(calls.marked.sort(), [1, 2]);
-  assert.deepEqual(summary, { claimed: 2, sent: 2, deadTokens: 0, retried: 0, failed: 0 });
+  assert.deepEqual(summary, { claimed: 2, sent: 2, deadTokens: 0, retried: 0, failed: 0, breakerTripped: false });
 });
 
 test('a push reaching one of two devices is done; dead tokens are dropped', async () => {
@@ -51,9 +51,29 @@ test('a push no device can take (all dead or rejected) is closed, not retried fo
   assert.equal(summary.failed, 1);
 });
 
+test('a run where most tokens come back dead drops none and retries', async () => {
+  const rows = Array.from({ length: 12 }, (_, i) => row(i, `t${i}`));
+  const dead = Object.fromEntries(rows.slice(0, 10).map((r) => [r.token, { kind: 'dead-token' as const }]));
+  const { deps, calls } = fakeDeps(rows, dead);
+  const summary = await dispatch(deps);
+  assert.equal(summary.breakerTripped, true);
+  assert.deepEqual(calls.dropped, []);
+  assert.deepEqual(calls.marked.sort((a, b) => a - b), [10, 11], 'only the delivered pushes are closed');
+  assert.equal(summary.retried, 10);
+});
+
+test('a few dead tokens among many sends are still dropped', async () => {
+  const rows = Array.from({ length: 30 }, (_, i) => row(i, `t${i}`));
+  const dead = Object.fromEntries(rows.slice(0, 10).map((r) => [r.token, { kind: 'dead-token' as const }]));
+  const { deps, calls } = fakeDeps(rows, dead);
+  const summary = await dispatch(deps);
+  assert.equal(summary.breakerTripped, false);
+  assert.equal(calls.dropped.length, 10);
+});
+
 test('nothing due: nothing marked or dropped', async () => {
   const { deps, calls } = fakeDeps([], {});
-  assert.deepEqual(await dispatch(deps), { claimed: 0, sent: 0, deadTokens: 0, retried: 0, failed: 0 });
+  assert.deepEqual(await dispatch(deps), { claimed: 0, sent: 0, deadTokens: 0, retried: 0, failed: 0, breakerTripped: false });
   assert.deepEqual(calls, { marked: [], dropped: [], sent: [] });
 });
 
@@ -114,7 +134,7 @@ test('the right secret runs a dispatch and returns counts only', async () => {
   const res = await handle(request({ 'x-dispatcher-secret': SECRET }), env(SECRET), () => fakeDeps([row(1, 'a')], {}).deps);
   assert.equal(res.status, 200);
   const body = await res.json();
-  assert.deepEqual(body, { claimed: 1, sent: 1, deadTokens: 0, retried: 0, failed: 0 });
+  assert.deepEqual(body, { claimed: 1, sent: 1, deadTokens: 0, retried: 0, failed: 0, breakerTripped: false });
   assert.ok(!JSON.stringify(body).includes('Khaadi'), 'no message content in the response');
 });
 

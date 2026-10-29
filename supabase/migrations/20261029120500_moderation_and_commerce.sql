@@ -196,7 +196,9 @@ create trigger user_roles_audit after insert or update or delete on public.user_
   for each row execute function private.audit();
 create trigger business_members_audit after insert or update or delete on public.business_members
   for each row execute function private.audit();
-create trigger businesses_status_audit after update of status on public.businesses
+-- Any update, not just `update of status`: guard_business also changes
+-- the status itself (a verified business that renames goes back to review).
+create trigger businesses_status_audit after update on public.businesses
   for each row when (old.status is distinct from new.status)
   execute function private.audit();
 create trigger businesses_delete_audit after delete on public.businesses

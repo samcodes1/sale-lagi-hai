@@ -25,7 +25,20 @@ export type DispatchSummary = {
   deadTokens: number;
   retried: number;
   failed: number;
+  /** Most sends came back "dead token": a configuration problem, so
+   * nothing was dropped (see [DEAD_TOKEN_BREAKER]). */
+  breakerTripped: boolean;
 };
+
+/**
+ * Circuit breaker for dead tokens. Devices go stale a few at a time; when
+ * at least [min] sends in one run, and at least [share] of them, say
+ * "dead", the cause is our side (a service account from another Firebase
+ * project answers SENDER_ID_MISMATCH for every token). Then no token is
+ * dropped and those pushes are retried, so a bad deploy can't wipe every
+ * user's devices in one minute.
+ */
+export const DEAD_TOKEN_BREAKER = { min: 10, share: 0.5 };
 
 /** Runs `tasks` with at most `limit` in flight. */
 async function pool<T>(items: T[], limit: number, task: (item: T) => Promise<void>) {
@@ -60,11 +73,17 @@ export async function dispatch(
   // An outbox row is done when one device got it, or none can (all dead,
   // or our request was rejected). Rows with only retryable failures stay
   // claimed and come back after the claim expires.
+  const sends = [...results.values()].reduce((n, l) => n + l.length, 0);
+  const breakerTripped =
+    deadTokens.length >= DEAD_TOKEN_BREAKER.min && deadTokens.length >= sends * DEAD_TOKEN_BREAKER.share;
+  // With the breaker tripped, "dead" means "try again later".
+  const settled = (r: SendResult) => r.kind !== 'retry' && !(breakerTripped && r.kind === 'dead-token');
+
   const done: number[] = [];
   let retried = 0;
   let failed = 0;
   for (const [id, list] of results) {
-    if (list.some((r) => r.kind === 'sent') || list.every((r) => r.kind !== 'retry')) {
+    if (list.some((r) => r.kind === 'sent') || list.every(settled)) {
       done.push(id);
     } else {
       retried++;
@@ -73,13 +92,14 @@ export async function dispatch(
   }
 
   if (done.length > 0) await deps.markSent(done);
-  if (deadTokens.length > 0) await deps.dropTokens(deadTokens);
+  if (deadTokens.length > 0 && !breakerTripped) await deps.dropTokens(deadTokens);
 
   return {
     claimed: results.size,
     sent: [...results.values()].filter((l) => l.some((r) => r.kind === 'sent')).length,
-    deadTokens: deadTokens.length,
+    deadTokens: breakerTripped ? 0 : deadTokens.length,
     retried,
     failed,
+    breakerTripped,
   };
 }
