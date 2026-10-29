@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/device/device_providers.dart';
@@ -27,11 +28,19 @@ class _AlertsStepState extends ConsumerState<AlertsStep> {
       ref.read(preferencesProvider.notifier).completeOnboarding();
 
   Future<void> _turnOn() async {
+    if (_asking) return;
     setState(() => _asking = true);
     final preferences = ref.read(preferencesProvider.notifier);
     await preferences.markAlertsAsked(ref.read(clockProvider)());
     final result = await ref.read(notificationPermissionProvider).request();
     if (!mounted) return;
+    if (result == AlertPermission.permanentlyDenied && kIsWeb) {
+      // Browsers have no app settings page to send the shopper to: say so
+      // (the blocked note) and finish, never a dead button (BUG-7).
+      setState(() => _blocked = true);
+      await _finish();
+      return;
+    }
     if (result == AlertPermission.permanentlyDenied) {
       // Android won't show the dialog: say so and offer settings instead
       // of silently doing nothing.
@@ -45,6 +54,8 @@ class _AlertsStepState extends ConsumerState<AlertsStep> {
   }
 
   Future<void> _notNow() async {
+    if (_asking) return;
+    _asking = true;
     await ref
         .read(preferencesProvider.notifier)
         .markAlertsAsked(ref.read(clockProvider)());

@@ -120,8 +120,11 @@ final class Harness {
 
   GoRouter get router => container.read(routerProvider);
 
+  /// [languageChosen]: as if the shopper already confirmed a language, so
+  /// a test may open a later step directly.
   Future<void> pump(
     WidgetTester tester, {
+    bool languageChosen = true,
     Locale device = AppLocales.english,
     Size size = const Size(412, 915),
   }) async {
@@ -150,6 +153,9 @@ final class Harness {
       retry: (_, _) => null,
     );
     addTearDown(container.dispose);
+    if (languageChosen) {
+      container.read(languageChosenProvider.notifier).confirm();
+    }
     await tester.pumpWidget(
       UncontrolledProviderScope(container: container, child: const App()),
     );

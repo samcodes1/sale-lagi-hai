@@ -98,6 +98,11 @@ final class GeolocatorLocationService implements LocationService {
       return const LocationUnavailable();
     } on PlatformException {
       return const LocationUnavailable();
+    } on Object {
+      // geolocator's own errors (PositionUpdateException,
+      // ActivityMissingException, PermissionRequestInProgressException…):
+      // the shopper picks a city instead (QA 4.1 BUG-2).
+      return const LocationUnavailable();
     }
   }
 
@@ -105,9 +110,7 @@ final class GeolocatorLocationService implements LocationService {
   Future<bool> openAppSettings() async {
     try {
       return await _platform.openAppSettings();
-    } on MissingPluginException {
-      return false;
-    } on PlatformException {
+    } on Object {
       return false;
     }
   }

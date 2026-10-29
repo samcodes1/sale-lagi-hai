@@ -7,7 +7,6 @@ import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/core/logging/log_sinks.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
-import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 
 import '../../helpers/fakes.dart';
 
@@ -180,14 +179,14 @@ void main() {
         openStore: () => throw StateError('no plugin'),
       );
 
-      const defaults = (
-        store: null,
-        locale: null,
-        preferences: ShopperPreferences(),
-      );
-      expect(failing, defaults);
-      expect(throwing, defaults);
-      expect(sink.records, hasLength(2));
+      // Every read fails: neither value is assumed (null, not defaults).
+      expect(failing.store, isNotNull);
+      expect(failing.locale, isNull);
+      expect(failing.preferences, isNull);
+      // No store at all: nothing could be read, so nothing is assumed.
+      expect(throwing, (store: null, locale: null, preferences: null));
+      // One warning per failed read, plus one for the store that won't open.
+      expect(sink.records, hasLength(3));
     });
   });
 }

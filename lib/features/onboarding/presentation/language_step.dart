@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/app/router/routes.dart';
@@ -5,6 +7,7 @@ import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/design_system/theme/app_theme.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/onboarding_scaffold.dart';
 
 /// Step 1, the only required one: English or Urdu. The choice applies at
@@ -64,7 +67,10 @@ class LanguageStep extends ConsumerWidget {
         ),
       ],
       primaryLabel: l10n.actionContinue,
-      onPrimary: () => const WelcomeCityRoute().push<void>(context),
+      onPrimary: () {
+        ref.read(languageChosenProvider.notifier).confirm();
+        unawaited(const WelcomeCityRoute().push<void>(context));
+      },
     );
   }
 }

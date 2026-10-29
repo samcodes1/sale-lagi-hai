@@ -24,7 +24,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       final location = state.uri.toString();
       final inWelcome = state.matchedLocation.startsWith(welcomePath);
       if (!onboarded.value) {
-        if (inWelcome) return null;
+        if (inWelcome) {
+          final atLanguage = state.matchedLocation == welcomePath;
+          return atLanguage || ref.read(languageChosenProvider)
+              ? null
+              : welcomePath;
+        }
         // Keep the link for afterwards (it is validated again then, by
         // its own route's redirect).
         if (location != const HomeRoute().location) pending = location;

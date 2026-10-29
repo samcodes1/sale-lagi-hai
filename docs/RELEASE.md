@@ -34,3 +34,6 @@ flutter build appbundle --release \
 3. Add the CI secrets (keystore, passwords, prod env values) and a release workflow with `REQUIRE_RELEASE_SIGNING=true`.
 4. Check the merged manifest of the release build (`docs/security/CHECKLIST.md`, Notes).
 5. Fill in the Data safety form from the current permissions and data flows (Phase 9 keeps it up to date).
+
+## Database migrations freeze at the first deploy
+Before the first `supabase db push` to staging, record the last migration file in this section. From then on, never edit any migration up to and including it; add new ones (`docs/backend/SCHEMA.md`).

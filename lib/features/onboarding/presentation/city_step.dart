@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/app/router/routes.dart';
@@ -40,10 +41,15 @@ class _CityStepState extends ConsumerState<CityStep> {
   City? _found;
 
   Future<void> _detect(List<City> cities) async {
+    if (_detection == _Detection.detecting) return;
     setState(() => _detection = _Detection.detecting);
-    final outcome = await ref
-        .read(locationServiceProvider)
-        .approximateLocation();
+    LocationOutcome outcome;
+    try {
+      outcome = await ref.read(locationServiceProvider).approximateLocation();
+    } on Object {
+      // Never leave the button spinning (QA 4.1 BUG-2).
+      outcome = const LocationUnavailable();
+    }
     if (!mounted) return;
     var detection = _Detection.unavailable;
     City? found;
@@ -129,7 +135,8 @@ class _CityStepState extends ConsumerState<CityStep> {
                           ),
                         ),
                 ),
-                if (_detection == _Detection.blocked)
+                // Browsers have no app settings page (QA 4.1 BUG-7).
+                if (_detection == _Detection.blocked && !kIsWeb)
                   Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: TextButton(

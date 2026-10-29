@@ -124,29 +124,42 @@ AppLogger createLogger({
 
 /// Settings needed before the first frame, so the app opens in the right
 /// language, and on the right screen (onboarding or Home), without a flash.
+///
+/// `preferences` is `null` when they couldn't be read (not when nothing was
+/// saved): the app then never overwrites them with defaults (QA 4.1 BUG-1).
 typedef StartupSettings = ({
   KeyValueStore? store,
   Locale? locale,
-  ShopperPreferences preferences,
+  ShopperPreferences? preferences,
 });
 
 /// Reads [StartupSettings]. Never throws: if storage is unavailable the app
-/// starts with defaults (and the error is logged).
+/// starts with defaults (and the error is logged). Each value is read on
+/// its own, so one failing read doesn't hide the other.
 @visibleForTesting
 Future<StartupSettings> loadStartupSettings(
   AppLogger logger, {
   KeyValueStore Function() openStore = SharedPrefsKeyValueStore.new,
 }) async {
+  final KeyValueStore store;
   try {
-    final store = openStore();
-    final code = await store.getString(localeStorageKey);
-    return (
-      store: store,
-      locale: code == null ? null : AppLocales.resolve(Locale(code)),
-      preferences: await PreferencesStore(store).read(),
-    );
+    store = openStore();
   } on Object catch (error) {
     logger.warning('Could not read saved settings', error: error);
-    return (store: null, locale: null, preferences: const ShopperPreferences());
+    return (store: null, locale: null, preferences: null);
   }
+  Locale? locale;
+  try {
+    final code = await store.getString(localeStorageKey);
+    locale = code == null ? null : AppLocales.resolve(Locale(code));
+  } on Object catch (error) {
+    logger.warning('Could not read the saved language', error: error);
+  }
+  ShopperPreferences? preferences;
+  try {
+    preferences = await PreferencesStore(store).read();
+  } on Object catch (error) {
+    logger.warning('Could not read the saved preferences', error: error);
+  }
+  return (store: store, locale: locale, preferences: preferences);
 }

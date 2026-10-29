@@ -27,6 +27,12 @@
         android:usesCleartextTraffic="false"
         android:networkSecurityConfig="@xml/network_security_config"
         android:enableOnBackInvokedCallback="true">
+        <!-- geolocator_android merges a foreground location service we never
+             start: location is one approximate fix, on tap. Removed so no
+             foreground-service declaration is needed (QA 4.1 BUG-3). -->
+        <service
+            android:name="com.baseflow.geolocator.GeolocatorLocationService"
+            tools:node="remove" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

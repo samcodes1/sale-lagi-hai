@@ -66,3 +66,4 @@ The database is the validator of last resort. The app and the portals validate t
 - **Every foreign key has an index**, and every `updated_at` has a trigger (both tested).
 - **Enums** for stable vocabularies (`ALTER TYPE … ADD VALUE` to extend). Staff-managed lists such as categories are tables.
 - **Migrations** are named `YYYYMMDDHHMMSS_name.sql`, run in order, and are never edited after they reach a shared environment; add a new migration instead.
+  - **Until the first deploy** (no shared environment exists yet), QA fixes and small additions such as `cities.center_lat`/`center_lng` (4.1) are made in place, so a fresh database gets one clean schema. The first `supabase db push` to staging freezes every file then in `supabase/migrations/`. From that point on, changes go in new migrations only (QA 4.1 BUG-4). Note it in `docs/RELEASE.md`.
