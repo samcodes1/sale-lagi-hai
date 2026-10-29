@@ -49,6 +49,12 @@ jobs:
         run: flutter analyze
       - name: Test
         run: flutter test --coverage
+      # bootstrap()'s success path only runs with a compiled-in config.
+      - name: Bootstrap with a real config
+        run: |
+          cp env/dev.example.json env/dev.json
+          flutter test test/qa/bootstrap_qa_test.dart \
+            --dart-define-from-file=env/dev.json
       - name: Coverage threshold
         run: dart run tool/check_coverage.dart coverage/lcov.info --min 80
       - name: Env templates are valid

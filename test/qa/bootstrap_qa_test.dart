@@ -46,14 +46,25 @@ void main() {
 
   group('bootstrap() with compiled-in config', () {
     testWidgets('boots App with the configured name', (tester) async {
-      await bootstrap();
-      await tester.pump();
+      // Since 1.2, bootstrap() installs global error handlers. The test
+      // framework requires FlutterError.onError to be restored before the
+      // test ends, so restore all of them in `finally`.
+      final flutterOnError = FlutterError.onError;
+      final dispatcherOnError = tester.binding.platformDispatcher.onError;
+      try {
+        await bootstrap();
+        await tester.pump();
 
-      expect(find.byType(App), findsOneWidget);
-      expect(find.byType(ConfigErrorApp), findsNothing);
-      expect(find.text(_appName), findsOneWidget);
-      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-      expect(app.title, _appName);
+        expect(find.byType(App), findsOneWidget);
+        expect(find.byType(ConfigErrorApp), findsNothing);
+        expect(find.text(_appName), findsOneWidget);
+        final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+        expect(app.title, _appName);
+        expect(FlutterError.onError, isNot(same(flutterOnError)));
+      } finally {
+        FlutterError.onError = flutterOnError;
+        tester.binding.platformDispatcher.onError = dispatcherOnError;
+      }
     }, skip: _noDefines || _flavorMismatch);
 
     testWidgets('a --flavor / FLAVOR mismatch shows ConfigErrorApp', (
