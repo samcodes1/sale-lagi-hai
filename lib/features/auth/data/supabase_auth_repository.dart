@@ -125,8 +125,14 @@ final class SupabaseAuthRepository implements AuthRepository {
       throw ServerFailure(statusCode: e.status, cause: e);
     }
     // The server session is gone with the user; clear the local one.
-    await _auth.signOut();
-    await _google?.signOut();
+    // GoTrue drops it before calling /logout, so a failed call (offline,
+    // or the user already gone) changes nothing: the account is deleted.
+    try {
+      await _auth.signOut();
+      await _google?.signOut();
+    } on Object catch (error) {
+      _logger.warning('Sign-out after deletion failed', error: error);
+    }
     return DeletionOutcome.deleted;
   });
 }

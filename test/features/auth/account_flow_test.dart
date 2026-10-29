@@ -4,6 +4,7 @@ import 'package:sale_lagi_hai/core/backend/backend_gateway.dart';
 import 'package:sale_lagi_hai/core/backend/demo/demo_data.dart';
 import 'package:sale_lagi_hai/core/backend/demo/demo_gateway.dart';
 import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
+import 'package:sale_lagi_hai/features/auth/domain/auth_repository.dart';
 import 'package:sale_lagi_hai/features/auth/presentation/delete_account_screen.dart';
 import 'package:sale_lagi_hai/features/auth/presentation/sign_in_screen.dart';
 import 'package:sale_lagi_hai/features/onboarding/data/preferences_store.dart';
@@ -41,7 +42,7 @@ Future<void> _signInWithPhone(
   await tester.enterText(find.byType(TextField), '0300 1234567');
   await tapText(tester, 'Send code');
   expect(
-    find.text('We sent a 6-digit code to +92 300 1234567.'),
+    find.text('We sent a 6-digit code to +92\u00A0300\u00A01234567.'),
     findsOneWidget,
   );
   // Six digits submit on their own.
@@ -84,7 +85,7 @@ void main() {
       await tester.enterText(find.byType(TextField), '021 34567890');
       await tapText(tester, 'Send code');
       expect(
-        find.text('Enter a Pakistani mobile number, like 0300 1234567.'),
+        find.text('Enter a Pakistani mobile number, like 0300\u00A01234567.'),
         findsOneWidget,
       );
       expect(find.text('Enter the code'), findsNothing);
@@ -227,6 +228,116 @@ void main() {
 
     expect(h.auth.currentUser, isNull);
     expect(find.byType(LanguageStep), findsOneWidget);
+  });
+
+  group('the fresh sign-in before deleting is the same account', () {
+    Future<void> deleteAfterTenMinutes(
+      WidgetTester tester,
+      void Function() later,
+    ) async {
+      later();
+      await tapText(tester, 'Delete account');
+      await tapText(tester, 'Delete my account');
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('Delete my account'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text("Confirm it's you"), findsOneWidget);
+    }
+
+    testWidgets('a phone user must use their own number', (tester) async {
+      var now = DateTime.utc(2026, 10, 29, 12);
+      final auth = DemoAuthRepository(clock: () => now);
+      final h = _harness(auth: auth);
+      await h.pump(tester);
+      await _openProfile(tester, h);
+      await _signInWithPhone(tester);
+      final me = auth.currentUser!.id;
+      await deleteAfterTenMinutes(
+        tester,
+        () => now = now.add(const Duration(minutes: 10)),
+      );
+      // Google isn't offered to a phone user here.
+      expect(find.text('Continue with Google'), findsNothing);
+      await tester.enterText(find.byType(TextField), '0333 7654321');
+      await tapText(tester, 'Send code');
+      expect(
+        find.text("Use this account's own number to confirm it's you."),
+        findsOneWidget,
+      );
+      expect(auth.currentUser?.id, me);
+      expect(auth.deletedIds, isEmpty);
+    });
+
+    testWidgets('a Google user signs in with Google only; another Google '
+        'account signs out and deletes nothing', (tester) async {
+      var now = DateTime.utc(2026, 10, 29, 12);
+      final auth = DemoAuthRepository(clock: () => now);
+      final h = _harness(auth: auth);
+      await h.pump(tester);
+      await _openProfile(tester, h);
+      await tapText(tester, 'Sign in');
+      await tapText(tester, 'Continue with Google');
+      await deleteAfterTenMinutes(
+        tester,
+        () => now = now.add(const Duration(minutes: 10)),
+      );
+      expect(find.byType(TextField), findsNothing);
+      auth.googleAccount = const AppUser(
+        id: '00000000-0000-4000-9000-0000000000bb',
+        method: SignInMethod.google,
+        email: 'someone.else@example.com',
+      );
+      await tapText(tester, 'Continue with Google');
+      expect(
+        find.text(
+          "That's a different account, so nothing was deleted. "
+          "You've been signed out.",
+        ),
+        findsOneWidget,
+      );
+      expect(auth.currentUser, isNull);
+      expect(auth.deletedIds, isEmpty);
+      // This phone keeps its choices.
+      expect(h.preferences.brandIds, [_karahiHouse]);
+    });
+
+    testWidgets('the same Google account goes ahead', (tester) async {
+      var now = DateTime.utc(2026, 10, 29, 12);
+      final auth = DemoAuthRepository(clock: () => now);
+      final h = _harness(auth: auth);
+      await h.pump(tester);
+      await _openProfile(tester, h);
+      await tapText(tester, 'Sign in');
+      await tapText(tester, 'Continue with Google');
+      final me = auth.currentUser!.id;
+      await deleteAfterTenMinutes(
+        tester,
+        () => now = now.add(const Duration(minutes: 10)),
+      );
+      await tapText(tester, 'Continue with Google');
+      expect(auth.deletedIds, [me]);
+      expect(find.byType(LanguageStep), findsOneWidget);
+    });
+  });
+
+  testWidgets('Back on the code step returns to the number; the wait for a '
+      'new code goes on', (tester) async {
+    final h = _harness();
+    await h.pump(tester);
+    await _openProfile(tester, h);
+    await tapText(tester, 'Sign in');
+    await tester.enterText(find.byType(TextField), '0300 1234567');
+    await tapText(tester, 'Send code');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(SignInScreen), findsOneWidget);
+    expect(find.text('Send code'), findsOneWidget);
+    await tapText(tester, 'Send code');
+    expect(find.textContaining('Send a new code in'), findsOneWidget);
   });
 
   testWidgets('guests cannot open the delete page', (tester) async {

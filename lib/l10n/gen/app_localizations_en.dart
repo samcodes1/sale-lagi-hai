@@ -478,6 +478,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'For your safety, sign in again before deleting your account.';
 
   @override
+  String get reauthOtherNumber =>
+      'Use this account\'s own number to confirm it\'s you.';
+
+  @override
+  String get reauthWrongAccount =>
+      'That\'s a different account, so nothing was deleted. You\'ve been signed out.';
+
+  @override
   String get phoneLabel => 'Mobile number';
 
   @override
@@ -485,7 +493,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneInvalid =>
-      'Enter a Pakistani mobile number, like 0300 1234567.';
+      'Enter a Pakistani mobile number, like 0300 1234567.';
 
   @override
   String get actionSendCode => 'Send code';

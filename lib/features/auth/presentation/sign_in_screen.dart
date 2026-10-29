@@ -10,6 +10,7 @@ import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
+import 'package:sale_lagi_hai/features/auth/domain/auth_repository.dart';
 import 'package:sale_lagi_hai/features/auth/domain/phone_number.dart';
 
 /// How long before a new code may be requested.
@@ -19,7 +20,9 @@ const resendWait = Duration(seconds: 60);
 /// code, or Google. Pops `true` once signed in.
 ///
 /// [reauth]: signing in again before a sensitive action (account
-/// deletion). The number is prefilled for phone users.
+/// deletion). Only the same account will do: phone users confirm their own
+/// number (prefilled), Google users their Google account. Signing in as
+/// anyone else signs out and pops nothing.
 class SignInScreen extends ConsumerStatefulWidget {
   const new({this.reauth = false, super.key});
 
@@ -34,8 +37,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _code = TextEditingController();
   final _codeFocus = FocusNode();
 
+  /// The account signing in again ([SignInScreen.reauth]).
+  AppUser? _account;
+
   /// The number a code was sent to; `null` on the phone step.
   String? _sentTo;
+
+  /// The number the last code went to, for the resend wait.
+  String? _lastSentTo;
   bool _busy = false;
   String? _phoneError;
   String? _codeError;
@@ -47,6 +56,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   void initState() {
     super.initState();
     final user = ref.read(authRepositoryProvider).currentUser;
+    if (widget.reauth) _account = user;
     final phone = user?.phone;
     if (widget.reauth && phone != null) {
       // "+92 300 1234567" → "300 1234567"
@@ -74,10 +84,26 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   Future<void> _sendCode() async {
+    if (_busy) return;
     final l10n = context.l10n;
     final e164 = PakistanPhone.toE164(_phone.text);
     if (e164 == null) {
       setState(() => _phoneError = l10n.phoneInvalid);
+      return;
+    }
+    final own = _account?.phone;
+    if (own != null && e164 != own) {
+      setState(() => _phoneError = l10n.reauthOtherNumber);
+      return;
+    }
+    if (e164 == _lastSentTo && _resendIn > 0) {
+      // Back from "Change number" to the same number: the code already
+      // sent still works, and the wait goes on.
+      setState(() {
+        _phoneError = null;
+        _sentTo = e164;
+      });
+      _codeFocus.requestFocus();
       return;
     }
     setState(() {
@@ -92,6 +118,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       case Success():
         setState(() {
           _sentTo = e164;
+          _lastSentTo = e164;
           _code.clear();
           _codeError = null;
         });
@@ -113,10 +140,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       _codeError = null;
       _failure = null;
     });
+    // Read now: the sign-in can finish after this page has gone (Back).
+    final sync = ref.read(guestSyncProvider);
     final result = await ref
         .read(authRepositoryProvider)
         .verifyPhoneCode(sentTo, code);
-    if (!mounted) return;
+    if (!mounted) {
+      if (result is Success && !widget.reauth) await sync();
+      return;
+    }
     switch (result) {
       case Success():
         await _signedIn();
@@ -138,8 +170,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       _busy = true;
       _failure = null;
     });
+    final sync = ref.read(guestSyncProvider);
     final result = await ref.read(authRepositoryProvider).signInWithGoogle();
-    if (!mounted) return;
+    if (!mounted) {
+      if (result case Success(value: _?) when !widget.reauth) await sync();
+      return;
+    }
     switch (result) {
       case Success(value: null):
         setState(() => _busy = false); // closed the Google sheet
@@ -154,6 +190,25 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   Future<void> _signedIn() async {
+    final account = _account;
+    final auth = ref.read(authRepositoryProvider);
+    if (account != null && auth.currentUser?.id != account.id) {
+      // Someone else's account: nothing may happen under it here.
+      await auth.signOut();
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _sentTo = null;
+        _failure = null;
+        _phoneError = null;
+      });
+      ScaffoldMessenger.maybeOf(context)
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(context.l10n.reauthWrongAccount)),
+        );
+      return;
+    }
     if (!widget.reauth) await ref.read(guestSyncProvider)();
     if (!mounted) return;
     if (!widget.reauth) {
@@ -168,97 +223,119 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final canUseGoogle = ref.watch(authRepositoryProvider).canUseGoogle;
+    final account = _account;
+    final canUseGoogle =
+        ref.watch(authRepositoryProvider).canUseGoogle &&
+        (account == null || account.method == SignInMethod.google);
+    final usePhone = account == null || account.method == SignInMethod.phone;
     final sentTo = _sentTo;
-    return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        // Not a lazy list: the whole (short) form is built, so focusing a
-        // field below the fold at large text sizes works.
-        child: SingleChildScrollView(
-          padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Semantics(
-                header: true,
-                child: Text(
-                  sentTo != null
-                      ? l10n.codeTitle
-                      : widget.reauth
-                      ? l10n.reauthTitle
-                      : l10n.signInTitle,
-                  style: theme.textTheme.headlineSmall,
-                ),
-              ),
-              const SizedBox(height: BrandSpacing.s3),
-              Text(
-                sentTo != null
-                    ? l10n.codeSentTo(PakistanPhone.display(sentTo))
-                    : widget.reauth
-                    ? l10n.reauthBody
-                    : l10n.signInBody,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: BrandSpacing.s7),
-              if (sentTo == null)
-                ..._phoneStep(l10n, canUseGoogle)
-              else
-                ..._codeStep(l10n),
-              if (_failure case final failure?) ...[
-                const SizedBox(height: BrandSpacing.s5),
+    // Back on the code step returns to the number. While a code is being
+    // checked it leaves, and the sign-in finishes on its own.
+    return PopScope(
+      canPop: sentTo == null || _busy,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) setState(() => _sentTo = null);
+      },
+      child: Scaffold(
+        appBar: AppBar(),
+        body: SafeArea(
+          // Not a lazy list: the whole (short) form is built, so focusing a
+          // field below the fold at large text sizes works.
+          child: SingleChildScrollView(
+            padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
                 Semantics(
-                  liveRegion: true,
+                  header: true,
                   child: Text(
-                    failure.message(l10n),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.error,
-                    ),
+                    sentTo != null
+                        ? l10n.codeTitle
+                        : widget.reauth
+                        ? l10n.reauthTitle
+                        : l10n.signInTitle,
+                    style: theme.textTheme.headlineSmall,
                   ),
                 ),
+                const SizedBox(height: BrandSpacing.s3),
+                Text(
+                  sentTo != null
+                      ? l10n.codeSentTo(PakistanPhone.inline(sentTo))
+                      : widget.reauth
+                      ? l10n.reauthBody
+                      : l10n.signInBody,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: BrandSpacing.s7),
+                if (sentTo == null)
+                  ..._phoneStep(
+                    l10n,
+                    canUseGoogle: canUseGoogle,
+                    usePhone: usePhone,
+                  )
+                else
+                  ..._codeStep(l10n),
+                if (_failure case final failure?) ...[
+                  const SizedBox(height: BrandSpacing.s5),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      failure.message(l10n),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                  ),
+                ],
+                if (!widget.reauth) ...[
+                  const SizedBox(height: BrandSpacing.s8),
+                  Text(l10n.signInTerms, style: theme.textTheme.bodySmall),
+                ],
               ],
-              if (!widget.reauth) ...[
-                const SizedBox(height: BrandSpacing.s8),
-                Text(l10n.signInTerms, style: theme.textTheme.bodySmall),
-              ],
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _phoneStep(AppLocalizations l10n, bool canUseGoogle) => [
-    TextField(
-      controller: _phone,
-      enabled: !_busy,
-      keyboardType: TextInputType.phone,
-      textInputAction: TextInputAction.send,
-      autofillHints: const [AutofillHints.telephoneNumberNational],
-      // Numbers read left to right in both languages.
-      textDirection: TextDirection.ltr,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9+ \-۰-۹٠-٩]')),
-        LengthLimitingTextInputFormatter(17),
-      ],
-      decoration: InputDecoration(
-        labelText: l10n.phoneLabel,
-        hintText: l10n.phoneHint,
-        hintTextDirection: Directionality.of(context),
-        errorText: _phoneError,
-        errorMaxLines: 3,
-        prefixIcon: const Icon(Icons.phone_android),
+  List<Widget> _phoneStep(
+    AppLocalizations l10n, {
+    required bool canUseGoogle,
+    required bool usePhone,
+  }) => [
+    if (usePhone) ...[
+      TextField(
+        controller: _phone,
+        enabled: !_busy,
+        keyboardType: TextInputType.phone,
+        textInputAction: TextInputAction.send,
+        autofillHints: const [AutofillHints.telephoneNumberNational],
+        // Numbers read left to right in both languages.
+        textDirection: TextDirection.ltr,
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9+ \-۰-۹٠-٩]')),
+          LengthLimitingTextInputFormatter(17),
+        ],
+        decoration: InputDecoration(
+          labelText: l10n.phoneLabel,
+          hintText: l10n.phoneHint,
+          hintTextDirection: Directionality.of(context),
+          errorText: _phoneError,
+          errorMaxLines: 3,
+          prefixIcon: const Icon(Icons.phone_android),
+        ),
+        onSubmitted: (_) => _sendCode(),
       ),
-      onSubmitted: (_) => _sendCode(),
-    ),
-    const SizedBox(height: BrandSpacing.s5),
-    FilledButton(
-      onPressed: _busy ? null : _sendCode,
-      child: Text(l10n.actionSendCode),
-    ),
-    if (canUseGoogle) ...[
+      const SizedBox(height: BrandSpacing.s5),
+      FilledButton(
+        onPressed: _busy ? null : _sendCode,
+        child: Text(l10n.actionSendCode),
+      ),
+    ],
+    if (canUseGoogle && usePhone) ...[
       const SizedBox(height: BrandSpacing.s5),
       Row(
         children: [
@@ -273,12 +350,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         ],
       ),
       const SizedBox(height: BrandSpacing.s5),
+    ],
+    if (canUseGoogle)
       OutlinedButton.icon(
         onPressed: _busy ? null : _google,
         icon: const Icon(Icons.account_circle_outlined),
         label: Text(l10n.actionContinueWithGoogle),
       ),
-    ],
   ];
 
   List<Widget> _codeStep(AppLocalizations l10n) => [
@@ -293,6 +371,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       autofillHints: const [AutofillHints.oneTimeCode],
       enableSuggestions: false,
       autocorrect: false,
+      enableIMEPersonalizedLearning: false,
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
       style: Theme.of(context).textTheme.headlineSmall
@@ -321,10 +400,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         alignment: WrapAlignment.spaceBetween,
         children: [
           TextButton(
-            onPressed: () => setState(() {
-              _sentTo = null;
-              _ticker?.cancel();
-            }),
+            // The resend wait keeps running.
+            onPressed: () => setState(() => _sentTo = null),
             child: Text(l10n.actionChangeNumber),
           ),
           if (_resendIn > 0)

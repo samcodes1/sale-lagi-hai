@@ -1,15 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { type AccountDeps, deleteAccount, REAUTH_WINDOW_MS, supabaseDeps } from './account.ts';
+import { type AccountDeps, deleteAccount, REAUTH_WINDOW_MS, signedInAt, supabaseDeps } from './account.ts';
 import { handle } from './handler.ts';
 
 const NOW = Date.parse('2026-10-29T12:00:00Z');
-const TOKEN = 'header.payload-xxxxxxxxxxxxxxxx.signature';
+const b64url = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url');
+/** An access token whose session signed in with [amr] (signature unchecked). */
+const jwt = (amr: unknown) => `${b64url({ alg: 'ES256' })}.${b64url({ sub: 'u1', amr })}.c2ln`;
+const TOKEN = jwt([{ method: 'otp', timestamp: (NOW - 60_000) / 1000 }]);
 
 function fakeDeps(overrides: Partial<AccountDeps> = {}) {
   const calls: string[] = [];
   const deps: AccountDeps = {
-    verifyUser: async () => ({ id: 'u1', lastSignInAt: new Date(NOW - 60_000).toISOString() }),
+    verifyUser: async () => ({ id: 'u1' }),
     listPrivateFiles: async () => [
       { bucket_id: 'avatars', name: 'u1/me.jpg' },
       { bucket_id: 'submission-photos', name: 'u1/a.jpg' },
@@ -39,11 +42,26 @@ test('a bad token deletes nothing', async () => {
 });
 
 test('an old sign-in must be repeated first', async () => {
-  for (const lastSignInAt of [new Date(NOW - REAUTH_WINDOW_MS - 1).toISOString(), null, 'garbage']) {
-    const { deps, calls } = fakeDeps({ verifyUser: async () => ({ id: 'u1', lastSignInAt }) });
-    assert.deepEqual(await deleteAccount(TOKEN, deps), { kind: 'reauth-required' }, String(lastSignInAt));
+  const old = (NOW - REAUTH_WINDOW_MS - 1) / 1000;
+  for (const token of [
+    jwt([{ method: 'otp', timestamp: old }]),
+    // A refresh is not a sign-in, nor is an anonymous session.
+    jwt([{ method: 'otp', timestamp: old }, { method: 'token_refresh', timestamp: NOW / 1000 }]),
+    jwt([{ method: 'anonymous', timestamp: NOW / 1000 }]),
+    jwt(null),
+    jwt([{ method: 'otp', timestamp: 'now' }]),
+    'not-a-token',
+    'a.%%%.b',
+  ]) {
+    const { deps, calls } = fakeDeps();
+    assert.deepEqual(await deleteAccount(token, deps), { kind: 'reauth-required' }, token);
     assert.deepEqual(calls, []);
   }
+});
+
+test('the newest real sign-in counts, by phone code or Google', () => {
+  const at = (NOW - 1000) / 1000;
+  assert.equal(signedInAt(jwt([{ method: 'otp', timestamp: at - 900 }, { method: 'oauth', timestamp: at }])), NOW - 1000);
 });
 
 test('many files go in batches of 100', async () => {
@@ -83,7 +101,7 @@ test('supabaseDeps speaks the Auth, PostgREST and Storage APIs', async () => {
   }) as typeof fetch;
   const deps = supabaseDeps('https://p.supabase.co', 'sb_secret_xxxxxxxxxxxxxxxx', http);
 
-  assert.deepEqual(await deps.verifyUser(TOKEN), { id: 'u1', lastSignInAt: '2026-10-29T11:59:00Z' });
+  assert.deepEqual(await deps.verifyUser(TOKEN), { id: 'u1' });
   assert.equal(seen[0].headers.authorization, `Bearer ${TOKEN}`, 'the user is checked with their own token');
   assert.deepEqual(await deps.listPrivateFiles('u1'), [{ bucket_id: 'avatars', name: 'u1/me.jpg' }]);
   assert.equal(JSON.parse(seen[1].body!).target, 'u1');
@@ -125,8 +143,7 @@ test('handler: maps outcomes to 200, 401 and 403, and failures to a generic 500'
   assert.equal(ok.status, 200);
   assert.deepEqual(await ok.json(), { deleted: true });
   assert.equal((await handle(post(auth), configured, () => fakeDeps({ verifyUser: async () => null }).deps)).status, 401);
-  const stale = await handle(post(auth), configured, () =>
-    fakeDeps({ verifyUser: async () => ({ id: 'u1', lastSignInAt: null }) }).deps);
+  const stale = await handle(post({ authorization: `Bearer ${jwt([])}` }), configured, () => fakeDeps().deps);
   assert.equal(stale.status, 403);
   assert.deepEqual(await stale.json(), { error: 'reauth_required' });
   const broken = await handle(post(auth), configured, () =>

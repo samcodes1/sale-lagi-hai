@@ -136,8 +136,12 @@ class _AccountSection extends ConsumerWidget {
         heading(),
         ListTile(
           leading: const ExcludeSemantics(child: Icon(Icons.person_outline)),
-          // Numbers and addresses read left to right in both languages.
-          title: Text(who, textDirection: TextDirection.ltr),
+          // Numbers and addresses read left to right in both languages,
+          // but sit at the start of the row like everything else.
+          title: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(who, textDirection: TextDirection.ltr),
+          ),
           subtitle: Text(
             user.method == SignInMethod.google
                 ? l10n.profileSignedInGoogle

@@ -782,6 +782,18 @@ abstract class AppLocalizations {
   /// **'For your safety, sign in again before deleting your account.'**
   String get reauthBody;
 
+  /// No description provided for @reauthOtherNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this account\'s own number to confirm it\'s you.'**
+  String get reauthOtherNumber;
+
+  /// No description provided for @reauthWrongAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s a different account, so nothing was deleted. You\'ve been signed out.'**
+  String get reauthWrongAccount;
+
   /// No description provided for @phoneLabel.
   ///
   /// In en, this message translates to:
@@ -797,7 +809,7 @@ abstract class AppLocalizations {
   /// No description provided for @phoneInvalid.
   ///
   /// In en, this message translates to:
-  /// **'Enter a Pakistani mobile number, like 0300 1234567.'**
+  /// **'Enter a Pakistani mobile number, like 0300 1234567.'**
   String get phoneInvalid;
 
   /// No description provided for @actionSendCode.

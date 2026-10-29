@@ -1,0 +1,338 @@
+[
+ {
+  "tag": "360x800_light_en",
+  "semanticsProfile": [
+   "button:Sign out:360x56",
+   "button:Delete account:360x56",
+   "button:Theme preview (dev):360x56",
+   "button:Widget gallery (dev):360x56",
+   "tab:Home:72x80",
+   "tab:Explore:72x80",
+   "tab:Alerts:72x80",
+   "tab:Saved:72x80",
+   "tab:Profile:72x80"
+  ]
+ },
+ {
+  "tag": "360x800_light_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "semanticsProfile": [
+   "button:Sign out:360x64",
+   "button:Delete account:360x64",
+   "button:Theme preview (dev):360x112",
+   "button:Widget gallery (dev):360x24",
+   "tab:Home:72x80",
+   "tab:Explore:72x80",
+   "tab:Alerts:72x80",
+   "tab:Saved:72x80",
+   "tab:Profile:72x80"
+  ]
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur",
+  "semanticsProfile": [
+   "button:سائن آؤٹ:360x56",
+   "button:اکاؤنٹ ڈیلیٹ کریں:360x56",
+   "button:Theme preview (dev):360x56",
+   "button:Widget gallery (dev):360x56",
+   "tab:ہوم:72x80",
+   "tab:تلاش:72x80",
+   "tab:الرٹس:72x80",
+   "tab:محفوظ:72x80",
+   "tab:پروفائل:72x80"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "semanticsProfile": [
+   "button:سائن آؤٹ:360x74",
+   "button:اکاؤنٹ ڈیلیٹ کریں:360x74",
+   "button:Theme preview (dev):360x142",
+   "button:Widget gallery (dev):360x89",
+   "tab:ہوم:72x80",
+   "tab:تلاش:72x80",
+   "tab:الرٹس:72x80",
+   "tab:محفوظ:72x80",
+   "tab:پروفائل:72x80"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en",
+  "semanticsProfile": [
+   "button:Sign out:360x56",
+   "button:Delete account:360x56",
+   "button:Theme preview (dev):360x56",
+   "button:Widget gallery (dev):360x56",
+   "tab:Home:72x80",
+   "tab:Explore:72x80",
+   "tab:Alerts:72x80",
+   "tab:Saved:72x80",
+   "tab:Profile:72x80"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "semanticsProfile": [
+   "button:Sign out:360x64",
+   "button:Delete account:360x64",
+   "button:Theme preview (dev):360x112",
+   "button:Widget gallery (dev):360x24",
+   "tab:Home:72x80",
+   "tab:Explore:72x80",
+   "tab:Alerts:72x80",
+   "tab:Saved:72x80",
+   "tab:Profile:72x80"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "semanticsProfile": [
+   "button:سائن آؤٹ:360x56",
+   "button:اکاؤنٹ ڈیلیٹ کریں:360x56",
+   "button:Theme preview (dev):360x56",
+   "button:Widget gallery (dev):360x56",
+   "tab:ہوم:72x80",
+   "tab:تلاش:72x80",
+   "tab:الرٹس:72x80",
+   "tab:محفوظ:72x80",
+   "tab:پروفائل:72x80"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "semanticsProfile": [
+   "button:سائن آؤٹ:360x74",
+   "button:اکاؤنٹ ڈیلیٹ کریں:360x74",
+   "button:Theme preview (dev):360x142",
+   "button:Widget gallery (dev):360x89",
+   "tab:ہوم:72x80",
+   "tab:تلاش:72x80",
+   "tab:الرٹس:72x80",
+   "tab:محفوظ:72x80",
+   "tab:پروفائل:72x80"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_en",
+  "semanticsProfile": [
+   "button:Sign out:412x56",
+   "button:Delete account:412x56",
+   "button:Theme preview (dev):412x56",
+   "button:Widget gallery (dev):412x56",
+   "tab:Home:82x80",
+   "tab:Explore:82x80",
+   "tab:Alerts:82x80",
+   "tab:Saved:82x80",
+   "tab:Profile:82x80"
+  ]
+ },
+ {
+  "tag": "412x915_light_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_en_ts2",
+  "semanticsProfile": [
+   "button:Sign out:412x64",
+   "button:Delete account:412x64",
+   "button:Theme preview (dev):412x64",
+   "button:Widget gallery (dev):412x64",
+   "tab:Home:82x80",
+   "tab:Explore:82x80",
+   "tab:Alerts:82x80",
+   "tab:Saved:82x80",
+   "tab:Profile:82x80"
+  ]
+ },
+ {
+  "tag": "412x915_light_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur",
+  "semanticsProfile": [
+   "button:سائن آؤٹ:412x56",
+   "button:اکاؤنٹ ڈیلیٹ کریں:412x56",
+   "button:Theme preview (dev):412x56",
+   "button:Widget gallery (dev):412x56",
+   "tab:ہوم:82x80",
+   "tab:تلاش:82x80",
+   "tab:الرٹس:82x80",
+   "tab:محفوظ:82x80",
+   "tab:پروفائل:82x80"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur_ts2",
+  "semanticsProfile": [
+   "button:سائن آؤٹ:412x74",
+   "button:اکاؤنٹ ڈیلیٹ کریں:412x74",
+   "button:Theme preview (dev):412x79",
+   "button:Widget gallery (dev):412x17",
+   "tab:ہوم:82x80",
+   "tab:تلاش:82x80",
+   "tab:الرٹس:82x80",
+   "tab:محفوظ:82x80",
+   "tab:پروفائل:82x80"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en",
+  "semanticsProfile": [
+   "button:Sign out:412x56",
+   "button:Delete account:412x56",
+   "button:Theme preview (dev):412x56",
+   "button:Widget gallery (dev):412x56",
+   "tab:Home:82x80",
+   "tab:Explore:82x80",
+   "tab:Alerts:82x80",
+   "tab:Saved:82x80",
+   "tab:Profile:82x80"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en_ts2",
+  "semanticsProfile": [
+   "button:Sign out:412x64",
+   "button:Delete account:412x64",
+   "button:Theme preview (dev):412x64",
+   "button:Widget gallery (dev):412x64",
+   "tab:Home:82x80",
+   "tab:Explore:82x80",
+   "tab:Alerts:82x80",
+   "tab:Saved:82x80",
+   "tab:Profile:82x80"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "semanticsProfile": [
+   "button:سائن آؤٹ:412x56",
+   "button:اکاؤنٹ ڈیلیٹ کریں:412x56",
+   "button:Theme preview (dev):412x56",
+   "button:Widget gallery (dev):412x56",
+   "tab:ہوم:82x80",
+   "tab:تلاش:82x80",
+   "tab:الرٹس:82x80",
+   "tab:محفوظ:82x80",
+   "tab:پروفائل:82x80"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur_ts2",
+  "semanticsProfile": [
+   "button:سائن آؤٹ:412x74",
+   "button:اکاؤنٹ ڈیلیٹ کریں:412x74",
+   "button:Theme preview (dev):412x79",
+   "button:Widget gallery (dev):412x17",
+   "tab:ہوم:82x80",
+   "tab:تلاش:82x80",
+   "tab:الرٹس:82x80",
+   "tab:محفوظ:82x80",
+   "tab:پروفائل:82x80"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ }
+]

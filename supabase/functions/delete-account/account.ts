@@ -10,7 +10,13 @@
 /** A sign-in older than this needs repeating before deletion. */
 export const REAUTH_WINDOW_MS = 5 * 60 * 1000;
 
-export type AuthUser = { id: string; lastSignInAt: string | null };
+/**
+ * The `amr` methods that are a real sign-in. A token refresh is not, and
+ * neither is an anonymous session.
+ */
+const SIGN_IN_METHODS = new Set(['otp', 'oauth', 'id_token', 'password', 'magiclink']);
+
+export type AuthUser = { id: string };
 export type StoredFile = { bucket_id: string; name: string };
 
 export type AccountDeps = {
@@ -34,8 +40,10 @@ export async function deleteAccount(accessToken: string, deps: AccountDeps): Pro
   const user = await deps.verifyUser(accessToken);
   if (!user) return { kind: 'unauthorized' };
 
-  const signedIn = user.lastSignInAt ? Date.parse(user.lastSignInAt) : NaN;
-  if (!Number.isFinite(signedIn) || deps.now() - signedIn > REAUTH_WINDOW_MS) {
+  // Not `users.last_sign_in_at`: Supabase Auth also bumps that on every
+  // token refresh, so a days-old or stolen session would pass.
+  const signedIn = signedInAt(accessToken);
+  if (signedIn === null || deps.now() - signedIn > REAUTH_WINDOW_MS) {
     return { kind: 'reauth-required' };
   }
 
@@ -50,6 +58,38 @@ export async function deleteAccount(accessToken: string, deps: AccountDeps): Pro
 
   await deps.deleteUser(user.id);
   return { kind: 'deleted', files: files.length };
+}
+
+/**
+ * When the session behind [accessToken] last really signed in, in ms, from
+ * the token's `amr` claim, or null when it has none. Only call this on a
+ * token the Auth server has accepted: the signature isn't checked here.
+ */
+export function signedInAt(accessToken: string): number | null {
+  const payload = accessToken.split('.')[1];
+  if (!payload) return null;
+  let claims: unknown;
+  try {
+    claims = JSON.parse(new TextDecoder().decode(base64UrlDecode(payload)));
+  } catch {
+    return null;
+  }
+  const amr = (claims as { amr?: unknown } | null)?.amr;
+  if (!Array.isArray(amr)) return null;
+  let latest: number | null = null;
+  for (const entry of amr) {
+    const { method, timestamp } = (entry ?? {}) as { method?: unknown; timestamp?: unknown };
+    if (typeof method !== 'string' || !SIGN_IN_METHODS.has(method)) continue;
+    if (typeof timestamp !== 'number' || !Number.isFinite(timestamp)) continue;
+    latest = Math.max(latest ?? 0, timestamp * 1000);
+  }
+  return latest;
+}
+
+function base64UrlDecode(text: string): Uint8Array {
+  const base64 = text.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(base64 + '='.repeat((4 - (base64.length % 4)) % 4));
+  return Uint8Array.from(binary, (c) => c.charCodeAt(0));
 }
 
 type Fetch = typeof fetch;
@@ -67,15 +107,9 @@ export function supabaseDeps(url: string, serviceKey: string, http: Fetch = fetc
         headers: { apikey: serviceKey, authorization: `Bearer ${accessToken}` },
       });
       if (response.status === 401 || response.status === 403) return null;
-      const body = (await (await ok(response, 'auth user')).json()) as {
-        id?: unknown;
-        last_sign_in_at?: unknown;
-      };
+      const body = (await (await ok(response, 'auth user')).json()) as { id?: unknown };
       if (typeof body.id !== 'string') return null;
-      return {
-        id: body.id,
-        lastSignInAt: typeof body.last_sign_in_at === 'string' ? body.last_sign_in_at : null,
-      };
+      return { id: body.id };
     },
     async listPrivateFiles(userId) {
       const response = await http(`${url}/rest/v1/rpc/prepare_account_deletion`, {

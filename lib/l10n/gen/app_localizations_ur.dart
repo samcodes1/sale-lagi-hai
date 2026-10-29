@@ -479,6 +479,14 @@ class AppLocalizationsUr extends AppLocalizations {
       'آپ کی حفاظت کے لیے، اکاؤنٹ ڈیلیٹ کرنے سے پہلے دوبارہ سائن اِن کریں۔';
 
   @override
+  String get reauthOtherNumber =>
+      'تصدیق کے لیے اسی اکاؤنٹ کا نمبر استعمال کریں۔';
+
+  @override
+  String get reauthWrongAccount =>
+      'یہ کوئی اور اکاؤنٹ ہے، اس لیے کچھ ڈیلیٹ نہیں ہوا۔ آپ سائن آؤٹ ہو گئے ہیں۔';
+
+  @override
   String get phoneLabel => 'موبائل نمبر';
 
   @override
@@ -486,7 +494,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get phoneInvalid =>
-      'پاکستانی موبائل نمبر درج کریں، جیسے ⁦0300 1234567⁩۔';
+      'پاکستانی موبائل نمبر درج کریں، جیسے ⁦0300 1234567⁩۔';
 
   @override
   String get actionSendCode => 'کوڈ بھیجیں';

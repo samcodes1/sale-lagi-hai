@@ -4,10 +4,11 @@
 /// `+92 300 1234567`, `0092…`, and with Urdu keyboards in Eastern Arabic
 /// digits (`۰۳۰۰…`). All become E.164 (`+923001234567`) or `null`.
 abstract final class PakistanPhone {
-  // Spaces, dashes, brackets, dots, and the invisible direction marks and
-  // isolates that copy-pasting from right-to-left text carries along.
+  // Spaces, dashes, brackets, dots, and the invisible direction marks,
+  // embeddings and isolates that copy-pasting from right-to-left text
+  // carries along.
   static final _separators = RegExp(
-    '[\\s\\-().\u200E\u200F\u2066\u2067\u2068\u2069]',
+    '[\\s\\-().\u200E\u200F\u202A-\u202E\u2066\u2067\u2068\u2069]',
   );
   static final _mobile = RegExp(r'^3[0-9]{9}$');
 
@@ -20,9 +21,10 @@ abstract final class PakistanPhone {
       digits = digits.substring(4);
     } else if (digits.startsWith('92') && digits.length == 12) {
       digits = digits.substring(2);
-    } else if (digits.startsWith('0')) {
-      digits = digits.substring(1);
     }
+    // The trunk 0, also when written after the country code
+    // (`+92 0300…`).
+    if (digits.startsWith('0')) digits = digits.substring(1);
     return _mobile.hasMatch(digits) ? '+92$digits' : null;
   }
 
@@ -41,6 +43,10 @@ abstract final class PakistanPhone {
     if (!_mobile.hasMatch(local)) return e164;
     return '+92 ${local.substring(0, 3)} ${local.substring(3)}';
   }
+
+  /// [display] for use inside a sentence: no-break spaces, so the number
+  /// never wraps across lines.
+  static String inline(String e164) => display(e164).replaceAll(' ', '\u00A0');
 
   /// Maps Arabic-Indic (U+0660…) and Extended Arabic-Indic (U+06F0…, the
   /// ones Urdu keyboards type) digits to ASCII.

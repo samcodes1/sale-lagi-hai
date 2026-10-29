@@ -59,12 +59,14 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
       _failure = null;
     });
     final auth = ref.read(authRepositoryProvider);
+    final who = auth.currentUser?.id;
     var result = await auth.deleteAccount();
     if (result case Success(value: DeletionOutcome.reauthRequired)) {
       if (!mounted) return;
       final again = await const SignInRoute(reauth: true).push<bool>(context);
       if (!mounted) return;
-      if (again != true) {
+      // Only ever delete the account that asked.
+      if (again != true || who == null || auth.currentUser?.id != who) {
         setState(() => _busy = false);
         return;
       }
@@ -108,7 +110,9 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.deleteTitle)),
+      // Short enough not to be cut at large text; the full title wraps
+      // below.
+      appBar: AppBar(title: Text(l10n.actionDeleteAccount)),
       body: SafeArea(
         // Not a lazy list: the whole (short) form is built, so focusing a
         // field below the fold at large text sizes works.
@@ -117,6 +121,14 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Semantics(
+                header: true,
+                child: Text(
+                  l10n.deleteTitle,
+                  style: theme.textTheme.headlineSmall,
+                ),
+              ),
+              const SizedBox(height: BrandSpacing.s3),
               Text(l10n.deleteIntro, style: theme.textTheme.bodyLarge),
               const SizedBox(height: BrandSpacing.s7),
               Semantics(

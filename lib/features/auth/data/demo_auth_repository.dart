@@ -19,6 +19,17 @@ final class DemoAuthRepository implements AuthRepository {
 
   final DateTime Function() _clock;
   final bool googleAvailable;
+
+  /// The account the Google sheet picks. Tests switch it to sign in as
+  /// someone else.
+  AppUser googleAccount = const AppUser(
+    id: '00000000-0000-4000-9000-0000000000aa',
+    method: SignInMethod.google,
+    email: 'demo.shopper@example.com',
+  );
+
+  /// The ids of the accounts deleted so far.
+  final deletedIds = <String>[];
   final _changes = StreamController<AppUser?>.broadcast();
   final _sent = <String, List<DateTime>>{};
   AppUser? _user;
@@ -90,13 +101,7 @@ final class DemoAuthRepository implements AuthRepository {
   @override
   Future<Result<AppUser?>> signInWithGoogle() async {
     if (!googleAvailable) return const Failure(ForbiddenFailure());
-    final user = _user?.method == SignInMethod.google
-        ? _user!
-        : const AppUser(
-            id: '00000000-0000-4000-9000-0000000000aa',
-            method: SignInMethod.google,
-            email: 'demo.shopper@example.com',
-          );
+    final user = googleAccount;
     _signIn(user);
     return Success(user);
   }
@@ -118,6 +123,7 @@ final class DemoAuthRepository implements AuthRepository {
     if (_clock().difference(signedInAt) > _reauthWindow) {
       return const Success(DeletionOutcome.reauthRequired);
     }
+    deletedIds.add(_user!.id);
     await signOut();
     return const Success(DeletionOutcome.deleted);
   }

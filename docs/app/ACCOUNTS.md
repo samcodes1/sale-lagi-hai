@@ -18,7 +18,14 @@ Profile → **Sign in** opens `/sign-in`, above the tabs.
 Profile → **Delete account** opens `/profile/account/delete` (signed-in shoppers only). The page lists what goes and what stays, and asks for one confirmation.
 
 1. The app calls the `delete-account` Edge Function with the shopper's access token.
-2. The function asks the Auth server who the token belongs to. If the last sign-in is more than 5 minutes old, it answers `403 reauth_required`. The app then opens `/sign-in?reauth=true` (with the number prefilled for phone users) and tries again once the shopper has signed in again.
+2. The function asks the Auth server who the token belongs to. If the session's last real sign-in is more than 5 minutes old, it answers `403 reauth_required`.
+   - "Real sign-in" is the newest `otp`, `oauth`, `id_token`, `password` or `magiclink` entry in the access token's `amr` claim. Refreshes don't change it. A missing or garbled claim counts as old.
+   - Not `users.last_sign_in_at`: Supabase Auth bumps that on every token refresh, so an old or stolen session would pass (QA 4.2-A1).
+   - The app then opens `/sign-in?reauth=true` and tries again once the shopper has signed in again. **Only the same account will do** (QA 4.2-A2):
+     - phone users confirm their own number (prefilled; another number is refused, and Google isn't offered);
+     - Google users get only the Google button;
+     - if a different account signs in anyway, it is signed out at once, nothing is deleted, and the shopper is told;
+     - the delete page also checks that the user id is unchanged before it tries again.
 3. `prepare_account_deletion(uid)` (service role only) hands the person's uploads in the public business buckets over to the business, and lists their private files. The function deletes those through the Storage API, in batches of 100 (Supabase refuses to delete a user who still owns files), then deletes the auth user. `on delete cascade` removes the profile, roles, follows, saves, cards, alert preferences, notifications, push tokens and queued pushes.
 4. The app signs out, clears local storage (preferences and cached deals), and the phone returns to onboarding.
 
@@ -53,3 +60,11 @@ The function fails closed. Without `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY
   - auth setup.
 - `supabase/tests/database/800_accounts.test.sql`: sync rules and deletion preparation.
 - `supabase/functions/delete-account/account.test.ts`: the steps, batching, re-auth, failure order and the HTTP API calls.
+
+## Sign-in details
+- Back on the code step returns to the number. While a code is being checked, Back leaves the page; the sign-in still finishes and the guest choices still sync.
+- "Send code" works once per tap. Going back to the same number keeps the 60-second wait and the code already sent.
+- The code field turns off suggestions, autocorrect and keyboard learning.
+- Numbers inside sentences use no-break spaces (`PakistanPhone.inline`), so they never wrap. `+92 0300…`, `0092 0300…` and numbers pasted with bidi embedding controls are accepted.
+- Deleting still counts as done if the `/logout` call after it fails (offline): GoTrue drops the local session first.
+- **Web QA build:** the `google_sign_in_web` plugin loads `accounts.google.com/gsi/client` when it registers, although web never offers Google sign-in. Expected on web previews only (QA 4.2-A11); Android doesn't load it.
