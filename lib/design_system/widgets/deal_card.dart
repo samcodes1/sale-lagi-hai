@@ -71,9 +71,10 @@ class DealCard extends ConsumerWidget {
             // ExcludeSemantics below drops the InkWell's own tap action, so
             // the merged node needs it (screen readers open the deal).
             onTap: onTap,
-            customSemanticsActions: {
-              CustomSemanticsAction(label: saveLabel): ?onSaveToggle,
-            },
+            // No save callback, no actions menu (not an empty one).
+            customSemanticsActions: onSaveToggle == null
+                ? null
+                : {CustomSemanticsAction(label: saveLabel): onSaveToggle!},
             child: ExcludeSemantics(
               child: InkWell(onTap: onTap, child: content),
             ),

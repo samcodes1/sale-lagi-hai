@@ -51,7 +51,11 @@ class AppStepper extends StatelessWidget {
         onStepContinue: onStepContinue,
         onStepCancel: onStepCancel,
         controlsBuilder: controlsBuilder ?? _controls,
-        type: type,
+        // Horizontal headers can't wrap: above 115% text they would
+        // overflow (worse in Urdu), so the stepper goes vertical instead.
+        type: MediaQuery.textScalerOf(context).scale(10) > 11.5
+            ? StepperType.vertical
+            : type,
         stepIconWidth: circle,
         stepIconHeight: circle,
         // Colours both the circles and the connectors.

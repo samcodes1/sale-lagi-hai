@@ -245,12 +245,43 @@ void main() {
   test('Android: Flutter deep linking is off and no link filters exist', () {
     final manifest = File('android/app/src/main/AndroidManifest.xml')
         .readAsStringSync();
+    // QA round 2: FlutterActivity reads the flag from the ACTIVITY's
+    // meta-data; under <application> it is ignored (found by the 1.7 gate,
+    // missed by this test in 1.5 round 1). Check where it sits.
+    final activity = RegExp(
+      r'<activity\b[^>]*android:name="\.MainActivity"[\s\S]*?</activity>',
+    ).firstMatch(manifest);
+    expect(activity, isNotNull);
     expect(
-      RegExp(r'flutter_deeplinking_enabled"\s+android:value="false"')
-          .hasMatch(manifest),
+      RegExp(
+        r'android:name="flutter_deeplinking_enabled"\s+android:value="false"',
+      ).hasMatch(activity![0]!),
       isTrue,
+      reason: 'flag must be inside <activity android:name=".MainActivity">',
     );
     expect(manifest, isNot(contains('android.intent.action.VIEW')));
     expect(manifest, isNot(contains('android:autoVerify')));
+  });
+
+  test('iOS: Flutter deep linking is off and no URL schemes exist '
+      '(QA round 2, 1.5 S4-1)', () {
+    final plist = File('ios/Runner/Info.plist').readAsStringSync();
+    expect(
+      RegExp(r'<key>FlutterDeepLinkingEnabled</key>\s*<false/>')
+          .hasMatch(plist),
+      isTrue,
+    );
+    expect(plist, isNot(contains('CFBundleURLTypes')));
+    final entitlements = Directory('ios/Runner')
+        .listSync()
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.entitlements'));
+    for (final f in entitlements) {
+      expect(
+        f.readAsStringSync(),
+        isNot(contains('associated-domains')),
+        reason: f.path,
+      );
+    }
   });
 }
