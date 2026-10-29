@@ -49,6 +49,9 @@ export type Fetcher = {
 
 export type Adapter = {
   kind: string;
+  /** True when an empty answer means "nothing on offer now" (e.g. no sale)
+   * rather than "something went wrong": the runner then ends its deals. */
+  emptyIsMeaningful?: boolean;
   fetchDeals(source: Source, fetcher: Fetcher): Promise<ScrapedDeal[]>;
 };
 

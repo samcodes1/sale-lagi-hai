@@ -55,7 +55,8 @@ export async function runSource(
 
   // Ending deals only makes sense when the source answered with a list; an
   // empty answer from a source that had deals is suspicious, not a sale end.
-  if (seen.size > 0 || (scraped.length === 0 && source.config.allowEmpty === true)) {
+  const emptyIsMeaningful = adapter.emptyIsMeaningful === true || source.config.allowEmpty === true;
+  if (seen.size > 0 || (scraped.length === 0 && emptyIsMeaningful)) {
     result.ended = await store.endMissing(source.id, [...seen]);
   }
   if (result.rejected > 0) result.status = seen.size > 0 ? 'partial' : 'failed';

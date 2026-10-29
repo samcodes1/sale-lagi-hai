@@ -2,6 +2,7 @@
 // calls it with x-dispatcher-secret (verify_jwt = false). The store writes
 // through the private ingestion functions over SUPABASE_DB_URL.
 import postgres from 'npm:postgres@3.4.7';
+import { shopifyAdapter } from '../_shared/ingest/adapters/shopify.ts';
 import { PoliteFetcher } from '../_shared/ingest/fetcher.ts';
 import type { Adapter, IngestStore, Source } from '../_shared/ingest/types.ts';
 import { handle } from './handler.ts';
@@ -21,7 +22,9 @@ const store: IngestStore = {
 
 // Adapters by source kind; each sub-phase adds its own (3.2 Shopify, 3.3
 // bank offers, 3.4 telecom bundles).
-const adapters: Record<string, Adapter> = {};
+const adapters: Record<string, Adapter> = {
+  shopify: shopifyAdapter,
+};
 
 Deno.serve((request) =>
   handle(request, Deno.env, () => ({
