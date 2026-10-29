@@ -13,7 +13,7 @@ const _expectedKeys = {
   'FLAVOR',
   'APP_NAME',
   'SUPABASE_URL',
-  'SUPABASE_ANON_KEY',
+  'SUPABASE_PUBLISHABLE_KEY',
 };
 
 Map<String, String> _readExample(Flavor flavor) {

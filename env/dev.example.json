@@ -2,5 +2,5 @@
   "FLAVOR": "dev",
   "APP_NAME": "SLH Dev",
   "SUPABASE_URL": "",
-  "SUPABASE_ANON_KEY": ""
+  "SUPABASE_PUBLISHABLE_KEY": ""
 }

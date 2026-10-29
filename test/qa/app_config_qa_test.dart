@@ -21,7 +21,7 @@ Map<String, String> _values(String key, {String flavor = 'prod'}) => {
   'FLAVOR': flavor,
   'APP_NAME': 'Sale Lagi Hai!',
   'SUPABASE_URL': 'https://abc.supabase.co',
-  'SUPABASE_ANON_KEY': key,
+  'SUPABASE_PUBLISHABLE_KEY': key,
 };
 
 bool _rejectedAsSecret(String key, {String flavor = 'prod'}) {
@@ -123,7 +123,7 @@ void main() {
         'FLAVOR': 'prod',
         'APP_NAME': 'Sale Lagi Hai!',
         'SUPABASE_URL': 'https://YOUR-PROD-PROJECT.supabase.co',
-        'SUPABASE_ANON_KEY': 'sb_publishable_REPLACE_ME',
+        'SUPABASE_PUBLISHABLE_KEY': 'sb_publishable_REPLACE_ME',
       });
       expect(config.flavor, Flavor.prod);
     });

@@ -48,7 +48,7 @@ Future<GoRouter> _pumpApp(
           flavor: flavor,
           appName: 'SLH',
           supabaseUrl: '',
-          supabaseAnonKey: '',
+          supabasePublishableKey: '',
         ),
       ),
       deviceLocaleProvider.overrideWithValue(locale),

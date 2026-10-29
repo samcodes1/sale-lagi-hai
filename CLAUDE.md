@@ -39,7 +39,7 @@ Copy `env/<flavor>.example.json` to `env/<flavor>.json` before the first run. Th
 - Flutter 3.47 ships Material as the `material_ui` package; the in-SDK `package:flutter/material.dart` is being deprecated. We migrate in sub-phase 1.3, and new code uses `material_ui` from then on.
 - Pin `build_runner: ^2.16.2`. Version 2.17 needs `build` 5, which riverpod_generator and go_router_builder don't support yet.
 - go_router_builder's typed-route mixin is `$RouteName` (go_router's docs wrongly show `_$RouteName`).
-- Supabase is replacing the anon key with the **publishable** key: use `publishableKey:` in `Supabase.initialize`. The env field gets renamed to `SUPABASE_PUBLISHABLE_KEY` in Phase 2.
+- Supabase is replacing the anon key with the **publishable** key: use `publishableKey:` in `Supabase.initialize`. The env field is `SUPABASE_PUBLISHABLE_KEY` (renamed from `SUPABASE_ANON_KEY` before Phase 4); the legacy anon JWT is still accepted by `AppConfig`.
 - Golden tests use alchemist; widgets from `material_ui` need the wrapper documented in the `qa-testing` skill.
 - Discontinued, so don't add them: golden_toolkit, uni_links, firebase_dynamic_links, intl_utils, hive, isar.
 - Play requires target API 36.

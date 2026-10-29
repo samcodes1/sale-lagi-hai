@@ -12,7 +12,7 @@ const _config = AppConfig(
   flavor: Flavor.dev,
   appName: 'SLH Dev',
   supabaseUrl: '',
-  supabaseAnonKey: '',
+  supabasePublishableKey: '',
 );
 
 Widget _app() => ProviderScope(
@@ -22,7 +22,8 @@ Widget _app() => ProviderScope(
 
 final List<String> _manyProblems = [
   for (var i = 0; i < 30; i++)
-    'Problem $i: SUPABASE_URL and SUPABASE_ANON_KEY must be set together.',
+    'Problem $i: SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY must be set '
+        'together.',
 ];
 
 void main() {

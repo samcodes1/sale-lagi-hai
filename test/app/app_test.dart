@@ -20,7 +20,7 @@ void main() {
     flavor: Flavor.dev,
     appName: 'SLH Dev',
     supabaseUrl: '',
-    supabaseAnonKey: '',
+    supabasePublishableKey: '',
   );
 
   testWidgets('App boots with the config it is given', (tester) async {

@@ -15,7 +15,7 @@ final class AppConfig {
     required this.flavor,
     required this.appName,
     required this.supabaseUrl,
-    required this.supabaseAnonKey,
+    required this.supabasePublishableKey,
   });
 
   /// Reads and validates the values compiled into this build.
@@ -23,7 +23,9 @@ final class AppConfig {
     'FLAVOR': String.fromEnvironment('FLAVOR'),
     'APP_NAME': String.fromEnvironment('APP_NAME'),
     'SUPABASE_URL': String.fromEnvironment('SUPABASE_URL'),
-    'SUPABASE_ANON_KEY': String.fromEnvironment('SUPABASE_ANON_KEY'),
+    'SUPABASE_PUBLISHABLE_KEY': String.fromEnvironment(
+      'SUPABASE_PUBLISHABLE_KEY',
+    ),
   });
 
   /// Builds a config from raw values, collecting every problem before
@@ -49,7 +51,8 @@ final class AppConfig {
     if (appName.isEmpty) problems.add('APP_NAME is missing.');
 
     final supabaseUrl = values['SUPABASE_URL']?.trim() ?? '';
-    final supabaseAnonKey = values['SUPABASE_ANON_KEY']?.trim() ?? '';
+    final supabasePublishableKey =
+        values['SUPABASE_PUBLISHABLE_KEY']?.trim() ?? '';
     // Dev builds may run without a backend until one is configured.
     final backendRequired = flavor != null && flavor != Flavor.dev;
 
@@ -62,17 +65,20 @@ final class AppConfig {
       }
     }
 
-    if (supabaseAnonKey.isEmpty) {
-      if (backendRequired) problems.add('SUPABASE_ANON_KEY is missing.');
-    } else if (!_isPublishableKey(supabaseAnonKey)) {
+    if (supabasePublishableKey.isEmpty) {
+      if (backendRequired) problems.add('SUPABASE_PUBLISHABLE_KEY is missing.');
+    } else if (!_isPublishableKey(supabasePublishableKey)) {
       problems.add(
-        'SUPABASE_ANON_KEY must be the publishable key (sb_publishable_…) '
-        'or a legacy anon JWT. Never ship a secret/service_role key.',
+        'SUPABASE_PUBLISHABLE_KEY must be the publishable key '
+        '(sb_publishable_…) or a legacy anon JWT. Never ship a '
+        'secret/service_role key.',
       );
     }
 
-    if ((supabaseUrl.isEmpty) != (supabaseAnonKey.isEmpty)) {
-      problems.add('SUPABASE_URL and SUPABASE_ANON_KEY must be set together.');
+    if ((supabaseUrl.isEmpty) != (supabasePublishableKey.isEmpty)) {
+      problems.add(
+        'SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY must be set together.',
+      );
     }
 
     if (problems.isNotEmpty) throw AppConfigException(problems);
@@ -81,14 +87,14 @@ final class AppConfig {
       flavor: flavor!,
       appName: appName,
       supabaseUrl: supabaseUrl,
-      supabaseAnonKey: supabaseAnonKey,
+      supabasePublishableKey: supabasePublishableKey,
     );
   }
 
   final Flavor flavor;
   final String appName;
   final String supabaseUrl;
-  final String supabaseAnonKey;
+  final String supabasePublishableKey;
 
   /// Whether a backend is configured for this build.
   bool get hasBackend => supabaseUrl.isNotEmpty;

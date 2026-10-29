@@ -10,7 +10,7 @@ const validProd = {
   'FLAVOR': 'prod',
   'APP_NAME': 'Sale Lagi Hai!',
   'SUPABASE_URL': 'https://abc.supabase.co',
-  'SUPABASE_ANON_KEY': 'sb_publishable_abc',
+  'SUPABASE_PUBLISHABLE_KEY': 'sb_publishable_abc',
 };
 
 void main() {
@@ -48,7 +48,7 @@ void main() {
 
     test('rejects a secret key before it can be compiled in', () {
       final problems = validateEnvFile(
-        envJson({...validProd, 'SUPABASE_ANON_KEY': 'sb_secret_abc'}),
+        envJson({...validProd, 'SUPABASE_PUBLISHABLE_KEY': 'sb_secret_abc'}),
       );
 
       expect(problems.single, contains('Never ship a secret/service_role key'));
@@ -67,7 +67,7 @@ void main() {
       final template = envJson({
         ...validProd,
         'SUPABASE_URL': 'https://YOUR-PROD-PROJECT.supabase.co',
-        'SUPABASE_ANON_KEY': 'sb_publishable_REPLACE_ME',
+        'SUPABASE_PUBLISHABLE_KEY': 'sb_publishable_REPLACE_ME',
       });
 
       expect(validateEnvFile(template), hasLength(2));
@@ -75,10 +75,10 @@ void main() {
         validateEnvFile(
           envJson({
             ...validProd,
-            'SUPABASE_ANON_KEY': 'sb_publishable_replace_me',
+            'SUPABASE_PUBLISHABLE_KEY': 'sb_publishable_replace_me',
           }),
         ),
-        ['"SUPABASE_ANON_KEY" still has a template placeholder value.'],
+        ['"SUPABASE_PUBLISHABLE_KEY" still has a template placeholder value.'],
       );
       expect(validateEnvFile(template, allowPlaceholders: true), isEmpty);
     });

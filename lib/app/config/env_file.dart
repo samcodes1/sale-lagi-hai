@@ -3,7 +3,12 @@ import 'dart:convert';
 import 'package:sale_lagi_hai/app/config/app_config.dart';
 
 /// The keys an `env/<flavor>.json` file may contain.
-const envFileKeys = {'FLAVOR', 'APP_NAME', 'SUPABASE_URL', 'SUPABASE_ANON_KEY'};
+const envFileKeys = {
+  'FLAVOR',
+  'APP_NAME',
+  'SUPABASE_URL',
+  'SUPABASE_PUBLISHABLE_KEY',
+};
 
 /// Template values from `env/*.example.json` that must be replaced before a
 /// real release. Matched case-insensitively (markers are upper case).

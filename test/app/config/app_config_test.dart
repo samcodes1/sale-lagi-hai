@@ -20,7 +20,7 @@ Map<String, String> validValues({
   'FLAVOR': flavor,
   'APP_NAME': 'Sale Lagi Hai!',
   'SUPABASE_URL': url,
-  'SUPABASE_ANON_KEY': key,
+  'SUPABASE_PUBLISHABLE_KEY': key,
 };
 
 Matcher throwsConfigProblem(String fragment) => throwsA(
@@ -47,12 +47,12 @@ void main() {
         'FLAVOR': ' staging ',
         'APP_NAME': ' SLH Staging ',
         'SUPABASE_URL': ' https://abc.supabase.co ',
-        'SUPABASE_ANON_KEY': ' sb_publishable_x ',
+        'SUPABASE_PUBLISHABLE_KEY': ' sb_publishable_x ',
       });
 
       expect(config.flavor, Flavor.staging);
       expect(config.appName, 'SLH Staging');
-      expect(config.supabaseAnonKey, 'sb_publishable_x');
+      expect(config.supabasePublishableKey, 'sb_publishable_x');
     });
 
     test('allows a dev build without a backend', () {
@@ -67,7 +67,7 @@ void main() {
     test('accepts a legacy anon JWT key', () {
       final config = AppConfig.fromMap(validValues(key: fakeJwt('anon')));
 
-      expect(config.supabaseAnonKey, fakeJwt('anon'));
+      expect(config.supabasePublishableKey, fakeJwt('anon'));
     });
 
     test('rejects a missing flavor', () {
@@ -102,7 +102,7 @@ void main() {
               'problems',
               containsAll([
                 'SUPABASE_URL is missing.',
-                'SUPABASE_ANON_KEY is missing.',
+                'SUPABASE_PUBLISHABLE_KEY is missing.',
               ]),
             ),
           ),

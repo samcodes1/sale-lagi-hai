@@ -33,7 +33,7 @@ AppConfig _config(Flavor flavor) => AppConfig(
   flavor: flavor,
   appName: 'SLH',
   supabaseUrl: '',
-  supabaseAnonKey: '',
+  supabasePublishableKey: '',
 );
 
 /// Pumps the real app and returns its router.

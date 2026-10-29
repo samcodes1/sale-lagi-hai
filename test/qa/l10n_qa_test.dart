@@ -313,7 +313,7 @@ void main() {
                 flavor: Flavor.dev,
                 appName: 'SLH',
                 supabaseUrl: '',
-                supabaseAnonKey: '',
+                supabasePublishableKey: '',
               ),
             ),
             savedLocaleProvider.overrideWithValue(AppLocales.urdu),

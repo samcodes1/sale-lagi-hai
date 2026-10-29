@@ -38,7 +38,7 @@ const _config = AppConfig(
   flavor: Flavor.dev,
   appName: 'SLH Dev',
   supabaseUrl: 'https://example.supabase.co',
-  supabaseAnonKey: 'sb_publishable_example',
+  supabasePublishableKey: 'sb_publishable_example',
 );
 
 Future<ThemeData> _effectiveTheme(
