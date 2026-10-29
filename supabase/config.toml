@@ -36,3 +36,7 @@ enable_confirmations = true
 
 [auth.email]
 enable_signup = false
+
+# Called by pg_cron (pg_net) with x-dispatcher-secret, not a user JWT.
+[functions.push-dispatcher]
+verify_jwt = false
