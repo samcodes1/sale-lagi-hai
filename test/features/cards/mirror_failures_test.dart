@@ -128,10 +128,11 @@ void main() {
     await c.read(myCardsProvider.notifier).add('new');
     expect(c.read(myCardsProvider), ['new']);
     expect(store.values[myCardsKey], '["kept"]');
-    // The third read works: merged and written.
+    // The third read works: every change since is replayed onto it, the
+    // one made during the outage too (QA 4.4 R2-2).
     await c.read(myCardsProvider.notifier).add('newer');
-    expect(c.read(myCardsProvider), ['kept', 'newer']);
-    expect(store.values[myCardsKey], '["kept","newer"]');
+    expect(c.read(myCardsProvider), ['kept', 'new', 'newer']);
+    expect(store.values[myCardsKey], '["kept","new","newer"]');
   });
 }
 

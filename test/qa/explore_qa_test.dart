@@ -266,6 +266,36 @@ void main() {
       expect(last, findsOneWidget);
     });
 
+    testWidgets('round 2: 130 brands page in by 60s, each shown once', (
+      tester,
+    ) async {
+      final auth = DemoAuthRepository();
+      final h = Harness(
+        saved: _shopper,
+        auth: auth,
+        backend: _Catalog(auth, extraBrands: 130),
+      );
+      await h.pump(tester);
+      h.router.go('/explore');
+      await tester.pumpAndSettle();
+      final seen = <String>{};
+      var repeats = 0;
+      await _toEnd(
+        tester,
+        each: () {
+          for (final e in find.textContaining('QA Brand ').evaluate()) {
+            final t = (e.widget as Text).data!;
+            if (!seen.add(t) && find.text(t).evaluate().length > 1) repeats++;
+          }
+        },
+      );
+      // Names sort as text ("QA Brand 12" < "QA Brand 129" < "QA Brand 13"),
+      // so check what was seen on the way down.
+      expect(seen, contains('QA Brand 129'));
+      expect(seen, hasLength(130));
+      expect(repeats, 0);
+    });
+
     for (final (name, locale, brightness, hc) in const [
       ('en dark', AppLocales.english, Brightness.dark, false),
       ('en light HC', AppLocales.english, Brightness.light, true),

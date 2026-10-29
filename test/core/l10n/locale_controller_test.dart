@@ -7,6 +7,7 @@ import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/core/logging/log_sinks.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
+import 'package:sale_lagi_hai/core/theme/theme_mode_controller.dart';
 
 import '../../helpers/fakes.dart';
 
@@ -183,10 +184,18 @@ void main() {
       expect(failing.store, isNotNull);
       expect(failing.locale, isNull);
       expect(failing.preferences, isNull);
-      // No store at all: nothing could be read, so nothing is assumed.
-      expect(throwing, (store: null, locale: null, preferences: null));
-      // One warning per failed read, plus one for the store that won't open.
-      expect(sink.records, hasLength(3));
+      expect(failing.theme, AppThemeMode.system);
+      // No store at all: nothing could be read, so nothing is assumed (the
+      // theme follows the phone).
+      expect(throwing, (
+        store: null,
+        locale: null,
+        preferences: null,
+        theme: AppThemeMode.system,
+      ));
+      // One warning per failed read (language, preferences, theme), plus
+      // one for the store that won't open.
+      expect(sink.records, hasLength(4));
     });
   });
 }

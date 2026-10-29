@@ -4,6 +4,7 @@ import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
 import 'package:sale_lagi_hai/app/router/app_router.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
+import 'package:sale_lagi_hai/core/theme/theme_mode_controller.dart';
 import 'package:sale_lagi_hai/design_system/theme/app_theme.dart';
 
 /// Root widget: the brand theme (light, dark and high contrast, following
@@ -32,6 +33,11 @@ class App extends ConsumerWidget {
         AppLocalizations.delegate,
         ...GlobalMaterialLocalizations.delegates,
       ],
+      themeMode: switch (ref.watch(themeModeProvider)) {
+        AppThemeMode.system => ThemeMode.system,
+        AppThemeMode.light => ThemeMode.light,
+        AppThemeMode.dark => ThemeMode.dark,
+      },
       theme: AppTheme.light(script: script),
       darkTheme: AppTheme.dark(script: script),
       highContrastTheme: AppTheme.build(

@@ -44,16 +44,16 @@ final class SavedDeals extends StoredStringList {
       update((current) => {...current, ...dealIds}.toList());
 
   Future<void> toggle(String dealId) async {
-    var saving = false;
-    final next = await update((current) {
-      saving = !current.contains(dealId);
-      return saving
-          ? [dealId, ...current]
-          : [
-              for (final id in current)
-                if (id != dealId) id,
-            ];
-    });
+    // The intent, decided from what the shopper sees, not re-decided when
+    // replayed onto the file (QA 4.4 R2-1): saving twice keeps one.
+    final saving = !state.contains(dealId);
+    final next = await update(
+      (current) => [
+        if (saving) dealId,
+        for (final id in current)
+          if (id != dealId) id,
+      ],
+    );
     if (next == null) return;
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) return;

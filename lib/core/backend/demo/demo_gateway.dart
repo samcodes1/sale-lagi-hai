@@ -318,6 +318,18 @@ final class DemoGateway implements BackendGateway {
           }
         }
         return const [];
+      case 'my_alert_prefs':
+        return [Map.of(_alertPrefs)];
+      case 'update_alert_prefs':
+        if (params['quiet_start'] != null &&
+            params['quiet_start'] ==
+                (params['quiet_end'] ?? _alertPrefs['quiet_end'])) {
+          throw const PostgrestException(message: 'check', code: '23514');
+        }
+        for (final MapEntry(:key, :value) in params.entries) {
+          if (value != null) _alertPrefs[key] = value;
+        }
+        return [Map.of(_alertPrefs)];
       case 'mark_alerts_read':
         final ids = params['ids'] as List<Object?>?;
         var changed = 0;
@@ -513,6 +525,21 @@ final class DemoGateway implements BackendGateway {
         };
       }(),
   ];
+
+  /// The demo user's alert preferences (the table's defaults).
+  final Map<String, Object?> _alertPrefs = {
+    'push_enabled': false,
+    'frequency': 'normal',
+    'quiet_start': '22:00:00',
+    'quiet_end': '08:00:00',
+    'time_zone': 'Asia/Karachi',
+    'followed_brands': true,
+    'followed_categories': true,
+    'my_cards': true,
+    'my_city': true,
+    'saved_price_drops': true,
+    'saved_expiring': true,
+  };
 
   /// The demo inbox: three alerts about demo deals, newest first.
   late final List<Map<String, Object?>> _notifications = [

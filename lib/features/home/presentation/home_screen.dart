@@ -14,7 +14,6 @@ import 'package:sale_lagi_hai/core/network/connectivity_service.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
-import 'package:sale_lagi_hai/design_system/widgets/app_bottom_sheet.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_refresh_indicator.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
@@ -25,7 +24,7 @@ import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
 import 'package:sale_lagi_hai/features/home/application/home_providers.dart';
-import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
+import 'package:sale_lagi_hai/features/home/presentation/city_picker.dart';
 
 /// How close to the end of "For you" the next page starts loading.
 const _prefetchFromEnd = 5;
@@ -98,11 +97,11 @@ class _CityButton extends ConsumerWidget {
       button: true,
       excludeSemantics: true,
       // The excluded button's own tap action goes with it.
-      onTap: () => _pickCity(context, ref, urdu: urdu),
+      onTap: () => pickCity(context, ref),
       child: Align(
         alignment: AlignmentDirectional.centerStart,
         child: TextButton.icon(
-          onPressed: () => _pickCity(context, ref, urdu: urdu),
+          onPressed: () => pickCity(context, ref),
           icon: const Icon(Icons.location_on_outlined),
           label: Row(
             mainAxisSize: MainAxisSize.min,
@@ -132,48 +131,6 @@ String? _cityName(WidgetRef ref, {required bool urdu}) {
     if (c.id == id) return c.name(urdu: urdu);
   }
   return null;
-}
-
-Future<void> _pickCity(
-  BuildContext context,
-  WidgetRef ref, {
-  required bool urdu,
-}) async {
-  final l10n = context.l10n;
-  final cities = await ref
-      .read(citiesProvider.future)
-      .then((c) => c, onError: (_) => const <City>[]);
-  if (!context.mounted) return;
-  final current = ref.read(homeCityProvider);
-  final picked = await showAppBottomSheet<({String? id})>(
-    context: context,
-    title: l10n.actionChangeCity,
-    builder: (context) => Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (final (id, name, live) in [
-          (null, l10n.allPakistan, true),
-          for (final c in cities) (c.id, c.name(urdu: urdu), c.isLive),
-        ])
-          Semantics(
-            selected: id == current,
-            inMutuallyExclusiveGroup: true,
-            child: ListTile(
-              selected: id == current,
-              title: Text(name),
-              subtitle: live ? null : Text(l10n.cityLocalSoon),
-              trailing: id == current
-                  ? const ExcludeSemantics(child: Icon(Icons.check))
-                  : null,
-              onTap: () => Navigator.of(context).pop((id: id)),
-            ),
-          ),
-      ],
-    ),
-  );
-  if (picked != null) {
-    await ref.read(preferencesProvider.notifier).setCity(picked.id);
-  }
 }
 
 /// A row title: a heading for screen readers, with the age of an offline

@@ -232,36 +232,48 @@ final class BackendDealRepository implements DealRepository {
             )
           : Future.value(const <Map<String, Object?>>[]),
     ).wait;
-    // A local deal's outlets are read where it runs: its areas, or its
-    // cities when one is city-wide. Otherwise a chain's first 100 outlets
-    // by name could all be elsewhere (QA 4.4 BUG-4).
+    // A local deal's outlets are read where it runs: in its target areas,
+    // and in the cities it targets as a whole, each read on its own, so a
+    // chain's 100-outlet cap never falls on outlets elsewhere (QA 4.4
+    // BUG-4, R2-3).
     final areaIds = [
       for (final t in targets)
         if (t['area_id'] case final String area) area,
     ];
-    final cityIds = {
+    final wholeCityIds = {
       for (final t in targets)
-        if (t['city_id'] case final String city) city,
+        if (t['area_id'] == null)
+          if (t['city_id'] case final String city) city,
     }.toList();
-    final outletRows =
-        deal.scope == DealScope.online || (local && cityIds.isEmpty)
-        ? const <Map<String, Object?>>[]
-        : await _backend.select(
-            TableQuery(
-              'outlets',
-              columns:
-                  'id,name,address,phone,city_id,area_id,latitude,longitude',
-              equals: {'brand_id': deal.brandId, 'is_active': true},
-              inList: {
-                if (local && areaIds.length == targets.length)
-                  'area_id': areaIds
-                else if (local)
-                  'city_id': cityIds,
-              },
-              orderBy: 'name',
-              limit: 100,
-            ),
-          );
+    Future<List<Map<String, Object?>>> outletsWhere(
+      Map<String, List<Object>> inList,
+    ) => _backend.select(
+      TableQuery(
+        'outlets',
+        columns: 'id,name,address,phone,city_id,area_id,latitude,longitude',
+        equals: {'brand_id': deal.brandId, 'is_active': true},
+        inList: inList,
+        orderBy: 'name',
+        limit: 100,
+      ),
+    );
+    final List<Map<String, Object?>> outletRows;
+    if (deal.scope == DealScope.online) {
+      outletRows = const [];
+    } else if (!local) {
+      outletRows = await outletsWhere(const {});
+    } else {
+      final pages = await [
+        if (areaIds.isNotEmpty) outletsWhere({'area_id': areaIds}),
+        if (wholeCityIds.isNotEmpty) outletsWhere({'city_id': wholeCityIds}),
+      ].wait;
+      final seen = <Object?>{};
+      outletRows = [
+        for (final page in pages)
+          for (final row in page)
+            if (seen.add(row['id'])) row,
+      ]..sort((a, b) => '${a['name']}'.compareTo('${b['name']}'));
+    }
     final outlets = [for (final row in outletRows) outletFromRow(row)];
     final extra = text.isEmpty ? const <String, Object?>{} : text.single;
     String? opt(String key) => switch (extra[key]) {

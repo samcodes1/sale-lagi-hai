@@ -41,6 +41,10 @@ abstract class StoredStringList extends Notifier<List<String>> {
   /// Whether the stored copy was read (and may be written).
   bool _readable = false;
 
+  /// Changes made while the stored copy couldn't be read, replayed onto it
+  /// once a read works (QA 4.4 R2-2).
+  final _unwritten = <ListChange>[];
+
   /// Bumped on every build, so a read from before a rebuild is ignored.
   int _generation = 0;
 
@@ -49,6 +53,7 @@ abstract class StoredStringList extends Notifier<List<String>> {
     final generation = ++_generation;
     _pending = [];
     _readable = false;
+    _unwritten.clear();
     unawaited(_first(generation));
     return const [];
   }
@@ -58,7 +63,11 @@ abstract class StoredStringList extends Notifier<List<String>> {
     if (!ref.mounted || generation != _generation) return;
     final pending = _pending ?? const <ListChange>[];
     _pending = null;
-    if (stored == null) return; // unreadable: keep what is in memory
+    if (stored == null) {
+      // Unreadable: keep what is in memory, and the changes to replay.
+      _unwritten.addAll(pending);
+      return;
+    }
     _readable = true;
     if (pending.isEmpty) {
       state = stored;
@@ -106,11 +115,13 @@ abstract class StoredStringList extends Notifier<List<String>> {
       return state;
     }
     if (!_readable) {
+      _unwritten.add(change);
       final stored = await _read();
       if (!ref.mounted || generation != _generation) return null;
       if (stored == null) return state;
       _readable = true;
-      state = _apply([change], stored);
+      state = _apply(_unwritten, stored);
+      _unwritten.clear();
     }
     await _write(state);
     return ref.mounted ? state : null;

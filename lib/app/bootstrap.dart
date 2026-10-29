@@ -18,6 +18,7 @@ import 'package:sale_lagi_hai/core/state/retry_policy.dart';
 import 'package:sale_lagi_hai/core/storage/json_cache.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/storage/secure_store.dart';
+import 'package:sale_lagi_hai/core/theme/theme_mode_controller.dart';
 import 'package:sale_lagi_hai/design_system/fonts/font_licenses.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
@@ -85,6 +86,7 @@ Future<void> bootstrap() async {
         if (settings.store case final store?)
           keyValueStoreProvider.overrideWithValue(store),
         savedLocaleProvider.overrideWithValue(settings.locale),
+        savedThemeModeProvider.overrideWithValue(settings.theme),
         savedPreferencesProvider.overrideWithValue(settings.preferences),
         backendGatewayProvider.overrideWithValue(backend.gateway),
         authRepositoryProvider.overrideWithValue(
@@ -140,6 +142,7 @@ typedef StartupSettings = ({
   KeyValueStore? store,
   Locale? locale,
   ShopperPreferences? preferences,
+  AppThemeMode theme,
 });
 
 /// Reads [StartupSettings]. Never throws: if storage is unavailable the app
@@ -155,7 +158,12 @@ Future<StartupSettings> loadStartupSettings(
     store = openStore();
   } on Object catch (error) {
     logger.warning('Could not read saved settings', error: error);
-    return (store: null, locale: null, preferences: null);
+    return (
+      store: null,
+      locale: null,
+      preferences: null,
+      theme: AppThemeMode.system,
+    );
   }
   Locale? locale;
   try {
@@ -170,5 +178,11 @@ Future<StartupSettings> loadStartupSettings(
   } on Object catch (error) {
     logger.warning('Could not read the saved preferences', error: error);
   }
-  return (store: store, locale: locale, preferences: preferences);
+  var theme = AppThemeMode.system;
+  try {
+    theme = AppThemeMode.fromName(await store.getString(themeModeStorageKey));
+  } on Object catch (error) {
+    logger.warning('Could not read the saved theme', error: error);
+  }
+  return (store: store, locale: locale, preferences: preferences, theme: theme);
 }
