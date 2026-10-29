@@ -65,7 +65,8 @@ select set_eq($$
          or has_function_privilege('authenticated', p.oid, 'execute'))
 $$, array['has_role', 'mfa_verified', 'is_moderator', 'is_admin', 'my_business_ids',
           'my_owned_business_ids', 'my_brand_ids', 'is_trusted_caller',
-          'is_live', 'shown_in_city', 'in_categories', 'page_size', 'follows_deal', 'recent_save_counts', 'search_hits', 'outlets_near'],
+          'is_live', 'shown_in_city', 'in_categories', 'page_size', 'follows_deal', 'recent_save_counts', 'search_hits', 'outlets_near',
+          'is_image_name', 'can_write_media', 'my_recent_uploads'],
 'only the RLS and query helpers in private are callable by the API roles');
 
 -- The app's DealOffer mirrors this enum.

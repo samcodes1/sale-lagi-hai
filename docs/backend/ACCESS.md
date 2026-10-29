@@ -30,3 +30,19 @@ Notes:
 - `created_by`, `granted_by`, `reporter_id` and `submitter_id` default to the caller, and policies require them to equal the caller.
 - The Custom Access Token Hook adds `user_roles` to the JWT **for the apps' UI only**; policies always read the table. Enable it in the dashboard (Authentication → Hooks).
 - **Account deletion always succeeds.** If the user was a business's last owner, the business is left without an owner for staff to reassign.
+
+## Storage
+Defined in `supabase/migrations/20261029150000_storage.sql`, tested in `300_storage.test.sql`.
+
+| Bucket | Public | Limit | Path | Write | Read |
+|---|---|---|---|---|---|
+| `deal-images` | Yes (by URL) | 2 MB | `<business_id>/<deal_id>/<file>`, or `staff/<deal_id>/<file>` | The business's members, for their own deals; staff with MFA | Anyone with the URL; nobody can list the bucket except members (their folder) and staff |
+| `brand-logos` | Yes (by URL) | 1 MB | `<business_id>/<brand_id>/<file>`, or `staff/…` | Same as above, for their own brands | Same as above |
+| `avatars` | No | 1 MB | `<user_id>/<file>` | The user | The user; moderators |
+| `submission-photos` | No | 5 MB | `<user_id>/<file>` | The user | The user; moderators |
+
+- **File types:** JPEG, PNG and WebP only, never SVG. The Storage API checks MIME type and size; policies also check the extension and the exact folder depth.
+- **Path checks:** folder names are compared as text, never cast, so a hostile name is denied rather than raising an error. `..` and extra folders are refused.
+- **Quota:** at most 60 uploads per user per hour, across all buckets.
+- **Resized variants** come from image transformations at read time (`/storage/v1/render/image/public/deal-images/…?width=400`), so only originals are stored.
+- **The size and MIME limits** are enforced by the Storage API itself, so they can only be tested on the full stack (`supabase start`). The plain-Postgres tests check the bucket settings that drive them.

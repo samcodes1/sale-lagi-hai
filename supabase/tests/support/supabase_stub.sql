@@ -74,3 +74,65 @@ grant execute on all functions in schema auth to anon, authenticated, service_ro
 
 -- pgTAP, where `supabase test db` expects it.
 create extension if not exists pgtap with schema extensions;
+
+-- ---------------------------------------------------------------------------
+-- Storage: the tables and helpers our policies use, shaped like Supabase's
+-- storage schema. The real Storage API also enforces each bucket's size
+-- and MIME limits before the row is written; that part is only testable on
+-- the full stack.
+-- ---------------------------------------------------------------------------
+create schema if not exists storage;
+grant usage on schema storage to anon, authenticated, service_role;
+
+create table if not exists storage.buckets (
+  id text primary key,
+  name text not null unique,
+  owner uuid,
+  public boolean default false,
+  file_size_limit bigint,
+  allowed_mime_types text[],
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text references storage.buckets (id),
+  name text,
+  owner uuid default auth.uid(),
+  owner_id text default auth.uid()::text,
+  metadata jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  last_accessed_at timestamptz default now(),
+  unique (bucket_id, name)
+);
+alter table storage.objects enable row level security;
+alter table storage.buckets enable row level security;
+grant all on storage.objects, storage.buckets to anon, authenticated, service_role;
+
+create or replace function storage.foldername(name text) returns text[]
+language plpgsql immutable as $$
+declare _parts text[];
+begin
+  select string_to_array(name, '/') into _parts;
+  return _parts[1:array_length(_parts, 1) - 1];
+end $$;
+
+create or replace function storage.filename(name text) returns text
+language plpgsql immutable as $$
+declare _parts text[];
+begin
+  select string_to_array(name, '/') into _parts;
+  return _parts[array_length(_parts, 1)];
+end $$;
+
+create or replace function storage.extension(name text) returns text
+language plpgsql immutable as $$
+declare _parts text[]; _filename text;
+begin
+  select string_to_array(name, '/') into _parts;
+  select _parts[array_length(_parts, 1)] into _filename;
+  return reverse(split_part(reverse(_filename), '.', 1));
+end $$;
+grant execute on all functions in schema storage to anon, authenticated, service_role;
