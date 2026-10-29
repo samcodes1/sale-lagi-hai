@@ -11,6 +11,15 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xml/xml.dart';
 
+import 'known_bugs.dart';
+
+/// Split key names, so this file doesn't trip the gitleaks rule it tests.
+const _store = 'store';
+const _key = 'key';
+const _envFallback = 'System.getenv("KS_PASS") ?: "hunter2hunter2"';
+const _providerFallback =
+    'providers.gradleProperty("ks").getOrElse("hunter2hunter2")';
+
 const _android = 'http://schemas.android.com/apk/res/android';
 const _tools = 'http://schemas.android.com/tools';
 
@@ -325,6 +334,8 @@ void main() {
 
     // Fixtures are split across literals so the committed file does not
     // trip gitleaks itself (a contiguous value would fail CI's secret scan).
+    // The signing-password fixtures below split the key name for the same
+    // reason.
     test('positive controls', () {
       const jwt =
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
@@ -364,9 +375,9 @@ void main() {
     // the custom rule: it excludes quotes from the value. The hygiene test
     // does not scan build scripts at all (it reads android/app/src only).
     for (final line in [
-      '        storePassword = "hunter2hunter2"',
-      "    keyPassword 'hunter2hunter2'",
-      '        keyPassword = "S3cr3t!Pass"',
+      '        ${_store}Password = "hunter2hunter2"',
+      "    ${_key}Password 'hunter2hunter2'",
+      '        ${_key}Password = "S3cr3t!Pass"',
     ]) {
       test('a hard-coded Gradle signing password is caught: $line', () {
         expect(_gitleaksRule(ids[3]).hasMatch(line), isTrue);
@@ -421,9 +432,9 @@ void main() {
       // A key.properties copy whose password contains a dollar sign.
       r'storePassword=Pa$$w0rd2026',
       // Kotlin fallback after an environment variable.
-      '        storePassword = System.getenv("KS_PASS") ?: "hunter2hunter2"',
+      '        ${_store}Password = $_envFallback',
       // A trailing comment after the value.
-      '        keyPassword = "hunter2hunter2" // TODO: move to CI',
+      '        ${_key}Password = "hunter2hunter2" // TODO: move to CI',
     ]) {
       test('caught: $line', () {
         expect(
@@ -434,5 +445,67 @@ void main() {
         expect(hygiene.hasMatch(line), isTrue, reason: 'hygiene test');
       });
     }
+  });
+
+  // Round 3. Fixture key names are split across literals so this file does
+  // not trip the project's own gitleaks rule.
+  group('R3-1: signing passwords still missed by both checks', () {
+    final hygiene = _hygienePattern("test('no secret keys").regExp;
+    for (final line in [
+      // A JSON (or quoted-key YAML) config: the closing quote of the key
+      // is taken as the opening quote of the value.
+      '{"${_store}Password": "hunter2hunter2"}',
+      // Gradle's provider API fallback.
+      '        ${_store}Password = $_providerFallback',
+    ]) {
+      test('caught: $line', () {
+        expect(
+          _gitleaksRule('android-signing-password').hasMatch(line),
+          isTrue,
+          reason: 'gitleaks',
+        );
+        expect(hygiene.hasMatch(line), isTrue, reason: 'hygiene test');
+      });
+    }
+  });
+
+  group('R3-2: a legitimate reference with an error message is flagged', () {
+    final hygiene = _hygienePattern("test('no secret keys").regExp;
+    const line =
+        '        ${_store}Password = '
+        'keystoreProperties.getProperty("${_store}Password") ?: '
+        'error("missing in key.properties")';
+    test('not reported: $line', () {
+      expect(
+        _gitleaksRule('android-signing-password').hasMatch(line),
+        isFalse,
+        reason: 'gitleaks',
+      );
+      expect(hygiene.hasMatch(line), isFalse, reason: 'hygiene test');
+    });
+  });
+
+  group('R3-5: cleartext URL built with +', () {
+    test("'http' + '://' is caught", () {
+      expect(
+        _hygieneCatches(
+          "final u = Uri.parse('http' + '://api.x.pk');",
+          "test('no cleartext URLs'",
+        ),
+        isTrue,
+      );
+    });
+  });
+
+  test('QA guard: no signing file is tracked anywhere', () {
+    final tracked = Process.runSync('git', [
+      'ls-files',
+      '--',
+      '*.jks',
+      '*.keystore',
+      '*key.properties',
+    ]);
+    expect(tracked.exitCode, 0, reason: '${tracked.stderr}');
+    expect((tracked.stdout as String).trim(), isEmpty);
   });
 }

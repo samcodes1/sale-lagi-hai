@@ -14,6 +14,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../tool/audit_deps.dart';
+import 'known_bugs.dart';
 
 LockedPackage _dio(String version) => LockedPackage(
   name: 'dio',
@@ -144,6 +145,18 @@ packages:
       events: [
         {'introduced': '0'},
         {'fixed': '5.0'},
+      ],
+    );
+    expect(advisoryProblems(_dio('4.0.6'), json), hasLength(1));
+  });
+
+  // R3-4: an `introduced` version that doesn't parse still drops the range
+  // (introduced = null), so the advisory fails open.
+  test('R3-4: an unparseable introduced version keeps the range affected', () {
+    final json = _dioAdvisory(
+      events: [
+        {'introduced': '1.0'},
+        {'fixed': '5.0.0'},
       ],
     );
     expect(advisoryProblems(_dio('4.0.6'), json), hasLength(1));

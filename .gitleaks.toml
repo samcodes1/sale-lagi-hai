@@ -36,8 +36,8 @@ description = "Android keystore or key password"
 # (storePassword = "...", keyPassword '...', getenv("X") ?: "...", with or
 # without a trailing comment); skips references such as
 # keystoreProperties.getProperty(...) and $System.env.X.
-regex = '''(?im)(?:store|key)Password\s*[=:]?\s*(?:[^\n]*\?:\s*)?["\x27]([^"\x27\n]{6,})["\x27]|^\s*(?:store|key)Password\s*[=:\s]\s*([^\s"\x27$(][^\s"\x27(]{5,})\s*(?://.*)?$'''
-keywords = ["storepassword", "keypassword"]
+regex = '''(?im)(?:store|key)Password["\x27]?(?:\s*[=:]\s*|\s+)(?:[^\n]*(?:\?:|getOrElse\()\s*)?["\x27]([^"\x27\n$][^"\x27\n]{5,})["\x27]|^\s*(?:store|key)Password\s*[=:\s]\s*([^\s"\x27$(][^\s"\x27(]{5,})\s*(?://.*)?$|android\.injected\.signing\.(?:store|key)\.password\s*=\s*[^\s$]{6,}|-(?:storepass|keypass)\s+["\x27]?[^\s"\x27$]{6,}'''
+keywords = ["storepassword", "keypassword", "signing.store.password", "signing.key.password", "-storepass", "-keypass"]
 
 # Test fixtures: short, obviously fake values that the default JWT rule
 # matches. Listed by value so a real token in a test still fails.
@@ -47,4 +47,22 @@ regexTarget = "match"
 regexes = [
   '''eyJhbGciOiJIUzI1NiJ9\.eyJyb2xlIjoiYW5vbiJ9\.abc-_123''',
   '''eyJhbGciOiJIUzI1NiJ9\.eyJwaG9uZSI6IjkyMzAwIn0''',
+]
+
+# Fake values used by tests and QA reports since sub-phase 1.1 (redaction,
+# config and signing-rule fixtures). Listed by value, so the same text
+# anywhere else, or a real secret in the same files, is still reported.
+[[allowlists]]
+description = "Known fake fixture values"
+regexTarget = "match"
+regexes = [
+  '''hunter2hunter2''',
+  '''Pa\$\$w0rd2026''',
+  '''S3cr3t!Pass''',
+  '''MRjVfQZ3Kx9''',
+  '''abcd1234efgh''',
+  '''opaqueAbc123''',
+  '''dXNlcjpwYXNz''',
+  '''sb_publishable_abc123''',
+  '''sb_secret_QASENTINEL123''',
 ]

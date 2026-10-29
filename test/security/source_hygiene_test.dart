@@ -32,8 +32,8 @@ final List<File> _buildScripts = [
             f.path.endsWith('.gradle.kts') ||
             f.path.endsWith('.properties')) &&
         // The owner's real, gitignored signing file (docs/RELEASE.md).
-        !f.path.endsWith('key.properties') &&
-        !f.path.endsWith('local.properties') &&
+        f.uri.pathSegments.last != 'key.properties' &&
+        f.uri.pathSegments.last != 'local.properties' &&
         !f.path.contains(
           '${Platform.pathSeparator}build${Platform.pathSeparator}',
         ) &&
@@ -90,7 +90,7 @@ void main() {
     final offenders = _matches(
       _shippedFiles.where((f) => !f.path.endsWith('.xml')),
       RegExp(
-        r'[hH][tT][tT][pP]:|[hH][tT][tT][pP].\s*.://|[wW][sS]://|\bUri\.http\('
+        r'[hH][tT][tT][pP]:|[hH][tT][tT][pP].\s*\+?\s*.://|[wW][sS]://|\bUri\.http\('
         r'|scheme:\s*.([hH][tT][tT][pP]|[wW][sS]).',
       ),
     );
@@ -116,8 +116,10 @@ void main() {
         'sb_secret_[A-Za-z0-9_-]{8,}'
         r'|eyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}'
         '|-----BEGIN [A-Z ]*PRIVATE KEY-----'
-        r'|(?:[sS]tore|[kK]ey)Password\s*[=:]?\s*(?:[^\n]*\?:\s*)?["\x27]([^"\x27\n]{6,})["\x27]'
+        r'|(?:[sS]tore|[kK]ey)Password["\x27]?(?:\s*[=:]\s*|\s+)(?:[^\n]*(?:\?:|getOrElse\()\s*)?["\x27]([^"\x27\n$][^"\x27\n]{5,})["\x27]'
         r'|^\s*(?:[sS]tore|[kK]ey)Password\s*[=:\s]\s*([^\s"\x27$(][^\s"\x27(]{5,})\s*(?://.*)?$'
+        r'|android\.injected\.signing\.(?:store|key)\.password\s*=\s*[^\s$]{6,}'
+        r'|-(?:storepass|keypass)\s+["\x27]?[^\s"\x27$]{6,}'
         '|AIza[0-9A-Za-z_-]{35}',
         multiLine: true,
       ),

@@ -74,7 +74,12 @@ final class LockedPackage {
 }
 
 List<LockedPackage> parseLockfile(String lockfile) {
-  final yaml = loadYaml(lockfile);
+  final Object? yaml;
+  try {
+    yaml = loadYaml(lockfile);
+  } on YamlException {
+    return const []; // not YAML: reported as "lists no packages"
+  }
   if (yaml is! YamlMap) return const []; // empty or not a lockfile
   final packages = switch (yaml['packages']) {
     final YamlMap map => map,
@@ -164,7 +169,10 @@ bool _affects(Map<String, Object?> affected, Version version) {
         in (range['events'] as List<Object?>? ?? [])
             .cast<Map<String, Object?>>()) {
       if (event['introduced'] case final String v) {
-        introduced = v == '0' ? Version.none : _parseVersion(v);
+        // An unparseable start fails closed: affected from the beginning.
+        introduced = v == '0'
+            ? Version.none
+            : (_parseVersion(v) ?? Version.none);
       } else if (introduced != null) {
         final inRange = switch (event) {
           // An end we can't parse fails closed: still affected.
