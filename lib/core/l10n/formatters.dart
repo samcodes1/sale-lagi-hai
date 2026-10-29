@@ -40,7 +40,8 @@ final class AppFormatters {
   /// How far an outlet is: `350 m`, `1.2 km`, `14 km`. Metres are
   /// rounded to 50, kilometres to one decimal below 10 km.
   String distance(int meters) {
-    if (meters < 1000) {
+    // From 975 m the rounding reaches 1,000 m: say "1 km" instead.
+    if (meters < 975) {
       final rounded = (meters / 50).round() * 50;
       return _l10n.distanceMeters(number(rounded < 50 ? 50 : rounded));
     }

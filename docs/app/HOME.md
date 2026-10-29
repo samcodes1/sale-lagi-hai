@@ -12,13 +12,18 @@ Home (screen S03) is one scrolling list. From the top:
 | For you | `feed(city, interests)` | Keyset-paged by 20. The next page loads about 5 cards before the end. A failed page shows a retry row, never a full-screen error, and never retries on its own. The end shows "You've seen all the new deals". |
 
 - **Cards keep their natural height**, since they grow with Urdu and large text. The carousels are therefore a scrolling `Row` (at most 20 cards each), not fixed-height lists.
-- **Pull to refresh** reloads every row.
+- **Pull to refresh** reloads every row except Near you, which never asks for location again on its own (tap its button).
 - **An empty row is left out.**
 - **Offline:**
   - The offline banner shows (a live region).
   - Each row shows its last saved copy (`JsonCache`, `cache.home.<row>.<city>`; "For you" keys also include the interests) with "Updated X ago". Copies older than 3 days aren't shown.
   - With no copy, the row shows a compact error with Try again; "For you" shows the full error view.
-  - Deals that ended since they were saved are dropped when shown.
+  - Deals that ended since they were saved are dropped when shown, in every row including For you.
+  - An offline "For you" is only the saved first page, so it never says "You've seen all the new deals".
+  - Copies don't pile up: one past 3 days is deleted when read, and at startup `JsonCache.prune('home.')` deletes old and corrupt copies for cities and interests not visited again. The For you key holds the sorted interest ids (not a hash), so the same interests in another order share one copy.
+- **Paging after a change:** a page asked for before the city or interests changed is dropped, even if the new first page hasn't arrived yet (a generation counter; QA 4.3 BUG-1). The deal lists of 4.5 do the same.
+- **Near you** forgets its results on a fresh start (account deleted, onboarding reset).
+- **City button:** one button node for screen readers, with its own tap action.
 - **Privacy:** the cache holds public deal rows only (`dealToRow`, the inverse of `dealFromRow`). Nothing about where the shopper is gets cached.
 
 ## Code

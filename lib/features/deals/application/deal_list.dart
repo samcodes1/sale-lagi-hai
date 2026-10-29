@@ -112,8 +112,13 @@ final class DealListController extends AsyncNotifier<FeedState> {
 
   final DealListQuery query;
 
+  /// Bumped on every rebuild (refresh), so a page asked for before it is
+  /// dropped.
+  int _generation = 0;
+
   @override
   Future<FeedState> build() async {
+    _generation++;
     final result = await query.fetch(ref.watch(dealRepositoryProvider), null);
     return switch (result) {
       Success(:final value) => FeedState(deals: value.deals, next: value.next),
@@ -125,10 +130,12 @@ final class DealListController extends AsyncNotifier<FeedState> {
     final current = state.value;
     final next = current?.next;
     if (current == null || next == null || current.loadingMore) return;
+    final generation = _generation;
     state = AsyncData(
       current.copyWith(loadingMore: true, moreFailure: () => null),
     );
     final result = await query.fetch(ref.read(dealRepositoryProvider), next);
+    if (!ref.mounted || generation != _generation) return;
     final now = state.value;
     if (now == null || now.next != next) return;
     switch (result) {

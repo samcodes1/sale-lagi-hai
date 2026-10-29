@@ -59,8 +59,14 @@ final class JsonCache {
 
   /// Returns the entry, or `null` when it is missing, older than [maxAge],
   /// saved in the future (with [maxAge] set), from another format version,
-  /// corrupt, or unreadable. Old-format and corrupt entries are deleted.
-  Future<CacheEntry?> get(String key, {Duration? maxAge}) async {
+  /// corrupt, or unreadable. Old-format and corrupt entries are deleted;
+  /// with [dropExpired], so are entries older than [maxAge] (for callers
+  /// that never read with a longer one).
+  Future<CacheEntry?> get(
+    String key, {
+    Duration? maxAge,
+    bool dropExpired = false,
+  }) async {
     final String? raw;
     try {
       raw = await _store.getString('$_keyPrefix$key');
@@ -90,9 +96,34 @@ final class JsonCache {
 
     if (maxAge != null) {
       final age = entry.ageAt(_clock());
-      if (age > maxAge || age < -clockSkewTolerance) return null;
+      if (age > maxAge) {
+        if (dropExpired) await remove(key);
+        return null;
+      }
+      if (age < -clockSkewTolerance) return null;
     }
     return entry;
+  }
+
+  /// Deletes the entries under [prefix] that are older than [maxAge] or
+  /// unreadable, so copies for places and filters not visited again don't
+  /// pile up. Never throws.
+  Future<void> prune(String prefix, {required Duration maxAge}) async {
+    final Iterable<String> keys;
+    try {
+      keys = await _store.keys();
+    } on Object catch (error) {
+      _logger?.warning('Cache prune failed', error: error);
+      return;
+    }
+    for (final key in keys.toList()) {
+      if (!key.startsWith('$_keyPrefix$prefix')) continue;
+      await get(
+        key.substring(_keyPrefix.length),
+        maxAge: maxAge,
+        dropExpired: true,
+      );
+    }
   }
 
   Future<void> remove(String key) async {

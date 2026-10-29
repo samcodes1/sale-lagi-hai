@@ -56,7 +56,11 @@ Future<HomeSection> _cached(
       }
       return HomeSection(value);
     case Failure(:final failure):
-      final entry = await cache.get(key, maxAge: homeCacheMaxAge);
+      final entry = await cache.get(
+        key,
+        maxAge: homeCacheMaxAge,
+        dropExpired: true,
+      );
       final rows = entry?.data;
       if (entry == null || rows is! List) throw failure;
       try {
@@ -130,6 +134,9 @@ final forYouProvider = AsyncNotifierProvider<ForYouController, FeedState>(
 );
 
 final class ForYouController extends AsyncNotifier<FeedState> {
+  /// Bumped on every rebuild, so a page asked for before it is dropped.
+  int _generation = 0;
+
   String? get _city => ref.read(homeCityProvider);
   List<String>? _interests() {
     final ids = ref.read(preferencesProvider).interestIds;
@@ -138,11 +145,14 @@ final class ForYouController extends AsyncNotifier<FeedState> {
 
   @override
   Future<FeedState> build() async {
+    _generation++;
     final city = ref.watch(homeCityProvider);
+    // Sorted, so the same interests picked in another order share a copy.
     final interests = ref.watch(
-      preferencesProvider.select((p) => p.interestIds.join(',')),
+      preferencesProvider.select((p) => ([...p.interestIds]..sort()).join(',')),
     );
-    final key = 'home.foryou.${city ?? 'all'}.${interests.hashCode}';
+    final key =
+        'home.foryou.${city ?? 'all'}.${interests.isEmpty ? 'any' : interests}';
     final cache = ref.read(jsonCacheProvider);
     final result = await ref
         .read(dealRepositoryProvider)
@@ -158,7 +168,11 @@ final class ForYouController extends AsyncNotifier<FeedState> {
         }
         return FeedState(deals: value.deals, next: value.next);
       case Failure(:final failure):
-        final entry = await cache.get(key, maxAge: homeCacheMaxAge);
+        final entry = await cache.get(
+          key,
+          maxAge: homeCacheMaxAge,
+          dropExpired: true,
+        );
         final rows = entry?.data;
         if (entry == null || rows is! List) throw failure;
         try {
@@ -167,8 +181,11 @@ final class ForYouController extends AsyncNotifier<FeedState> {
               dealFromRow(Map<String, Object?>.from(row as Map)),
           ];
           // A cached first page: paging resumes once the network is back
-          // (pull to refresh).
-          return FeedState(deals: deals, cachedAt: entry.savedAt);
+          // (pull to refresh). Deals that ended since are left out.
+          return FeedState(
+            deals: _live(deals, ref.read(clockProvider)()),
+            cachedAt: entry.savedAt,
+          );
         } on Object {
           throw failure;
         }
@@ -181,13 +198,16 @@ final class ForYouController extends AsyncNotifier<FeedState> {
     final current = state.value;
     final next = current?.next;
     if (current == null || next == null || current.loadingMore) return;
+    final generation = _generation;
     state = AsyncData(
       current.copyWith(loadingMore: true, moreFailure: () => null),
     );
     final result = await ref
         .read(dealRepositoryProvider)
         .feed(cityId: _city, categoryIds: _interests(), after: next);
-    // The list may have been rebuilt (new city) meanwhile: drop the page.
+    // The list may have been rebuilt (new city or interests) meanwhile,
+    // even if the new first page hasn't come yet: drop the page.
+    if (!ref.mounted || generation != _generation) return;
     final now = state.value;
     if (now == null || now.next != next) return;
     switch (result) {
@@ -254,7 +274,12 @@ final nearMeProvider = NotifierProvider<NearMeController, NearMeState>(
 
 final class NearMeController extends Notifier<NearMeState> {
   @override
-  NearMeState build() => const NearMeIdle();
+  NearMeState build() {
+    // A fresh start (account deleted, onboarding reset) forgets the
+    // results along with everything else.
+    ref.watch(onboardedProvider);
+    return const NearMeIdle();
+  }
 
   Future<void> locate() async {
     if (state is NearMeLocating) return;

@@ -97,6 +97,8 @@ class _CityButton extends ConsumerWidget {
       hint: l10n.actionChangeCity,
       button: true,
       excludeSemantics: true,
+      // The excluded button's own tap action goes with it.
+      onTap: () => _pickCity(context, ref, urdu: urdu),
       child: Align(
         alignment: AlignmentDirectional.centerStart,
         child: TextButton.icon(
@@ -552,7 +554,8 @@ class _FeedFooter extends ConsumerWidget {
         failure: failure,
         onRetry: () => ref.read(forYouProvider.notifier).loadMore(),
       );
-    } else if (state.atEnd) {
+    } else if (state.atEnd && state.cachedAt == null) {
+      // An offline copy is only the first page: more exist.
       child = Text(
         l10n.homeFeedEnd,
         textAlign: TextAlign.center,

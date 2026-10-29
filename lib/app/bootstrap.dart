@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -13,6 +15,7 @@ import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/core/logging/log_sinks.dart';
 import 'package:sale_lagi_hai/core/state/retry_policy.dart';
+import 'package:sale_lagi_hai/core/storage/json_cache.dart';
 import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/storage/secure_store.dart';
 import 'package:sale_lagi_hai/design_system/fonts/font_licenses.dart';
@@ -21,6 +24,7 @@ import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
 import 'package:sale_lagi_hai/features/auth/data/google_id_token.dart';
 import 'package:sale_lagi_hai/features/auth/data/supabase_auth_repository.dart';
 import 'package:sale_lagi_hai/features/auth/domain/auth_repository.dart';
+import 'package:sale_lagi_hai/features/home/application/home_providers.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 import 'package:sale_lagi_hai/features/onboarding/data/preferences_store.dart';
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
@@ -52,6 +56,11 @@ Future<void> bootstrap() async {
   logger.info('App starting', context: {'flavor': config.flavor.name});
   registerFontLicenses();
   final settings = await loadStartupSettings(logger);
+  if (settings.store case final store?) {
+    unawaited(
+      JsonCache(store, logger: logger).prune('home.', maxAge: homeCacheMaxAge),
+    );
+  }
 
   final Backend backend;
   try {

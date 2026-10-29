@@ -235,6 +235,37 @@ void main() {
       );
     });
 
+    test(
+      'dropExpired deletes a copy that is too old; plain reads keep it',
+      () async {
+        await cache().put('feed', [1]);
+        now = now.add(const Duration(minutes: 31));
+        const age = Duration(minutes: 30);
+        expect(await cache().get('feed', maxAge: age), isNull);
+        expect(store.values, contains('cache.feed'));
+        expect(
+          await cache().get('feed', maxAge: age, dropExpired: true),
+          isNull,
+        );
+        expect(store.values, isNot(contains('cache.feed')));
+      },
+    );
+
+    test('prune removes old and corrupt copies under a prefix only', () async {
+      await cache().put('home.a', [1]);
+      now = now.add(const Duration(days: 4));
+      await cache().put('home.b', [2]);
+      await cache().put('other', [3]);
+      store.values['cache.home.c'] = '{oops';
+      store.values['settings'] = 'kept';
+      await cache().prune('home.', maxAge: const Duration(days: 3));
+      expect(store.values.keys.toSet(), {
+        'cache.home.b',
+        'cache.other',
+        'settings',
+      });
+    });
+
     test('treats entries from another format version as a miss', () async {
       store.values['cache.feed'] = jsonEncode({
         'v': JsonCache.formatVersion + 1,
