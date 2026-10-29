@@ -223,7 +223,7 @@ final class DemoGateway implements BackendGateway {
         );
       case 'search_deals':
         final query = (params['query'] as String? ?? '').trim().toLowerCase();
-        if (query.length < 2 || query.length > 100) return const [];
+        if (query.length == 1 || query.length > 100) return const [];
         bool matches(String text) {
           final words = text.toLowerCase().split(RegExp(r'\W+'));
           return text.toLowerCase().contains(query) ||
@@ -231,15 +231,30 @@ final class DemoGateway implements BackendGateway {
                   .split(RegExp(r'\s+'))
                   .every((q) => words.any((w) => _close(q, w)));
         }
-        return live
+        final found = live
             .where(
               (d) =>
                   _shownInCity(d, cityId) &&
                   _inCategories(d, params['category_ids'] as List<Object?>?) &&
-                  (matches(d['title_en']! as String) ||
+                  _passesSearchFilters(d, params) &&
+                  (query.isEmpty ||
+                      matches(d['title_en']! as String) ||
                       matches(d['brand_name']! as String) ||
                       (d['title_ur']! as String).contains(query)),
             )
+            .toList();
+        // Words: best first (here, the demo's own order); none: newest.
+        final ordered = query.isEmpty
+            ? _page(found, const {'page_size': 50})
+            : found;
+        final afterId = params['after_id'] as String?;
+        final start = afterId == null
+            ? 0
+            : ordered.indexWhere((d) => d['id'] == afterId) + 1;
+        // A deal no longer in the results ends the list.
+        if (afterId != null && start == 0) return const [];
+        return ordered
+            .skip(start)
             .take(_pageSize(params['page_size']))
             .toList();
       case 'ending_soon_deals':
@@ -281,6 +296,30 @@ final class DemoGateway implements BackendGateway {
           }
         }
         return const [];
+      case 'brand_suggestions':
+        final words = (params['query'] as String? ?? '').trim().toLowerCase();
+        if (words.isEmpty || words.length > 60) return const [];
+        final starts = [
+          for (final b in demoBrands)
+            if (b['is_active'] == true &&
+                ((b['name']! as String).toLowerCase().startsWith(words) ||
+                    ((b['name_ur'] as String?) ?? '').startsWith(words)))
+              b,
+        ];
+        final close = [
+          for (final b in demoBrands)
+            if (b['is_active'] == true &&
+                !starts.contains(b) &&
+                (b['name']! as String)
+                    .toLowerCase()
+                    .split(RegExp(r'\W+'))
+                    .any((w) => _close(words, w)))
+              b,
+        ];
+        return [
+          ...starts,
+          ...close,
+        ].take(((params['page_size'] as int?) ?? 6).clamp(1, 10)).toList();
       case 'brand_deals':
         return _page(
           live.where(
@@ -292,6 +331,38 @@ final class DemoGateway implements BackendGateway {
         );
     }
     throw UnsupportedError('demo backend has no RPC $function');
+  }
+
+  /// search_deals' area, bank, discount and ending-soon filters.
+  bool _passesSearchFilters(Map<String, Object?> deal, Map<String, Object?> p) {
+    if (p['area_id'] case final String areaId when deal['scope'] == 'local') {
+      final slug = demoAreas.firstWhere(
+        (a) => a['id'] == areaId,
+        orElse: () => const {},
+      )['slug'];
+      final areas = _demo(deal['id']! as String).areas;
+      if (slug == null || (areas.isNotEmpty && !areas.contains(slug))) {
+        return false;
+      }
+    }
+    if (p['bank_ids'] case final List<Object?> bankIds
+        when bankIds.isNotEmpty) {
+      final names = {
+        for (final b in demoBanks)
+          if (bankIds.contains(b['id'])) b['short_name'],
+      };
+      if (!(deal['card_banks']! as List).any(names.contains)) return false;
+    }
+    if (p['min_percent'] case final int min) {
+      final percent = deal['percent'] as int?;
+      if (percent == null || percent < min.clamp(1, 99)) return false;
+    }
+    if (p['ending_within_hours'] case final int hours) {
+      final ends = deal['ends_at'] as String?;
+      final limit = _clock().toUtc().add(Duration(hours: hours.clamp(1, 336)));
+      if (ends == null || DateTime.parse(ends).isAfter(limit)) return false;
+    }
+    return true;
   }
 
   /// The alert planner's rules: the brand; the category or its parent; a

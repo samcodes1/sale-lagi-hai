@@ -187,8 +187,8 @@ select ok(exists (select 1 from public.search_deals('student biryani') where bra
 select is((select count(*)::int from public.search_deals('b')), 0, 'one-letter queries return nothing');
 select is((select count(*)::int from public.search_deals(repeat('a', 101))), 0, 'queries over 100 characters return nothing');
 select ok(not exists (select 1 from public.search_deals('draft')), 'search shows live deals only');
-select lives_ok($$ select * from public.search_deals('sale & | ! ( :*', page => 99) $$,
-  'odd characters and huge page numbers are safe');
+select lives_ok($$ select * from public.search_deals('sale & | ! ( :*', after_id => gen_random_uuid()) $$,
+  'odd characters and unknown page starts are safe');
 
 -- Brand page
 select is(pg_temp.titles(array(select f from public.brand_deals('student-biryani') f)),

@@ -1375,6 +1375,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That\'s every live deal here.'**
   String get listEnd;
+
+  /// No description provided for @searchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchTitle;
+
+  /// No description provided for @searchFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search deals'**
+  String get searchFieldLabel;
+
+  /// No description provided for @actionClearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get actionClearSearch;
+
+  /// No description provided for @searchRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches'**
+  String get searchRecent;
+
+  /// No description provided for @actionClearRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get actionClearRecent;
+
+  /// No description provided for @actionRemoveRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove “⁨{query}⁩”'**
+  String actionRemoveRecent(String query);
+
+  /// No description provided for @searchRecentPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches stay on this phone.'**
+  String get searchRecentPrivacy;
+
+  /// No description provided for @searchPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular categories'**
+  String get searchPopular;
+
+  /// No description provided for @searchSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions'**
+  String get searchSuggestions;
+
+  /// No description provided for @searchKindBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get searchKindBrand;
+
+  /// No description provided for @searchKindCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get searchKindCategory;
+
+  /// No description provided for @searchKindArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Area: show deals here'**
+  String get searchKindArea;
+
+  /// No description provided for @searchDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Deals'**
+  String get searchDeals;
+
+  /// No description provided for @searchNoFilterResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No deals match these filters. Try fewer filters.'**
+  String get searchNoFilterResults;
+
+  /// No description provided for @filtersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filtersTitle;
+
+  /// The filters button when some are on.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters ({count})'**
+  String filtersOn(int count);
+
+  /// No description provided for @filterArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Area'**
+  String get filterArea;
+
+  /// No description provided for @filterAnyArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Anywhere'**
+  String get filterAnyArea;
+
+  /// No description provided for @filterAreaNeedsCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a city on Home to filter by area.'**
+  String get filterAreaNeedsCity;
+
+  /// No description provided for @filterCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get filterCategory;
+
+  /// No description provided for @filterBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Card offers from'**
+  String get filterBank;
+
+  /// No description provided for @filterDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get filterDiscount;
+
+  /// No description provided for @filterAnyDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get filterAnyDiscount;
+
+  /// No description provided for @filterMinPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%+ off'**
+  String filterMinPercent(String percent);
+
+  /// No description provided for @filterEndingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Ending soon'**
+  String get filterEndingSoon;
+
+  /// No description provided for @filterEndingSoonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends within 3 days'**
+  String get filterEndingSoonHint;
+
+  /// No description provided for @actionShowDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Show deals'**
+  String get actionShowDeals;
 }
 
 class _AppLocalizationsDelegate

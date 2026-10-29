@@ -12,13 +12,14 @@ Every RPC returns `deal_card` rows: the deal-card fields (brand, category, offer
 | `nearby_deals(lat, lng, radius_m, page_size)` | Near me. Deals with an active outlet within the radius (100 m–20 km), with the distance to the nearest outlet. Local deals only in live cities (as in the feed). The location is not stored | Nearest 50 |
 | `ending_soon_deals(city_id, within_hours, page_size)` | Home's "Ending soon" (4.3). Live deals ending within the window (1–168 h, default 72), soonest first; shown in a city like the feed | One page (≤ 50) |
 | `deals_for_my_cards(city_id, after_published_at, after_id, page_size)` | Deals for my cards: card offers matching the signed-in user's card products (bank, plus product, kind or network). Signed-in users only | Keyset |
-| `search_deals(query, city_id, category_ids, page, page_size)` | Search. Full text on titles and descriptions (English, Roman Urdu, Urdu), plus fuzzy matching on titles and brand names that forgives a wrong letter or two. Queries are 2–100 characters | Pages 0–4 |
+| `search_deals(query, city_id, category_ids, area_id, bank_ids, min_percent, ending_within_hours, after_id, page_size)` | Search (4.6). With words (2–100 characters): full text on titles and descriptions (English, Roman Urdu, Urdu), plus fuzzy matching on titles and brand names that forgives a wrong letter or two, best first. With no words: the newest deals that pass the filters. Filters: area (local deals there or city-wide; online and nationwide stay), banks (card offers), at least a percentage off (1–99), ending within hours (1–336). Every filter applies before the 250-hit cap | Keyset on `after_id` (the rank is recomputed; a deal no longer in the results ends the list) |
+| `brand_suggestions(query, page_size)` | Brands while typing (4.6): name starts with the words, then fuzzy matches, then Urdu-name prefixes. 1–60 characters, at most 10. LIKE wildcards in the words are plain characters | One list |
 | `brand_deals(brand_slug, city_id, after_published_at, after_id, page_size)` | Brand pages | Keyset |
 
 ## Rules
 - **Pages hold at most 50 rows** (`page_size` is clamped to 1–50; the default is 20). PostgREST's `max_rows` is 100 as a backstop.
 - **RLS decides visibility.** The RPCs are `security invoker`, and lists show live deals only: published, started, not ended, from an active brand.
-- **Where RLS would block an index**, the lookup runs in a `private` security-definer helper (`search_hits`, `outlets_near`) that returns only public rows; the RPC then reads the cards under RLS. This applies to full-text, fuzzy and spatial matching, which Postgres won't push below RLS policies because their operators aren't leakproof.
+- **Where RLS would block an index**, the lookup runs in a `private` security-definer helper (`search_hits`, `brand_hits`, `outlets_near`) that returns only public rows; the RPC then reads the cards under RLS. This applies to full-text, fuzzy and spatial matching, which Postgres won't push below RLS policies because their operators aren't leakproof.
 - **Counts without identities:** trending reads save counts through `private.recent_save_counts`, never who saved.
 - **Search indexes skip GIN's pending list** (`fastupdate = off`), so results stay index-backed right after an ingestion burst.
 

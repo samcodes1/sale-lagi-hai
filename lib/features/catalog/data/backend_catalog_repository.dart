@@ -106,6 +106,61 @@ final class BackendCatalogRepository implements CatalogRepository {
   );
 
   @override
+  Future<List<Brand>> suggestBrands(String text, {int limit = 6}) async {
+    final words = text.trim();
+    if (words.isEmpty || words.length > 60) return const [];
+    final rows = await _backend.rpc('brand_suggestions', {
+      'query': words,
+      'page_size': limit.clamp(1, 10),
+    });
+    return [for (final row in rows) _brand(row)];
+  }
+
+  @override
+  Future<List<Area>> areas(String cityId) async {
+    final rows = await _backend.select(
+      TableQuery(
+        'areas',
+        columns: 'id,city_id,slug,name_en,name_ur',
+        equals: {'city_id': cityId},
+        orderBy: 'name_en',
+      ),
+    );
+    return [
+      for (final row in rows)
+        Area(
+          id: _req<String>(row, 'areas', 'id'),
+          cityId: _req<String>(row, 'areas', 'city_id'),
+          slug: _req<String>(row, 'areas', 'slug'),
+          nameEn: _req<String>(row, 'areas', 'name_en'),
+          nameUr: _req<String>(row, 'areas', 'name_ur'),
+        ),
+    ];
+  }
+
+  @override
+  Future<List<Bank>> banks() async {
+    final rows = await _backend.select(
+      const TableQuery(
+        'banks',
+        columns: 'id,slug,name_en,name_ur,short_name',
+        equals: {'is_active': true},
+        orderBy: 'name_en',
+      ),
+    );
+    return [
+      for (final row in rows)
+        Bank(
+          id: _req<String>(row, 'banks', 'id'),
+          slug: _req<String>(row, 'banks', 'slug'),
+          nameEn: _req<String>(row, 'banks', 'name_en'),
+          nameUr: _req<String>(row, 'banks', 'name_ur'),
+          shortName: _req<String>(row, 'banks', 'short_name'),
+        ),
+    ];
+  }
+
+  @override
   Future<Brand?> brandBySlug(String slug) async {
     final rows = await _backend.select(
       TableQuery(

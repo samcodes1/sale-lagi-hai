@@ -9,6 +9,7 @@ import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_repository.dart';
+import 'package:sale_lagi_hai/features/deals/domain/search_filters.dart';
 
 /// [DealRepository] over the read APIs (docs/backend/API.md).
 final class BackendDealRepository implements DealRepository {
@@ -110,25 +111,36 @@ final class BackendDealRepository implements DealRepository {
       });
 
   @override
-  Future<Result<List<Deal>>> search(
+  Future<Result<DealPage>> search(
     String query, {
     String? cityId,
-    List<String>? categoryIds,
-    int page = 0,
+    SearchFilters filters = SearchFilters.none,
+    FeedCursor? after,
   }) {
-    final trimmed = query.trim();
-    // The server ignores queries outside 2-100 characters; don't ask.
-    if (trimmed.length < 2 || trimmed.length > 100) {
-      return Future.value(const Success(<Deal>[]));
+    final words = query.trim();
+    // The server returns nothing for 1 or over 100 characters, or for no
+    // words and no filters: don't ask.
+    if (words.length == 1 ||
+        words.length > 100 ||
+        (words.isEmpty && filters.isEmpty)) {
+      return Future.value(const Success(DealPage([])));
     }
-    return _guard(
-      () => _rpc('search_deals', {
-        'query': trimmed,
+    return _guard(() async {
+      final deals = await _rpc('search_deals', {
+        'query': ?(words.isEmpty ? null : words),
         'city_id': ?cityId,
-        'category_ids': ?categoryIds,
-        'page': page,
-      }),
-    );
+        'category_ids': ?(filters.categoryIds.isEmpty
+            ? null
+            : filters.categoryIds),
+        'area_id': ?filters.areaId,
+        'bank_ids': ?(filters.bankIds.isEmpty ? null : filters.bankIds),
+        'min_percent': ?filters.minPercent,
+        'ending_within_hours': ?(filters.endingSoon ? endingSoonHours : null),
+        'after_id': ?after?.id,
+        'page_size': 20,
+      });
+      return DealPage.of(deals, pageSize: 20);
+    });
   }
 
   @override

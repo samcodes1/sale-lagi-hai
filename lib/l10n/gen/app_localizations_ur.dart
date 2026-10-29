@@ -819,4 +819,93 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get listEnd => 'یہاں کی تمام ڈیلز یہی ہیں۔';
+
+  @override
+  String get searchTitle => 'تلاش';
+
+  @override
+  String get searchFieldLabel => 'ڈیلز تلاش کریں';
+
+  @override
+  String get actionClearSearch => 'تلاش صاف کریں';
+
+  @override
+  String get searchRecent => 'حالیہ تلاش';
+
+  @override
+  String get actionClearRecent => 'سب صاف کریں';
+
+  @override
+  String actionRemoveRecent(String query) {
+    return '“⁨$query⁩” ہٹائیں';
+  }
+
+  @override
+  String get searchRecentPrivacy => 'حالیہ تلاش صرف اسی فون پر رہتی ہے۔';
+
+  @override
+  String get searchPopular => 'مقبول زمرے';
+
+  @override
+  String get searchSuggestions => 'تجاویز';
+
+  @override
+  String get searchKindBrand => 'برانڈ';
+
+  @override
+  String get searchKindCategory => 'زمرہ';
+
+  @override
+  String get searchKindArea => 'علاقہ: یہاں کی ڈیلز دیکھیں';
+
+  @override
+  String get searchDeals => 'ڈیلز';
+
+  @override
+  String get searchNoFilterResults =>
+      'ان فلٹرز کے مطابق کوئی ڈیل نہیں۔ کم فلٹر آزمائیں۔';
+
+  @override
+  String get filtersTitle => 'فلٹرز';
+
+  @override
+  String filtersOn(int count) {
+    return 'فلٹرز (⁦$count⁩)';
+  }
+
+  @override
+  String get filterArea => 'علاقہ';
+
+  @override
+  String get filterAnyArea => 'کہیں بھی';
+
+  @override
+  String get filterAreaNeedsCity =>
+      'علاقے کا فلٹر لگانے کے لیے ہوم پر شہر منتخب کریں۔';
+
+  @override
+  String get filterCategory => 'زمرہ';
+
+  @override
+  String get filterBank => 'ان بینکوں کی کارڈ آفرز';
+
+  @override
+  String get filterDiscount => 'رعایت';
+
+  @override
+  String get filterAnyDiscount => 'کوئی بھی';
+
+  @override
+  String filterMinPercent(String percent) {
+    return '⁦$percent%+⁩ رعایت';
+  }
+
+  @override
+  String get filterEndingSoon => 'جلد ختم ہونے والی';
+
+  @override
+  String get filterEndingSoonHint => 'تین دن کے اندر ختم';
+
+  @override
+  String get actionShowDeals => 'ڈیلز دکھائیں';
 }

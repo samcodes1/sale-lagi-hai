@@ -1,6 +1,6 @@
 -- Query plans on realistic volume: the read APIs must not scan whole tables.
 begin;
-select plan(6);
+select plan(10);
 
 -- 20,000 deals across 200 brands and 2 cities, 5,000 outlets, 20,000 saves.
 create temp table x as select tests.make_city('test-karachi') as karachi, tests.make_category('food') as food;
@@ -56,6 +56,24 @@ select is(pg_temp.scans_during('deals', $$ select * from public.search_deals('ka
   'search reads deals through indexes');
 select is(pg_temp.scans_during('deals', $$ select * from public.search_deals('biriyani karhai') $$), 0::bigint,
   'fuzzy search too');
+select is(pg_temp.scans_during('deals', $$ select * from public.search_deals('karahi', (select karachi from x),
+            min_percent => 20, ending_within_hours => 72) $$), 0::bigint,
+  'a filtered search too');
+select is(pg_temp.scans_during('deals', $$ select * from public.search_deals(null, (select karachi from x),
+            min_percent => 20) $$), 0::bigint,
+  'filters alone page through the live-deals index');
+select tests.clear_authentication();
+-- Suggestions on a realistic brand count: 20,000 more brands, one Zaiqa.
+insert into public.brands (slug, name, name_ur, category_id, is_active)
+  select 'shop-' || i, 'Shop ' || md5(i::text), 'دکان ' || i, (select food from x), true
+  from generate_series(1, 20000) i;
+insert into public.brands (slug, name, name_ur, category_id, is_active)
+  values ('zaiqa-house', 'Zaiqa House', 'ذائقہ ہاؤس', (select food from x), true);
+analyze public.brands;
+select tests.authenticate_as_anon();
+select is(pg_temp.scans_during('brands', $$ select * from public.brand_suggestions('zaiq') $$), 0::bigint,
+  'brand suggestions use the name indexes');
+select is((select name from public.brand_suggestions('zaiq') limit 1), 'Zaiqa House', 'and find the brand');
 select ok((select count(*) from public.feed((select karachi from x))) = 20,
   'the feed still returns a full page');
 

@@ -7,6 +7,7 @@ import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_repository.dart';
+import 'package:sale_lagi_hai/features/deals/domain/search_filters.dart';
 
 final DateTime qaNow = DateTime.now().toUtc().copyWith(
   second: 0,
@@ -119,11 +120,11 @@ final class GatedDeals implements DealRepository {
       throw UnimplementedError();
 
   @override
-  Future<Result<List<Deal>>> search(
+  Future<Result<DealPage>> search(
     String query, {
     String? cityId,
-    List<String>? categoryIds,
-    int page = 0,
+    SearchFilters filters = SearchFilters.none,
+    FeedCursor? after,
   }) => throw UnimplementedError();
 
   @override

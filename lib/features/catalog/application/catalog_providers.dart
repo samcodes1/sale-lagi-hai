@@ -79,3 +79,15 @@ final FutureProviderFamily<Brand, String> brandProvider =
       );
       return brand ?? (throw const NotFoundFailure());
     });
+
+/// The areas of a city (search filter).
+final FutureProviderFamily<List<Area>, String> areasProvider =
+    FutureProvider.family<List<Area>, String>(
+      (ref, cityId) =>
+          _load(ref, () => ref.watch(catalogRepositoryProvider).areas(cityId)),
+    );
+
+/// Active banks (search filter, My Cards).
+final banksProvider = FutureProvider<List<Bank>>(
+  (ref) => _load(ref, ref.watch(catalogRepositoryProvider).banks),
+);

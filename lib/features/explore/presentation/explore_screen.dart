@@ -12,8 +12,8 @@ import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dar
 import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
 import 'package:sale_lagi_hai/features/follows/presentation/follow_button.dart';
 
-/// Explore tab (screen S04): every category, then the brands to follow.
-/// Search arrives in 4.6.
+/// Explore tab (screen S04): search, every category, then the brands to
+/// follow.
 class ExploreScreen extends ConsumerWidget {
   const new({super.key});
 
@@ -42,6 +42,7 @@ class ExploreScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.navExplore)),
       body: CustomScrollView(
         slivers: [
+          const SliverToBoxAdapter(child: _SearchEntry()),
           SliverToBoxAdapter(child: heading(l10n.exploreCategories)),
           switch (interests) {
             AsyncData(:final value) => SliverPadding(
@@ -162,6 +163,66 @@ class _BrandRow extends StatelessWidget {
                 follow,
               ],
             ),
+    );
+  }
+}
+
+/// Looks like a search field; opens Search.
+class _SearchEntry extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        BrandSpacing.s5,
+        BrandSpacing.s3,
+        BrandSpacing.s5,
+        0,
+      ),
+      child: Semantics(
+        button: true,
+        label: l10n.searchFieldLabel,
+        hint: l10n.exploreHint,
+        excludeSemantics: true,
+        onTap: () => const SearchRoute().push<void>(context),
+        child: Material(
+          color: theme.colorScheme.surfaceContainerHigh,
+          shape: const StadiumBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => const SearchRoute().push<void>(context),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 56),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: BrandSpacing.s5,
+                  vertical: BrandSpacing.s3,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.search,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: BrandSpacing.s4),
+                    Expanded(
+                      child: Text(
+                        l10n.exploreHint,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

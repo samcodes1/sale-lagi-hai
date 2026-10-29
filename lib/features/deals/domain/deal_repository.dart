@@ -2,6 +2,7 @@ import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
+import 'package:sale_lagi_hai/features/deals/domain/search_filters.dart';
 
 /// Featured slots (public.placement_slot).
 enum FeaturedSlot {
@@ -44,11 +45,14 @@ abstract interface class DealRepository {
 
   Future<Result<DealPage>> forMyCards({String? cityId, FeedCursor? after});
 
-  Future<Result<List<Deal>>> search(
+  /// Deals matching [query] (best first) and [filters]; with no words,
+  /// the newest deals that pass the filters. Nothing when there are
+  /// neither, or the words are 1 or over 100 characters. Keyset-paged.
+  Future<Result<DealPage>> search(
     String query, {
     String? cityId,
-    List<String>? categoryIds,
-    int page = 0,
+    SearchFilters filters = SearchFilters.none,
+    FeedCursor? after,
   });
 
   Future<Result<DealPage>> brandDeals(

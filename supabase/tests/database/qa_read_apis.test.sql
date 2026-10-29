@@ -40,8 +40,9 @@ select is((select count(*) from public.feed(null, null, false, null, null, 1000)
   'a huge page_size still returns at most 50 rows');
 select is((select count(*) from public.feed(null, null, false, null, null, -5)), 1::bigint,
   'a negative page_size returns one row');
-select is((select count(*) from public.search_deals('tie deal', null, null, 999, 50)), 0::bigint,
-  'search pages stop at page 4');
+-- (4.6: search pages by keyset; the 250-hit cap still bounds it.)
+select is((select count(*) from public.search_deals('tie deal', after_id => gen_random_uuid(), page_size => 50)), 0::bigint,
+  'a search page after a deal not in the results is empty');
 
 -- Hostile search input never errors and never leaks drafts.
 create temp table bad_queries (q text);
@@ -154,9 +155,9 @@ update public.deals set status = 'published'
   where status = 'draft' and (title_en like 'Karahi karahi night%' or title_en like 'Dinner deal%');
 set constraints all immediate;
 select tests.authenticate_as_anon();
-select is((select count(*) from public.search_deals('zebra', null, array[(select b from r8)], 0, 50)), 10::bigint,
+select is((select count(*) from public.search_deals('zebra', null, array[(select b from r8)], page_size => 50)), 10::bigint,
   'QA BUG 2.3-R8: a category-filtered search finds all 10 matches in the category');
-select is((select count(*) from public.search_deals('karahi', (select city from w), null, 0, 50)), 5::bigint,
+select is((select count(*) from public.search_deals('karahi', (select city from w), null, page_size => 50)), 5::bigint,
   'QA BUG 2.3-R8: a city search finds the city''s 5 local matches');
 select tests.clear_authentication();
 

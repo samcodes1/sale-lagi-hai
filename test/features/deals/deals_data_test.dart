@@ -9,6 +9,7 @@ import 'package:sale_lagi_hai/features/deals/data/deal_row.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_repository.dart';
+import 'package:sale_lagi_hai/features/deals/domain/search_filters.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Map<String, Object?> _row([Map<String, Object?> over = const {}]) => {
@@ -178,10 +179,61 @@ void main() {
     });
 
     test('search trims, and skips queries the server would ignore', () async {
-      expect(await repo.search(' a '), isA<Success<List<Deal>>>());
+      for (final q in [' a ', '', '   ', 'x' * 101]) {
+        expect(
+          (await repo.search(q)).valueOrNull?.deals,
+          isEmpty,
+          reason: '"$q"',
+        );
+      }
       expect(gateway.calls, isEmpty);
       await repo.search('  karahi ');
-      expect(gateway.calls.single.$2['query'], 'karahi');
+      expect(gateway.calls.single.$2, {'query': 'karahi', 'page_size': 20});
+    });
+
+    test(
+      'search sends only the filters that are on, and pages by id',
+      () async {
+        gateway.rows = [_row()];
+        final page = await repo.search(
+          '',
+          cityId: 'k',
+          filters: const SearchFilters(
+            areaId: 'clifton',
+            categoryIds: ['food'],
+            bankIds: ['hbl'],
+            minPercent: 25,
+            endingSoon: true,
+          ),
+          after: FeedCursor(publishedAt: DateTime.utc(2026), id: 'd0'),
+        );
+        expect(gateway.calls.single.$1, 'search_deals');
+        expect(gateway.calls.single.$2, {
+          'city_id': 'k',
+          'category_ids': ['food'],
+          'area_id': 'clifton',
+          'bank_ids': ['hbl'],
+          'min_percent': 25,
+          'ending_within_hours': endingSoonHours,
+          'after_id': 'd0',
+          'page_size': 20,
+        });
+        // One row of a 20-row page: the end.
+        expect(page.valueOrNull?.next, isNull);
+      },
+    );
+
+    test('filters compare by value, in any order', () {
+      expect(
+        const SearchFilters(categoryIds: ['a', 'b'], bankIds: ['x']),
+        const SearchFilters(categoryIds: ['b', 'a'], bankIds: ['x']),
+      );
+      expect(SearchFilters.none.isEmpty, isTrue);
+      const some = SearchFilters(areaId: 'a', minPercent: 10, endingSoon: true);
+      expect(some.count, 3);
+      expect(some.forOtherCity().areaId, isNull);
+      expect(some.forOtherCity().count, 2);
+      expect(some.toString(), isNot(contains('a,')));
     });
 
     test('featured uses the slot name the database knows', () async {

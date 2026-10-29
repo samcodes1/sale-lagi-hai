@@ -24,6 +24,7 @@ import 'package:sale_lagi_hai/features/onboarding/presentation/interests_step.da
 import 'package:sale_lagi_hai/features/onboarding/presentation/language_step.dart';
 import 'package:sale_lagi_hai/features/profile/presentation/profile_screen.dart';
 import 'package:sale_lagi_hai/features/saved/presentation/saved_screen.dart';
+import 'package:sale_lagi_hai/features/search/presentation/search_screen.dart';
 
 part 'routes.g.dart';
 
@@ -44,6 +45,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
             TypedGoRoute<DealRoute>(path: 'deal/:dealId'),
             TypedGoRoute<BrandRoute>(path: 'brand/:slug'),
             TypedGoRoute<CategoryRoute>(path: 'category/:slug'),
+            TypedGoRoute<SearchRoute>(path: 'search'),
           ],
         ),
       ],
@@ -194,6 +196,23 @@ final class CategoryRoute extends GoRouteData with $CategoryRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       CategoryScreen(slug: slug);
+}
+
+/// `/search?q=`: search, optionally starting with words (cut to 100).
+final class SearchRoute extends GoRouteData with $SearchRoute {
+  const new({this.q});
+
+  final String? q;
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    final words = q?.trim() ?? '';
+    return SearchScreen(
+      initialQuery: words.length > 100 ? words.substring(0, 100) : words,
+    );
+  }
 }
 
 // ------------------------------------------------------------- account ---

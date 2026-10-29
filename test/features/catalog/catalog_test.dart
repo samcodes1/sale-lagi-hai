@@ -94,6 +94,63 @@ void main() {
       expect(backend.queries.last.equals, {'is_active': true});
     });
 
+    test(
+      'areas of a city, by name; active banks with their short names',
+      () async {
+        final areas = await repository.areas(karachiId);
+        expect(areas.map((a) => a.nameEn), contains('Clifton'));
+        expect(areas.every((a) => a.cityId == karachiId), isTrue);
+        expect(await repository.areas(lahoreId), isEmpty);
+        final banks = await repository.banks();
+        expect(banks.map((b) => b.shortName), containsAll(['HBL', 'Meezan']));
+        expect(banks.first.name(urdu: true), isNotEmpty);
+      },
+    );
+
+    test('areas and banks are equal by id', () {
+      const a = Area(
+        id: 'a',
+        cityId: 'k',
+        slug: 's',
+        nameEn: 'Clifton',
+        nameUr: 'کلفٹن',
+      );
+      const b = Bank(
+        id: 'b',
+        slug: 'hbl',
+        nameEn: 'HBL',
+        nameUr: 'ایچ بی ایل',
+        shortName: 'HBL',
+      );
+      expect(
+        a,
+        const Area(id: 'a', cityId: 'x', slug: 'y', nameEn: '', nameUr: ''),
+      );
+      expect(a.hashCode, 'a'.hashCode);
+      expect(a.name(urdu: true), 'کلفٹن');
+      expect(
+        b,
+        const Bank(id: 'b', slug: '', nameEn: '', nameUr: '', shortName: ''),
+      );
+      expect(b.hashCode, 'b'.hashCode);
+      expect(b.name(urdu: false), 'HBL');
+    });
+
+    test(
+      'brand suggestions: prefix first, typos too, never for nothing',
+      () async {
+        expect((await repository.suggestBrands('kara')).map((b) => b.slug), [
+          'demo-karahi-house',
+        ]);
+        expect(
+          (await repository.suggestBrands('karahy')).map((b) => b.slug),
+          contains('demo-karahi-house'),
+        );
+        expect(await repository.suggestBrands('  '), isEmpty);
+        expect(await repository.suggestBrands('k' * 61), isEmpty);
+      },
+    );
+
     test('a malformed row is a FormatException, never a half-filled city', () {
       final repo = BackendCatalogRepository(
         _TableGateway(

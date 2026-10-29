@@ -16,7 +16,9 @@ select is(
   -- sync_guest_preferences (signed-in users), reviewed in
   -- 800_accounts.test.sql; QA re-checks them in the 4.2 gate.
   -- 4.3 added ending_soon_deals (810_home.test.sql).
-  array['approve_submission', 'brand_deals', 'custom_access_token_hook', 'deals_for_my_cards',
+  -- 4.6 added brand_suggestions and replaced search_deals' signature
+  -- (830_search.test.sql).
+  array['approve_submission', 'brand_deals', 'brand_suggestions', 'custom_access_token_hook', 'deals_for_my_cards',
         'ending_soon_deals', 'featured_deals', 'feed', 'mark_submission_duplicate', 'nearby_deals',
         'prepare_account_deletion', 'register_push_token',
         'reject_submission', 'search_deals', 'submission_duplicates', 'sync_guest_preferences',
@@ -46,6 +48,8 @@ begin
     ('ending_soon_deals', 'select count(*) from public.ending_soon_deals()'),
     ('nearby_deals', 'select count(*) from public.nearby_deals(24.86, 67.0, 3000)'),
     ('search_deals', 'select count(*) from public.search_deals(''winter'')'),
+    ('search_filters', 'select count(*) from public.search_deals(null, min_percent => 10, ending_within_hours => 72)'),
+    ('brand_suggestions', 'select count(*) from public.brand_suggestions(''kol'')'),
     ('brand_deals', 'select count(*) from public.brand_deals(''kolachi'')'),
     ('deals_for_my_cards', 'select count(*) from public.deals_for_my_cards()'),
     ('register_push_token', format('select public.register_push_token(%L, ''android'')', who || '-device-0000000000000000')),
@@ -99,7 +103,7 @@ select is(
   (select string_agg(format('%s/%s: %s (want %s)', c.who, c.rpc, c.code, e.code), '; ' order by c.who, c.rpc)
    from calls c join expected e using (who, rpc) where c.code <> e.code),
   null, 'every role gets exactly the expected answer from every RPC and view');
-select is((select count(*) from calls), 96::bigint, 'six roles called sixteen RPCs and views');
+select is((select count(*) from calls), 108::bigint, 'six roles called eighteen RPCs and views');
 
 -- What non-staff see in the staff views.
 select tests.authenticate_as((select shopper from w));

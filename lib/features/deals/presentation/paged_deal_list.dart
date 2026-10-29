@@ -36,10 +36,20 @@ Widget dealCardFor(BuildContext context, WidgetRef ref, Deal deal) {
 /// or the end note. Empty shows [emptyMessage]; a failed first page, the
 /// full error with Try again.
 class PagedDealSlivers extends ConsumerWidget {
-  const new({required this.query, required this.emptyMessage, super.key});
+  const new({
+    required this.query,
+    required this.emptyMessage,
+    this.emptyActionLabel,
+    this.onEmptyAction,
+    super.key,
+  });
 
   final DealListQuery query;
   final String emptyMessage;
+
+  /// An action for the empty state ("Clear filters").
+  final String? emptyActionLabel;
+  final VoidCallback? onEmptyAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,6 +61,8 @@ class PagedDealSlivers extends ConsumerWidget {
           child: MessageView(
             icon: Icons.local_offer_outlined,
             message: emptyMessage,
+            actionLabel: emptyActionLabel,
+            onAction: onEmptyAction,
           ),
         );
       case AsyncData(:final value):

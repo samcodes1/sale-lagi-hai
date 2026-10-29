@@ -7,6 +7,7 @@ import 'package:sale_lagi_hai/features/deals/application/deal_providers.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_page.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_repository.dart';
+import 'package:sale_lagi_hai/features/deals/domain/search_filters.dart';
 
 /// A paged list of deals: what is loaded, where the next page starts,
 /// and how loading more is going.
@@ -97,6 +98,29 @@ final class BrandDeals extends DealListQuery {
 
   @override
   int get hashCode => Object.hash(cityId, brandSlug);
+}
+
+/// Search results: the words (best first) and filters; with no words,
+/// the newest deals that pass the filters.
+final class SearchDeals extends DealListQuery {
+  const new(this.query, {this.filters = SearchFilters.none, super.cityId});
+
+  final String query;
+  final SearchFilters filters;
+
+  @override
+  Future<Result<DealPage>> fetch(DealRepository deals, FeedCursor? after) =>
+      deals.search(query, cityId: cityId, filters: filters, after: after);
+
+  @override
+  bool operator ==(Object other) =>
+      other is SearchDeals &&
+      other.cityId == cityId &&
+      other.query == query &&
+      other.filters == filters;
+
+  @override
+  int get hashCode => Object.hash(cityId, query, filters);
 }
 
 final AsyncNotifierProviderFamily<DealListController, FeedState, DealListQuery>

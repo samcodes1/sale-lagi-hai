@@ -134,7 +134,61 @@ final class Brand {
   int get hashCode => id.hashCode;
 }
 
-/// Reference data: cities, categories and brands.
+/// A neighbourhood of a city (Clifton, DHA), for the search area filter.
+@immutable
+final class Area {
+  const new({
+    required this.id,
+    required this.cityId,
+    required this.slug,
+    required this.nameEn,
+    required this.nameUr,
+  });
+
+  final String id;
+  final String cityId;
+  final String slug;
+  final String nameEn;
+  final String nameUr;
+
+  String name({required bool urdu}) => urdu ? nameUr : nameEn;
+
+  @override
+  bool operator ==(Object other) => other is Area && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// A bank whose cards have offers (search filter, My Cards).
+@immutable
+final class Bank {
+  const new({
+    required this.id,
+    required this.slug,
+    required this.nameEn,
+    required this.nameUr,
+    required this.shortName,
+  });
+
+  final String id;
+  final String slug;
+  final String nameEn;
+  final String nameUr;
+
+  /// What chips show: "HBL", "Meezan".
+  final String shortName;
+
+  String name({required bool urdu}) => urdu ? nameUr : nameEn;
+
+  @override
+  bool operator ==(Object other) => other is Bank && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// Reference data: cities, areas, categories, banks and brands.
 abstract interface class CatalogRepository {
   /// Every city, live ones first, then in the backend's order.
   Future<List<City>> cities();
@@ -148,4 +202,14 @@ abstract interface class CatalogRepository {
 
   /// An active brand by its slug, or `null`.
   Future<Brand?> brandBySlug(String slug);
+
+  /// The areas of a city, by English name.
+  Future<List<Area>> areas(String cityId);
+
+  /// Active banks, by English name.
+  Future<List<Bank>> banks();
+
+  /// Brands for what is being typed (1 to 60 characters): names that start
+  /// with it first, then close spellings. At most [limit] (up to 10).
+  Future<List<Brand>> suggestBrands(String text, {int limit = 6});
 }

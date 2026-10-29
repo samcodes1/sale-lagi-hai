@@ -816,4 +816,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listEnd => 'That\'s every live deal here.';
+
+  @override
+  String get searchTitle => 'Search';
+
+  @override
+  String get searchFieldLabel => 'Search deals';
+
+  @override
+  String get actionClearSearch => 'Clear search';
+
+  @override
+  String get searchRecent => 'Recent searches';
+
+  @override
+  String get actionClearRecent => 'Clear all';
+
+  @override
+  String actionRemoveRecent(String query) {
+    return 'Remove “⁨$query⁩”';
+  }
+
+  @override
+  String get searchRecentPrivacy => 'Recent searches stay on this phone.';
+
+  @override
+  String get searchPopular => 'Popular categories';
+
+  @override
+  String get searchSuggestions => 'Suggestions';
+
+  @override
+  String get searchKindBrand => 'Brand';
+
+  @override
+  String get searchKindCategory => 'Category';
+
+  @override
+  String get searchKindArea => 'Area: show deals here';
+
+  @override
+  String get searchDeals => 'Deals';
+
+  @override
+  String get searchNoFilterResults =>
+      'No deals match these filters. Try fewer filters.';
+
+  @override
+  String get filtersTitle => 'Filters';
+
+  @override
+  String filtersOn(int count) {
+    return 'Filters ($count)';
+  }
+
+  @override
+  String get filterArea => 'Area';
+
+  @override
+  String get filterAnyArea => 'Anywhere';
+
+  @override
+  String get filterAreaNeedsCity => 'Choose a city on Home to filter by area.';
+
+  @override
+  String get filterCategory => 'Category';
+
+  @override
+  String get filterBank => 'Card offers from';
+
+  @override
+  String get filterDiscount => 'Discount';
+
+  @override
+  String get filterAnyDiscount => 'Any';
+
+  @override
+  String filterMinPercent(String percent) {
+    return '$percent%+ off';
+  }
+
+  @override
+  String get filterEndingSoon => 'Ending soon';
+
+  @override
+  String get filterEndingSoonHint => 'Ends within 3 days';
+
+  @override
+  String get actionShowDeals => 'Show deals';
 }

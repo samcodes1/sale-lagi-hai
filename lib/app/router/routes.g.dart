@@ -36,6 +36,12 @@ RouteBase get $appShellRoute => StatefulShellRouteData.$route(
               parentNavigatorKey: CategoryRoute.$parentNavigatorKey,
               factory: $CategoryRoute._fromState,
             ),
+            GoRouteData.$route(
+              path: 'search',
+              hasOverriddenOnExit: false,
+              parentNavigatorKey: SearchRoute.$parentNavigatorKey,
+              factory: $SearchRoute._fromState,
+            ),
           ],
         ),
       ],
@@ -178,6 +184,32 @@ mixin $CategoryRoute on GoRouteData {
   @override
   String get location =>
       GoRouteData.$location('/category/${Uri.encodeComponent(_self.slug)}');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $SearchRoute on GoRouteData {
+  static SearchRoute _fromState(GoRouterState state) =>
+      SearchRoute(q: state.uri.queryParameters['q']);
+
+  SearchRoute get _self => this as SearchRoute;
+
+  @override
+  String get location => GoRouteData.$location(
+    '/search',
+    queryParams: {if (_self.q != null) 'q': _self.q},
+  );
 
   @override
   void go(BuildContext context) => context.go(location);
