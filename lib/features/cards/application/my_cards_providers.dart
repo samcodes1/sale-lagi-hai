@@ -37,12 +37,41 @@ final class MyCards extends StoredStringList {
 
   bool has(String cardProductId) => state.contains(cardProductId);
 
+  /// Drops cards the catalog no longer offers (retired products), here
+  /// and in the account, so they neither hide nor count toward the limit
+  /// (QA 4.7-A1). [offered] is the full, freshly loaded catalog.
+  Future<void> keepOnly(Set<String> offered) async {
+    final retired = [
+      for (final id in state)
+        if (!offered.contains(id)) id,
+    ];
+    if (retired.isEmpty) return;
+    final next = await update(
+      (current) => [
+        for (final id in current)
+          if (!retired.contains(id)) id,
+      ],
+    );
+    if (next == null) return;
+    for (final id in retired) {
+      await _mirror(
+        (backend, userId) => backend.delete('user_cards', {
+          'user_id': userId,
+          'card_product_id': id,
+        }),
+      );
+    }
+  }
+
   /// Adds cards kept in the account (added on another phone).
   Future<void> addFromAccount(Iterable<String> cardProductIds) =>
       update((current) => {...current, ...cardProductIds}.toList());
 
   /// Adds a card; false when there are already [max].
   Future<bool> add(String cardProductId) async {
+    // The limit counts the stored cards too (QA 4.7-A4).
+    await loaded;
+    if (!ref.mounted) return false;
     var added = false;
     final next = await update((current) {
       if (current.contains(cardProductId)) {

@@ -1,0 +1,26 @@
+# Privacy policy
+Last updated: 29 October 2026
+
+Sale Lagi Hai! shows deals from across Pakistan. We collect as little as we can, and never sell your data.
+
+# Without an account
+- Your language, city, interests, followed brands and categories, saved deals, recent searches and cards stay on this phone.
+- When you ask for deals near you, your approximate location is used for that one search. It is never stored or sent with anything else.
+- We never ask for card numbers. "My cards" stores only your bank and card type, such as "HBL Visa Credit".
+
+# With an account
+- You sign in with your mobile number (a one-time code by SMS) or with Google. We keep your number or email to sign you in, and nothing else from Google.
+- Your choices above are kept in your account too, so they follow you to another phone.
+- If you turn on alerts, we keep your phone's notification token to send them, and your alert settings: topics, how often, and quiet hours.
+
+# What we never do
+- We never sell or rent your data, and never show it to brands.
+- We never ask for card numbers, PINs, CVVs or passwords for other services.
+- Brands see only totals (for example, how many people saved a deal), never who you are.
+
+# Deleting your data
+- Profile, Delete account removes your account and everything kept in it straight away. This phone is cleared too.
+- Settings, Privacy lets you clear what is stored on this phone at any time.
+
+# Questions
+Write to us from Settings, About.

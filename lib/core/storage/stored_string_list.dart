@@ -48,9 +48,16 @@ abstract class StoredStringList extends Notifier<List<String>> {
   /// Bumped on every build, so a read from before a rebuild is ignored.
   int _generation = 0;
 
+  Completer<void> _loaded = Completer();
+
+  /// Completes once the stored copy was read (or found unreadable), so a
+  /// reader such as the guest sync sees what is stored (QA 4.7-A6).
+  Future<void> get loaded => _loaded.future;
+
   @override
   List<String> build() {
     final generation = ++_generation;
+    if (_loaded.isCompleted) _loaded = Completer();
     _pending = [];
     _readable = false;
     _unwritten.clear();
@@ -60,7 +67,20 @@ abstract class StoredStringList extends Notifier<List<String>> {
 
   Future<void> _first(int generation) async {
     final stored = await _read();
-    if (!ref.mounted || generation != _generation) return;
+    final loaded = _loaded;
+    if (!ref.mounted || generation != _generation) {
+      // Gone, or rebuilt: no one waits on this read (a rebuild has its own).
+      if (!ref.mounted && !loaded.isCompleted) loaded.complete();
+      return;
+    }
+    try {
+      await _settle(stored);
+    } finally {
+      if (!loaded.isCompleted) loaded.complete();
+    }
+  }
+
+  Future<void> _settle(List<String>? stored) async {
     final pending = _pending ?? const <ListChange>[];
     _pending = null;
     if (stored == null) {

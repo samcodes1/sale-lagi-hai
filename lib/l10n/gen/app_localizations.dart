@@ -1801,6 +1801,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 new alert} other{{count} new alerts}}'**
   String alertsBadge(int count);
+
+  /// No description provided for @reportNoteCardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please leave out card numbers. We never need them.'**
+  String get reportNoteCardNumber;
 }
 
 class _AppLocalizationsDelegate

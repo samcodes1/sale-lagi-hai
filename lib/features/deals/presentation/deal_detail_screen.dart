@@ -536,10 +536,12 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
     switch (result) {
       case Success(:final value):
         Navigator.of(context).pop(value);
-      case Failure(failure: ValidationFailure()):
+      case Failure(failure: ValidationFailure(:final fieldErrors)):
         setState(() {
           _sending = false;
-          _error = l10n.reportNoteRequired;
+          _error = fieldErrors['note'] == 'card_number'
+              ? l10n.reportNoteCardNumber
+              : l10n.reportNoteRequired;
         });
       case Failure(:final failure):
         setState(() {

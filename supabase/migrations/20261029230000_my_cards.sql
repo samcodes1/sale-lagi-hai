@@ -21,7 +21,9 @@ as $$
     select cp.id, cp.bank_id, cp.kind, cp.network
     from public.card_products cp
     where cp.is_active
-      and cp.id = any((coalesce(deals_for_cards.card_product_ids, '{}'::uuid[]))[1:20])
+      -- The first 20 ids, however the array is shaped (unnest flattens a
+      -- 2-D one; QA 4.7-C1).
+      and cp.id in (select u.id from unnest(deals_for_cards.card_product_ids) u(id) limit 20)
   )
   select d.*, false, null::integer
   from public.deal_cards d

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
@@ -24,6 +26,18 @@ class MyCardsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final mine = ref.watch(myCardsProvider);
     final products = ref.watch(cardProductsProvider);
+    // Cards the (fully loaded) catalog no longer offers are dropped, after
+    // this frame (QA 4.7-A1).
+    if (products case AsyncData(:final value)) {
+      final offered = {for (final p in value) p.id};
+      if (mine.any((id) => !offered.contains(id))) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            unawaited(ref.read(myCardsProvider.notifier).keepOnly(offered));
+          }
+        });
+      }
+    }
     final banks = ref.watch(banksProvider);
 
     Widget heading(String text, {Widget? trailing}) => Padding(
@@ -369,55 +383,62 @@ class _AddCardSheetState extends ConsumerState<AddCardSheet> {
       };
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsetsDirectional.only(bottom: BrandSpacing.s5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: BrandSpacing.s3,
+    // Back on the card-type step returns to the banks (QA 4.7-A3).
+    return PopScope(
+      canPop: bank == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) setState(() => _bank = null);
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.only(bottom: BrandSpacing.s5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: BrandSpacing.s3,
+              ),
+              child: Row(
+                children: [
+                  if (bank != null)
+                    IconButton(
+                      tooltip: l10n.actionBack,
+                      icon: const BackButtonIcon(),
+                      onPressed: () => setState(() => _bank = null),
+                    )
+                  else
+                    const SizedBox(width: BrandSpacing.s3),
+                  Expanded(
+                    child: Semantics(
+                      header: true,
+                      child: Text(
+                        bank == null
+                            ? l10n.addCardPickBank
+                            : l10n.addCardPickType(bank.shortName),
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                if (bank != null)
-                  IconButton(
-                    tooltip: l10n.actionBack,
-                    icon: const BackButtonIcon(),
-                    onPressed: () => setState(() => _bank = null),
-                  )
-                else
-                  const SizedBox(width: BrandSpacing.s3),
-                Expanded(
-                  child: Semantics(
-                    header: true,
-                    child: Text(
-                      bank == null
-                          ? l10n.addCardPickBank
-                          : l10n.addCardPickType(bank.shortName),
-                      style: theme.textTheme.titleLarge,
+            if (_full)
+              Padding(
+                padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
+                child: Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    l10n.myCardsFull(MyCards.max),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.error,
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          if (_full)
-            Padding(
-              padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
-              child: Semantics(
-                liveRegion: true,
-                child: Text(
-                  l10n.myCardsFull(MyCards.max),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.error,
-                  ),
-                ),
               ),
-            ),
-          const SizedBox(height: BrandSpacing.s3),
-          body,
-        ],
+            const SizedBox(height: BrandSpacing.s3),
+            body,
+          ],
+        ),
       ),
     );
   }

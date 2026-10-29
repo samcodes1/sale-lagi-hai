@@ -315,7 +315,9 @@ begin
         union all
         select uc.user_id, 3, 'cards'
         from public.user_cards uc
-        join public.card_products cp on cp.id = uc.card_product_id
+        -- Retired card products match nothing, as in deals_for_cards
+        -- (QA 4.7-C2).
+        join public.card_products cp on cp.id = uc.card_product_id and cp.is_active
         join public.card_offers co on co.deal_id = d.id and co.bank_id = cp.bank_id
           and (co.card_product_id is null or co.card_product_id = cp.id)
           and (co.card_kind is null or co.card_kind = cp.kind)

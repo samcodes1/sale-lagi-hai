@@ -17,6 +17,7 @@ final class AppConfig {
     required this.supabaseUrl,
     required this.supabasePublishableKey,
     this.googleServerClientId = '',
+    this.supportEmail = '',
   });
 
   /// Reads and validates the values compiled into this build.
@@ -30,6 +31,7 @@ final class AppConfig {
     'GOOGLE_SERVER_CLIENT_ID': String.fromEnvironment(
       'GOOGLE_SERVER_CLIENT_ID',
     ),
+    'SUPPORT_EMAIL': String.fromEnvironment('SUPPORT_EMAIL'),
   });
 
   /// Builds a config from raw values, collecting every problem before
@@ -97,6 +99,12 @@ final class AppConfig {
       );
     }
 
+    // Optional: where "Contact us" (Settings, About) writes to.
+    final supportEmail = values['SUPPORT_EMAIL']?.trim() ?? '';
+    if (supportEmail.isNotEmpty && !_email.hasMatch(supportEmail)) {
+      problems.add('SUPPORT_EMAIL must be an email address.');
+    }
+
     if (problems.isNotEmpty) throw AppConfigException(problems);
 
     return AppConfig(
@@ -105,8 +113,11 @@ final class AppConfig {
       supabaseUrl: supabaseUrl,
       supabasePublishableKey: supabasePublishableKey,
       googleServerClientId: googleServerClientId,
+      supportEmail: supportEmail,
     );
   }
+
+  static final _email = RegExp(r'^[^@\s]+@[^@\s]+\.[a-z]{2,}$');
 
   static final _googleClientId = RegExp(
     r'^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$',
@@ -122,6 +133,9 @@ final class AppConfig {
   final String googleServerClientId;
 
   bool get hasGoogleSignIn => googleServerClientId.isNotEmpty;
+
+  /// The support address for "Contact us". Empty: the row is hidden.
+  final String supportEmail;
 
   /// Whether a backend is configured for this build.
   bool get hasBackend => supabaseUrl.isNotEmpty;

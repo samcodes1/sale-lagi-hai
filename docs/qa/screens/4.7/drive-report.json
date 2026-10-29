@@ -1,0 +1,340 @@
+[
+ {
+  "tag": "360x800_light_en",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:360x744",
+   "button:Add a card:142x48",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:328x336"
+  ]
+ },
+ {
+  "tag": "360x800_light_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:360x744",
+   "button:Add a card:213x60",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:328x24"
+  ]
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:360x744",
+   "button:کارڈ شامل کریں:159x50",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رعایت (ڈیمو):328x350"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:360x744",
+   "button:کارڈ شامل کریں:249x75",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:360x744",
+   "button:Add a card:142x48",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:328x336"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:360x744",
+   "button:Add a card:213x60",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:328x24"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:360x744",
+   "button:کارڈ شامل کریں:159x50",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رعایت (ڈیمو):328x350"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:360x744",
+   "button:کارڈ شامل کریں:249x75",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_en",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:412x859",
+   "button:Add a card:142x48",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:380x342"
+  ]
+ },
+ {
+  "tag": "412x915_light_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_en_ts2",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:412x859",
+   "button:Add a card:213x60",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:380x180"
+  ]
+ },
+ {
+  "tag": "412x915_light_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:412x859",
+   "button:کارڈ شامل کریں:159x50",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رعایت (ڈیمو):380x379"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur_ts2",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:412x859",
+   "button:کارڈ شامل کریں:249x75",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رعایت (ڈیمو):380x57"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:412x859",
+   "button:Add a card:142x48",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:380x342"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en_ts2",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:412x859",
+   "button:Add a card:213x60",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:380x180"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:412x859",
+   "button:کارڈ شامل کریں:159x50",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رعایت (ڈیمو):380x379"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur_ts2",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:412x859",
+   "button:کارڈ شامل کریں:249x75",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رعایت (ڈیمو):380x109"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_hc_en",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:360x744",
+   "button:Add a card:142x48",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:328x336"
+  ]
+ },
+ {
+  "tag": "360x800_light_hc_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_light_hc_ur",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:360x744",
+   "button:کارڈ شامل کریں:159x50",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رعایت (ڈیمو):328x350"
+  ]
+ },
+ {
+  "tag": "360x800_light_hc_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_hc_en",
+  "semantics": [
+   "button:Back:48x48",
+   "group:We never ask for card numbers: only your bank and card type.:360x744",
+   "button:Add a card:142x48",
+   "button:Remove HBL Visa Credit (Credit):48x48",
+   "button:Karahi House (Demo). 20% off with HBL credit cards (demo). -:328x336"
+  ]
+ },
+ {
+  "tag": "360x800_dark_hc_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ },
+ {
+  "tag": "360x800_dark_hc_ur",
+  "semantics": [
+   "button:پیچھے:48x48",
+   "group:ہم کبھی کارڈ نمبر نہیں مانگتے: صرف آپ کا بینک اور کارڈ کی قس:360x744",
+   "button:کارڈ شامل کریں:159x50",
+   "button:⁨⁨HBL⁩ کا ⁨Visa Credit⁩ (⁨کریڈٹ⁩)⁩ ہٹائیں:48x48",
+   "button:کڑاہی ہاؤس (ڈیمو). ایچ بی ایل کریڈٹ کارڈ پر 20% رعایت (ڈیمو):328x350"
+  ]
+ },
+ {
+  "tag": "360x800_dark_hc_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ]
+ }
+]

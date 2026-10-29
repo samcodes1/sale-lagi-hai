@@ -36,6 +36,12 @@ final guestSyncProvider = Provider<Future<void> Function()>(
     // (QA 4.4 BUG-1, 4.5 BUG-1).
     final userId = ref.read(authRepositoryProvider).currentUser?.id;
     if (userId == null) return;
+    // What is stored on the phone, not just what this session has loaded
+    // (QA 4.7-A6).
+    await (
+      ref.read(savedDealsProvider.notifier).loaded,
+      ref.read(myCardsProvider.notifier).loaded,
+    ).wait;
     final result = await guard(
       () => backend.rpc('sync_guest_preferences', {
         'city': preferences.cityId,

@@ -1099,4 +1099,8 @@ class AppLocalizationsUr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get reportNoteCardNumber =>
+      'براہِ کرم کارڈ نمبر نہ لکھیں۔ ہمیں ان کی کبھی ضرورت نہیں ہوتی۔';
 }

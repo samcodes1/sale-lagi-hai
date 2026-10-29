@@ -164,14 +164,23 @@ final class BackendCatalogRepository implements CatalogRepository {
 
   @override
   Future<List<CardProduct>> cardProducts() async {
-    final rows = await _backend.select(
-      const TableQuery(
-        'card_products',
-        columns: 'id,bank_id,name,network,kind',
-        equals: {'is_active': true},
-        orderBy: 'name',
-      ),
-    );
+    // In pages: PostgREST returns at most 100 rows a request (QA 4.7-C3).
+    const page = 100;
+    final rows = <Map<String, Object?>>[];
+    while (true) {
+      final next = await _backend.select(
+        TableQuery(
+          'card_products',
+          columns: 'id,bank_id,name,network,kind',
+          equals: const {'is_active': true},
+          orderBy: 'name',
+          limit: page,
+          offset: rows.length,
+        ),
+      );
+      rows.addAll(next);
+      if (next.length < page || rows.length >= 2000) break;
+    }
     return [
       for (final row in rows)
         CardProduct(

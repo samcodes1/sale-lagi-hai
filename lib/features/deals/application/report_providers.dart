@@ -5,6 +5,7 @@ import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/result/guard.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
+import 'package:sale_lagi_hai/core/text/card_numbers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 
 /// Why a deal is wrong (public.report_reason).
@@ -44,6 +45,12 @@ final reportDealProvider =
                   (text == null || text.isEmpty)) {
                 throw const ValidationFailure(
                   fieldErrors: {'note': 'required'},
+                );
+              }
+              // Never send a card number; the database refuses one too.
+              if (text != null && CardNumbers.containsOne(text)) {
+                throw const ValidationFailure(
+                  fieldErrors: {'note': 'card_number'},
                 );
               }
               try {

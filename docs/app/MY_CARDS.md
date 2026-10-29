@@ -25,6 +25,22 @@ My Cards (screen S14, `/cards`, opened from Profile and from Explore) is where s
 ## Demo backend
 Demo card offers name only a bank, so any demo card of that bank gets them. The demo card-product ids are now unique per bank (they used to repeat across banks).
 
+## Changed after the 4.7 QA gate (PASS)
+- **P1:** no card numbers in free text anywhere. A report note or a submitted deal's title or details holding a 13–19 digit run that passes the Luhn check is refused:
+  - by the app, with "Please leave out card numbers." (`CardNumbers.containsOne`);
+  - by the database (`private.contains_card_number`, check constraints on `reports` and `submissions`; `20261029260000_no_card_numbers.sql`).
+
+  The run is checked as a whole and in its first and last 15 or 16 digits, so long order references aren't refused.
+- **A1:** cards the freshly loaded catalog no longer offers are dropped from the phone and the account, so nothing hidden counts toward the 20.
+- **A6:** the guest sync waits for the on-phone lists to load (`StoredStringList.loaded`) before reading them.
+- **A3:** Back on the card-type step returns to the banks.
+- **A4:** adding a card waits for the stored list, so the limit counts it.
+- **A5:** covered by `StoredStringList` replaying every change made while storage was unreadable.
+- **A7:** the Explore entry is a full-width row, which wraps at large text.
+- **C1:** `deals_for_cards` reads the first 20 ids however the array is shaped.
+- **C2:** the alert planner skips retired card products.
+- **C3:** card products are read in pages of 100.
+
 ## Tests
 - `test/features/cards/my_cards_test.dart`:
   - on the phone: add, duplicate, the 20 limit, remove, mirroring with `user_id`, the guest sync, a fresh start;

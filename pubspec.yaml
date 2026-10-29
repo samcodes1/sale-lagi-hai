@@ -43,6 +43,7 @@ dependencies:
   intl: ^0.20.3
   material_ui: ^1.8.0
   meta: ^1.19.0
+  package_info_plus: ^10.2.2
   permission_handler: ^13.0.2
   shared_preferences: ^2.5.6
   supabase_flutter: ^2.18.3
@@ -79,6 +80,8 @@ flutter:
     - assets/fonts/licenses/
     # The bilingual logo lockup for the welcome screen (1x, 2.0x, 3.0x).
     - assets/brand/
+    # Terms and privacy policy, in English and Urdu (Settings, Legal).
+    - assets/legal/
   fonts:
     - family: BricolageCondensed
       fonts:

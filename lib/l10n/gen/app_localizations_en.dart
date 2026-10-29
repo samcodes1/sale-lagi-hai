@@ -1095,4 +1095,8 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get reportNoteCardNumber =>
+      'Please leave out card numbers. We never need them.';
 }

@@ -51,12 +51,26 @@ class ExploreScreen extends ConsumerWidget {
                 BrandSpacing.s5,
                 0,
               ),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: ActionChip(
-                  avatar: const Icon(Icons.credit_card),
-                  label: Text(l10n.myCardsEntry),
-                  onPressed: () => const MyCardsRoute().push<void>(context),
+              // A row, not a chip: chips can't wrap at large text sizes
+              // (QA 4.7-A7).
+              child: Semantics(
+                button: true,
+                child: InkWell(
+                  onTap: () => const MyCardsRoute().push<void>(context),
+                  borderRadius: BrandRadii.card,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 48),
+                    child: Row(
+                      children: [
+                        const ExcludeSemantics(child: Icon(Icons.credit_card)),
+                        const SizedBox(width: BrandSpacing.s4),
+                        Expanded(child: Text(l10n.myCardsEntry)),
+                        const ExcludeSemantics(
+                          child: Icon(Icons.chevron_right),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
