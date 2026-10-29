@@ -47,7 +47,7 @@ The database is the validator of last resort. The app and the portals validate t
   - Phone and email stay in `auth.users`, except a business's own contact details.
 
 ## Security model
-- **Grants are opt-in.** Default privileges in `public` are revoked from `anon` and `authenticated`, and every table has RLS enabled. After 2.1 the API roles can read and write **nothing**; 2.2 grants access table by table, with a policy per operation and tests per role.
+- **Grants are opt-in.** Default privileges in `public` are revoked from `anon` and `authenticated`, and every table has RLS enabled. Sub-phase 2.2 grants access table by table, with a policy per operation and tests per role; the result is in [ACCESS.md](ACCESS.md).
 - `service_role` (the server-only secret key) keeps its grants and bypasses RLS. It is for Edge Functions and ingestion only.
 - `private` is not exposed through the Data API. Trigger and helper functions there are `security definer` with `search_path = ''` and fully qualified names, and nobody else can execute them.
 - The schema lint (`supabase/tests/support/schema_lint.sql`) and `010_schema.test.sql` fail the build if any of these happens:

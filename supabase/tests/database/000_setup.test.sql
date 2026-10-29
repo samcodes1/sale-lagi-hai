@@ -111,6 +111,53 @@ begin
   return d;
 end $$;
 
+-- A small world for access tests: business A (owner + editor, a verified
+-- active brand with a live deal, a draft and a deal in review), business B
+-- (its own owner, brand and live deal), a shopper, a moderator and an
+-- admin. Staff sessions need MFA: authenticate them with tests.staff().
+create or replace function tests.make_world() returns table (
+  shopper uuid, editor uuid, owner uuid, other_owner uuid, moderator uuid, admin uuid,
+  biz_a uuid, biz_b uuid, brand_a uuid, brand_b uuid,
+  live_a uuid, draft_a uuid, review_a uuid, live_b uuid, city uuid
+) language plpgsql as $$
+begin
+  shopper := tests.create_user('shopper@example.com');
+  editor := tests.create_user('editor@example.com');
+  owner := tests.create_user('owner@example.com');
+  other_owner := tests.create_user('other@example.com');
+  moderator := tests.create_user('mod@example.com');
+  admin := tests.create_user('admin@example.com');
+  insert into public.user_roles (user_id, role) values (moderator, 'moderator'), (admin, 'admin');
+
+  biz_a := tests.make_business('Kolachi');
+  biz_b := tests.make_business('Burger Lab');
+  insert into public.business_members (business_id, user_id, role)
+  values (biz_a, owner, 'owner'), (biz_a, editor, 'editor'), (biz_b, other_owner, 'owner');
+
+  brand_a := tests.make_brand(biz_a, 'kolachi');
+  brand_b := tests.make_brand(biz_b, 'burger-lab');
+  live_a := tests.make_deal(brand_a, 'published');
+  draft_a := tests.make_deal(brand_a, 'draft');
+  review_a := tests.make_deal(brand_a, 'pending_review');
+  live_b := tests.make_deal(brand_b, 'published');
+  city := tests.make_city('karachi');
+  return next;
+end $$;
+
+-- Rows an UPDATE or DELETE ... RETURNING 1 affected, under the current role
+-- (0 when RLS filtered them out silently).
+create or replace function tests.affected(statement text) returns int
+language plpgsql as $$
+declare n int;
+begin
+  execute format('with q as (%s) select count(*) from q', statement) into n;
+  return n;
+end $$;
+
+-- Act as staff with an MFA session.
+create or replace function tests.staff(uid uuid) returns void
+language sql as $$ select tests.authenticate_as(uid, '{"aal": "aal2"}') $$;
+
 grant usage on schema tests to anon, authenticated;
 grant execute on all functions in schema tests to anon, authenticated;
 

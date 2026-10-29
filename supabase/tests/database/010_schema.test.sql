@@ -49,19 +49,23 @@ select is_empty($$
                                                    'character varying', 'money')
 $$, 'no json, timestamp without time zone, varchar or money columns');
 
--- Until the RLS migration grants access, the API roles see nothing.
-select is_empty($$
-  select table_name || ':' || grantee || ':' || privilege_type
-  from information_schema.role_table_grants
-  where table_schema = 'public' and grantee in ('anon', 'authenticated')
-$$, 'anon and authenticated have no table grants yet');
+-- anon reads public content only, and writes nothing.
+select set_eq($$
+  select table_name::text from information_schema.role_table_grants
+  where table_schema = 'public' and grantee = 'anon'
+$$, array['cities', 'areas', 'categories', 'banks', 'card_products', 'brands', 'outlets',
+          'deals', 'deal_targets', 'card_offers', 'placements'],
+'anon has grants on the public-content tables only');
 
-select is_empty($$
-  select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-  where n.nspname = 'private' and p.prosecdef
+-- The only private functions the API roles can call are the RLS helpers.
+select set_eq($$
+  select p.proname::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname = 'private'
     and (has_function_privilege('anon', p.oid, 'execute')
          or has_function_privilege('authenticated', p.oid, 'execute'))
-$$, 'no private security definer function is executable by the API roles yet');
+$$, array['has_role', 'mfa_verified', 'is_moderator', 'is_admin', 'my_business_ids',
+          'my_owned_business_ids', 'my_brand_ids', 'is_trusted_caller'],
+'only the RLS helpers in private are callable by the API roles');
 
 -- The app's DealOffer mirrors this enum.
 select enum_has_labels('public', 'offer_kind', array[
