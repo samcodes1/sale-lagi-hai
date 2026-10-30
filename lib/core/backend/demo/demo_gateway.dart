@@ -318,6 +318,31 @@ final class DemoGateway implements BackendGateway {
           }
         }
         return const [];
+      case 'sync_guest_items':
+        // Visible deals and active card products, once each.
+        for (final id in (params['deal_ids'] as List<Object?>?) ?? const []) {
+          final known = demoDeals.any((d) => d.id == id);
+          final already = _tables['saves']!.any((r) => r['deal_id'] == id);
+          if (known && !already) {
+            _tables['saves']!.add({'user_id': userId, 'deal_id': id});
+          }
+        }
+        for (final id
+            in (params['card_product_ids'] as List<Object?>?) ?? const []) {
+          final active = demoCardProducts.any(
+            (c) => c['id'] == id && c['is_active'] != false,
+          );
+          final already = _tables['user_cards']!.any(
+            (r) => r['card_product_id'] == id,
+          );
+          if (active && !already) {
+            _tables['user_cards']!.add({
+              'user_id': userId,
+              'card_product_id': id,
+            });
+          }
+        }
+        return const [];
       case 'my_alert_prefs':
         return [Map.of(_alertPrefs)];
       case 'update_alert_prefs':

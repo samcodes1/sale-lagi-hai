@@ -141,6 +141,15 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
     ),
   );
 
+  /// Replaces the followed brands and categories on the phone (empty by
+  /// default), as when another account's are dropped at sign-in.
+  Future<void> setFollows({
+    List<String> brandIds = const [],
+    List<String> categoryIds = const [],
+  }) => _update(
+    state.copyWith(brandIds: brandIds, categoryFollowIds: categoryIds),
+  );
+
   Future<void> markAlertsAsked(DateTime at) =>
       _update(state.copyWith(alertsAskedAt: at));
 

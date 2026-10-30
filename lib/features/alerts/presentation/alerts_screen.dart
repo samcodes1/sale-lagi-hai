@@ -27,14 +27,6 @@ class AlertsScreen extends ConsumerStatefulWidget {
 }
 
 class _AlertsScreenState extends ConsumerState<AlertsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(markAlertsSeen(ref));
-    });
-  }
-
   Future<void> _open(AppAlert alert) async {
     unawaited(ref.read(inboxProvider.notifier).markRead(alert));
     if (alert.dealId case final id?) {

@@ -355,6 +355,7 @@
   "actionExplore": "Explore brands",
   "alertsBadge": "{count, plural, =1{1 new alert} other{{count} new alerts}}",
   "@alertsBadge": {"placeholders": {"count": {"type": "int"}}},
+  "alertsBadgeMany": "More than 99 new alerts",
   "reportNoteCardNumber": "Please leave out card numbers. We never need them.",
   "settingsTitle": "Settings",
   "settingsCity": "City",

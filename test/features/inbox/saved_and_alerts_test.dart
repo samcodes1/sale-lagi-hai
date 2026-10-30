@@ -14,6 +14,7 @@ import 'package:sale_lagi_hai/core/l10n/formatters.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
+import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/features/alerts/application/alerts_providers.dart';
 import 'package:sale_lagi_hai/features/alerts/domain/app_alert.dart';
@@ -35,6 +36,29 @@ String _deal(int n) => demoDeals.firstWhere((d) => d.n == n).id;
 String _title(int n) => demoDeals.firstWhere((d) => d.n == n).titleEn;
 const _gone = '00000000-0000-4000-0006-00000000dead';
 final _threads = brandBySlug('demo-threads')['id']! as String;
+
+/// [InMemoryKeyValueStore], but whose-lists reads fail.
+final class _NoMarkerStore implements KeyValueStore {
+  final inner = InMemoryKeyValueStore();
+
+  @override
+  Future<String?> getString(String key) => key == accountOnPhoneKey
+      ? Future.error(StateError('unreadable'))
+      : inner.getString(key);
+
+  @override
+  Future<void> setString(String key, String value) =>
+      inner.setString(key, value);
+
+  @override
+  Future<void> remove(String key) => inner.remove(key);
+
+  @override
+  Future<Set<String>> keys() => inner.keys();
+
+  @override
+  Future<void> clear() => inner.clear();
+}
 
 Future<void> _signIn(DemoAuthRepository auth) async {
   await auth.sendPhoneCode('+923001234567');
@@ -204,6 +228,92 @@ void main() {
       expect(c.read(savedDealsProvider), containsAll([_deal(1), _deal(5)]));
       expect(c.read(myCardsProvider), [card]);
       expect(c.read(preferencesProvider).brandIds, [_threads]);
+    });
+
+    group('whose lists are on the phone (QA 4.8 BUG-1)', () {
+      late DemoGateway backend;
+      late DemoAuthRepository auth;
+      final card = demoCardProducts.first['id']! as String;
+
+      ProviderContainer phone(KeyValueStore store) {
+        final c = ProviderContainer(
+          overrides: [
+            keyValueStoreProvider.overrideWithValue(store),
+            loggerProvider.overrideWithValue(AppLogger(sinks: [])),
+            backendGatewayProvider.overrideWithValue(backend),
+            authRepositoryProvider.overrideWithValue(auth),
+            savedPreferencesProvider.overrideWithValue(
+              onboardedPreferences.copyWith(brandIds: [_threads]),
+            ),
+          ],
+        );
+        addTearDown(c.dispose);
+        return c;
+      }
+
+      Future<List<Object?>> inAccount(String table, String column) async => [
+        for (final r in await backend.select(TableQuery(table))) r[column],
+      ];
+
+      setUp(() {
+        backend = DemoGateway();
+        auth = DemoAuthRepository();
+      });
+
+      test("a guest's lists go up in one call, and the phone is noted as "
+          "this account's", () async {
+        final store = InMemoryKeyValueStore()
+          ..values[savedDealsKey] = jsonEncode([_deal(1), _deal(2)])
+          ..values[myCardsKey] = jsonEncode([card]);
+        final c = phone(store);
+        await _signIn(auth);
+        await c.read(guestSyncProvider)();
+        expect(await inAccount('saves', 'deal_id'), [_deal(1), _deal(2)]);
+        expect(await inAccount('user_cards', 'card_product_id'), [card]);
+        expect(store.values[accountOnPhoneKey], auth.currentUser!.id);
+      });
+
+      test(
+        'the same account again: what was saved meanwhile goes up',
+        () async {
+          await _signIn(auth);
+          final store = InMemoryKeyValueStore()
+            ..values[accountOnPhoneKey] = auth.currentUser!.id
+            ..values[savedDealsKey] = jsonEncode([_deal(3)]);
+          final c = phone(store);
+          await c.read(guestSyncProvider)();
+          expect(await inAccount('saves', 'deal_id'), [_deal(3)]);
+        },
+      );
+
+      test("another account's lists are dropped, never sent; this one's "
+          'come in', () async {
+        await backend.insert('saves', {'deal_id': _deal(5)});
+        final store = InMemoryKeyValueStore()
+          ..values[accountOnPhoneKey] = 'someone-else'
+          ..values[savedDealsKey] = jsonEncode([_deal(1)])
+          ..values[myCardsKey] = jsonEncode([card]);
+        final c = phone(store);
+        await _signIn(auth);
+        await c.read(guestSyncProvider)();
+        expect(await inAccount('saves', 'deal_id'), [_deal(5)]);
+        expect(await inAccount('user_cards', 'card_product_id'), isEmpty);
+        expect(await inAccount('follows', 'brand_id'), isEmpty);
+        expect(c.read(savedDealsProvider), [_deal(5)]);
+        expect(c.read(myCardsProvider), isEmpty);
+        expect(c.read(preferencesProvider).brandIds, isEmpty);
+        expect(store.values[accountOnPhoneKey], auth.currentUser!.id);
+      });
+
+      test("unreadable counts as another account's", () async {
+        final store = _NoMarkerStore();
+        store.inner.values[savedDealsKey] = jsonEncode([_deal(1)]);
+        final c = phone(store);
+        await _signIn(auth);
+        await c.read(guestSyncProvider)();
+        expect(await inAccount('saves', 'deal_id'), isEmpty);
+        expect(c.read(savedDealsProvider), isEmpty);
+      });
     });
   });
 

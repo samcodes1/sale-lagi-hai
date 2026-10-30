@@ -43,17 +43,50 @@ final class SavedDeals extends StoredStringList {
   Future<void> addFromAccount(Iterable<String> dealIds) =>
       update((current) => {...current, ...dealIds}.toList());
 
-  Future<void> toggle(String dealId) async {
+  /// Removes [dealIds] (the Saved tab's "Remove ended deals"), from the
+  /// account too when signed in, so the next sign-in doesn't bring them
+  /// back (QA 4.8 BUG-2).
+  Future<void> removeAll(Iterable<String> dealIds) async {
+    final gone = dealIds.toSet();
+    if (gone.isEmpty) return;
+    final next = await update(
+      (current) => [
+        for (final id in current)
+          if (!gone.contains(id)) id,
+      ],
+    );
+    if (next == null) return;
+    final user = ref.read(authRepositoryProvider).currentUser;
+    if (user == null) return;
+    final backend = ref.read(backendGatewayProvider);
+    final results = await Future.wait([
+      for (final id in gone)
+        backend
+            .delete('saves', {'user_id': user.id, 'deal_id': id})
+            .then((_) => true, onError: (Object _) => false),
+    ]);
+    final failed = results.where((ok) => !ok).length;
+    if (failed > 0 && ref.mounted) {
+      ref
+          .read(loggerProvider)
+          .warning('Could not remove saved deals', context: {'count': failed});
+    }
+  }
+
+  /// Saves or unsaves [dealId]. A save goes first, or back at [at] (Undo
+  /// on the Saved tab puts it where it was; QA 4.8 BUG-6).
+  Future<void> toggle(String dealId, {int? at}) async {
     // The intent, decided from what the shopper sees, not re-decided when
     // replayed onto the file (QA 4.4 R2-1): saving twice keeps one.
     final saving = !state.contains(dealId);
-    final next = await update(
-      (current) => [
-        if (saving) dealId,
+    final next = await update((current) {
+      final rest = [
         for (final id in current)
           if (id != dealId) id,
-      ],
-    );
+      ];
+      if (!saving) return rest;
+      return rest..insert((at ?? 0).clamp(0, rest.length), dealId);
+    });
     if (next == null) return;
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) return;

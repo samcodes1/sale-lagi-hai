@@ -40,4 +40,5 @@ final page = await supabase.rpc('feed', params: {
 | RPC | Who | What |
 |---|---|---|
 | `sync_guest_preferences(city, lang, brand_ids)` | Signed-in users | Copies a guest's on-phone city, language and followed brands (at most 200, active only) into the account. Nulls keep what the account has. |
+| `sync_guest_items(deal_ids, card_product_ids)` | Signed-in users | Adds a guest's on-phone saved deals (at most 500, visible ones only) and cards (at most 20, active products only) to the account in one call. Ones already there are skipped. |
 | `prepare_account_deletion(target)` | Service role only (the `delete-account` Edge Function) | Hands business-bucket uploads to the business, and lists the private files to delete. See `docs/app/ACCOUNTS.md`. |

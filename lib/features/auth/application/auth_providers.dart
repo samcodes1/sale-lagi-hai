@@ -24,79 +24,91 @@ final currentUserProvider = StreamProvider<AppUser?>(
   (ref) => ref.watch(authRepositoryProvider).userChanges(),
 );
 
-/// Copies the guest's on-phone choices (city, language, followed brands)
-/// into the account right after sign-in, so nothing chosen before signing
-/// in is lost. A failure is logged and doesn't undo the sign-in: the
-/// choices stay on the phone and sync on the next sign-in.
+/// Where the phone notes which account its saved deals, cards and follows
+/// belong to (the last one that signed in on it).
+const accountOnPhoneKey = 'account.on_phone.v1';
+
+/// Copies the guest's on-phone choices (city, language, follows, saved
+/// deals, cards) into the account right after sign-in, so nothing chosen
+/// before signing in is lost, then brings the account's onto the phone.
+/// A failure is logged and doesn't undo the sign-in: the choices stay on
+/// the phone and sync on the next sign-in.
+///
+/// On a shared phone, what another account left on it never goes into
+/// this one (QA 4.8 BUG-1): the phone's lists are dropped, and this
+/// account's take their place.
 final guestSyncProvider = Provider<Future<void> Function()>(
   (ref) => () async {
-    final preferences = ref.read(preferencesProvider);
     final backend = ref.read(backendGatewayProvider);
-    // Rows name their owner: the insert policies check user_id = auth.uid()
-    // (QA 4.4 BUG-1, 4.5 BUG-1).
+    final store = ref.read(keyValueStoreProvider);
+    final logger = ref.read(loggerProvider);
     final userId = ref.read(authRepositoryProvider).currentUser?.id;
     if (userId == null) return;
+    final saved = ref.read(savedDealsProvider.notifier);
+    final cards = ref.read(myCardsProvider.notifier);
     // What is stored on the phone, not just what this session has loaded
     // (QA 4.7-A6).
-    await (
-      ref.read(savedDealsProvider.notifier).loaded,
-      ref.read(myCardsProvider.notifier).loaded,
-    ).wait;
-    final result = await guard(
-      () => backend.rpc('sync_guest_preferences', {
-        'city': preferences.cityId,
-        'lang': ref.read(localeControllerProvider).languageCode,
-        'brand_ids': preferences.brandIds,
-        'category_ids': preferences.categoryFollowIds,
-      }),
-      logger: ref.read(loggerProvider),
-      mappers: const [backendErrorMapper],
-    );
-    if (result case Failure(:final failure)) {
-      ref
-          .read(loggerProvider)
-          .warning(
-            'Could not sync guest choices',
-            context: {'code': failure.code},
-          );
+    await (saved.loaded, cards.loaded).wait;
+
+    String? onPhone;
+    var known = true;
+    try {
+      onPhone = await store.getString(accountOnPhoneKey);
+    } on Object catch (error) {
+      known = false;
+      logger.warning(
+        'Could not read whose lists are on this phone',
+        context: {'error': error.runtimeType.toString()},
+      );
     }
-    // Deals saved as a guest go into the account too (already saved ones
-    // are skipped by the primary key; any failure leaves the phone copy).
-    var failed = 0;
-    for (final dealId in ref.read(savedDealsProvider)) {
-      try {
-        await backend.insert('saves', {'user_id': userId, 'deal_id': dealId});
-      } on Object {
-        failed++;
+    // Unknown counts as someone else's: better to start from the account
+    // than to copy another person's lists into it.
+    if (!known || (onPhone != null && onPhone != userId)) {
+      await saved.update((_) => const []);
+      await cards.update((_) => const []);
+      await ref.read(preferencesProvider.notifier).setFollows();
+    }
+    try {
+      await store.setString(accountOnPhoneKey, userId);
+    } on Object catch (error) {
+      logger.warning(
+        'Could not note whose lists are on this phone',
+        context: {'error': error.runtimeType.toString()},
+      );
+    }
+
+    final preferences = ref.read(preferencesProvider);
+    final dealIds = ref.read(savedDealsProvider);
+    final cardIds = ref.read(myCardsProvider);
+    // Rows go in as auth.uid() on the server, so never in another's name
+    // (QA 4.4 BUG-1, 4.5 BUG-1). One call each, whatever the count
+    // (QA 4.8 BUG-3); ones already in the account are skipped.
+    for (final (what, function, params) in [
+      (
+        'Could not sync guest choices',
+        'sync_guest_preferences',
+        <String, Object?>{
+          'city': preferences.cityId,
+          'lang': ref.read(localeControllerProvider).languageCode,
+          'brand_ids': preferences.brandIds,
+          'category_ids': preferences.categoryFollowIds,
+        },
+      ),
+      if (dealIds.isNotEmpty || cardIds.isNotEmpty)
+        (
+          'Could not sync saved deals and cards',
+          'sync_guest_items',
+          <String, Object?>{'deal_ids': dealIds, 'card_product_ids': cardIds},
+        ),
+    ]) {
+      final result = await guard(
+        () => backend.rpc(function, params),
+        logger: logger,
+        mappers: const [backendErrorMapper],
+      );
+      if (result case Failure(:final failure)) {
+        logger.warning(what, context: {'code': failure.code});
       }
-    }
-    if (failed > 0) {
-      ref
-          .read(loggerProvider)
-          .info(
-            'Some saved deals were already synced',
-            context: {'count': failed},
-          );
-    }
-    // Cards added as a guest too (card products only, never numbers).
-    var cardsFailed = 0;
-    for (final cardProductId in ref.read(myCardsProvider)) {
-      try {
-        await backend.insert('user_cards', {
-          'user_id': userId,
-          'card_product_id': cardProductId,
-        });
-      } on Object {
-        cardsFailed++;
-      }
-    }
-    if (cardsFailed > 0) {
-      ref
-          .read(loggerProvider)
-          .info(
-            'Some cards were already synced',
-            context: {'count': cardsFailed},
-          );
     }
     // And the other way: what the account holds from another phone comes
     // onto this one. A failure leaves the phone as it was.

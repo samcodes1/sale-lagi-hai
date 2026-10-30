@@ -427,10 +427,10 @@ void main() {
     await auth.sendPhoneCode('+923001234567');
     await auth.verifyPhoneCode('+923001234567', DemoAuthRepository.code);
     await c.read(guestSyncProvider)();
+    // In the account (sent in one call since QA 4.8 BUG-3).
     expect(
-      backend.inserts
-          .where((i) => i.$1 == 'user_cards')
-          .map((i) => i.$2['card_product_id']),
+      (await backend.select(const TableQuery('user_cards')))
+          .map((r) => r['card_product_id']),
       [hblCredit],
     );
   });

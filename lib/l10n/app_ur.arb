@@ -300,6 +300,7 @@
   "followingEmpty": "آپ ابھی کچھ فالو نہیں کر رہے۔ برانڈز اور زمرے فالو کریں تاکہ ان کی ڈیلز کی خبر ملے۔",
   "actionExplore": "برانڈز دیکھیں",
   "alertsBadge": "{count, plural, =1{ایک نیا الرٹ} other{⁦{count}⁩ نئے الرٹس}}",
+  "alertsBadgeMany": "⁦99⁩ سے زیادہ نئے الرٹس",
   "reportNoteCardNumber": "براہِ کرم کارڈ نمبر نہ لکھیں۔ ہمیں ان کی کبھی ضرورت نہیں ہوتی۔",
   "settingsTitle": "سیٹنگز",
   "settingsCity": "شہر",

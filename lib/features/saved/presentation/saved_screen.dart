@@ -35,6 +35,7 @@ class _SavedScreenState extends ConsumerState<SavedScreen> {
     final l10n = context.l10n;
     final messenger = ScaffoldMessenger.maybeOf(context);
     final saved = ref.read(savedDealsProvider.notifier);
+    final at = ref.read(savedDealsProvider).indexOf(deal.id);
     await saved.toggle(deal.id);
     messenger
       ?..hideCurrentSnackBar()
@@ -44,21 +45,17 @@ class _SavedScreenState extends ConsumerState<SavedScreen> {
           action: SnackBarAction(
             label: l10n.actionUndo,
             onPressed: () {
-              if (!saved.isSaved(deal.id)) unawaited(saved.toggle(deal.id));
+              if (!saved.isSaved(deal.id)) {
+                unawaited(saved.toggle(deal.id, at: at));
+              }
             },
           ),
         ),
       );
   }
 
-  Future<void> _removeAll(List<String> ids) => ref
-      .read(savedDealsProvider.notifier)
-      .update(
-        (current) => [
-          for (final id in current)
-            if (!ids.contains(id)) id,
-        ],
-      );
+  Future<void> _removeAll(List<String> ids) =>
+      ref.read(savedDealsProvider.notifier).removeAll(ids);
 
   @override
   Widget build(BuildContext context) {

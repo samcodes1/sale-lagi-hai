@@ -12,7 +12,7 @@ Profile → **Sign in** opens `/sign-in`, above the tabs.
 
 - **Errors.** A wrong or expired code, or a refused number, shows a message at the field. Rate limits (Supabase's own SMS limits) and network errors show their usual messages.
 - **Guest sync.** Straight after sign-in, `sync_guest_preferences(city, lang, brand_ids, category_ids)` copies the on-phone city, language, followed brands and followed categories (from Explore, 4.5) into the account, together with saved deals. It runs once, under the shopper's own RLS, only follows active brands and categories, and takes at most 200 follows in all. If it fails, the choices stay on the phone and sync next time.
-- **Sign out.** Signs out on this phone only. The on-phone choices stay.
+- **Sign out.** Signs out on this phone only. The on-phone choices stay. If a different account then signs in, the saved deals, cards and follows left by the last one are dropped, not copied into it (QA 4.8 BUG-1; see SAVED_AND_ALERTS.md).
 
 ## Deleting the account (UX flow F7, a Play requirement)
 Profile → **Delete account** opens `/profile/account/delete` (signed-in shoppers only). The page lists what goes and what stays, and asks for one confirmation.

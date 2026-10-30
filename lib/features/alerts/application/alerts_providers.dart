@@ -102,20 +102,23 @@ final class Inbox extends AsyncNotifier<InboxState> {
     );
     final result = await _guard(() => _page(current.alerts.length));
     if (!ref.mounted) return;
+    // From the state as it is now: an alert read while the page loaded
+    // stays read (QA 4.8 BUG-4).
+    final latest = state.value ?? current;
     state = AsyncData(switch (result) {
       Success(:final value) => () {
-        final seen = {for (final a in current.alerts) a.id};
+        final seen = {for (final a in latest.alerts) a.id};
         final fresh = [
           for (final a in value)
             if (!seen.contains(a.id)) a,
         ];
-        return current.copyWith(
-          alerts: [...current.alerts, ...fresh],
+        return latest.copyWith(
+          alerts: [...latest.alerts, ...fresh],
           hasMore: value.length == pageSize && fresh.isNotEmpty,
           loadingMore: false,
         );
       }(),
-      Failure(:final failure) => current.copyWith(
+      Failure(:final failure) => latest.copyWith(
         loadingMore: false,
         moreFailure: () => failure,
       ),
@@ -186,11 +189,35 @@ final alertsBadgeProvider = FutureProvider<int>((ref) async {
   }
 });
 
-/// The Alerts tab was opened: its badge clears.
+/// The Alerts tab was opened: its badge clears. Seen up to now, or up to
+/// the newest alert if the server's clock is ahead of the phone's.
 Future<void> markAlertsSeen(WidgetRef ref) async {
-  final now = ref.read(clockProvider)().toUtc().toIso8601String();
+  var seen = ref.read(clockProvider)().toUtc();
+  if (ref.read(currentUserProvider).value != null) {
+    try {
+      final newest = await ref
+          .read(backendGatewayProvider)
+          .select(
+            const TableQuery(
+              'notifications',
+              columns: 'created_at',
+              orderBy: 'created_at',
+              ascending: false,
+              limit: 1,
+            ),
+          );
+      if (newest.firstOrNull?['created_at'] case final String at) {
+        final time = DateTime.tryParse(at)?.toUtc();
+        if (time != null && time.isAfter(seen)) seen = time;
+      }
+    } on Object {
+      // Offline: seen up to now.
+    }
+  }
   try {
-    await ref.read(keyValueStoreProvider).setString(alertsSeenKey, now);
+    await ref
+        .read(keyValueStoreProvider)
+        .setString(alertsSeenKey, seen.toIso8601String());
   } on Object catch (error) {
     ref
         .read(loggerProvider)

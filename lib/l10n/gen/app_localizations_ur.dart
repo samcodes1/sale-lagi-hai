@@ -1101,6 +1101,9 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get alertsBadgeMany => '99 سے زیادہ نئے الرٹس';
+
+  @override
   String get reportNoteCardNumber =>
       'براہِ کرم کارڈ نمبر نہ لکھیں۔ ہمیں ان کی کبھی ضرورت نہیں ہوتی۔';
 

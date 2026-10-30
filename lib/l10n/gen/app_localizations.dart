@@ -1802,6 +1802,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 new alert} other{{count} new alerts}}'**
   String alertsBadge(int count);
 
+  /// No description provided for @alertsBadgeMany.
+  ///
+  /// In en, this message translates to:
+  /// **'More than 99 new alerts'**
+  String get alertsBadgeMany;
+
   /// No description provided for @reportNoteCardNumber.
   ///
   /// In en, this message translates to:

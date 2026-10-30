@@ -1097,6 +1097,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get alertsBadgeMany => 'More than 99 new alerts';
+
+  @override
   String get reportNoteCardNumber =>
       'Please leave out card numbers. We never need them.';
 

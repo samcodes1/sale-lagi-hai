@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -52,6 +54,7 @@ class AppShell extends ConsumerWidget {
 
   /// The Alerts tab's icon, with a badge for alerts not yet seen.
   static Widget _icon(
+    BuildContext context,
     _Destination d,
     int index,
     int badge, {
@@ -59,7 +62,15 @@ class AppShell extends ConsumerWidget {
   }) {
     final icon = Icon(selected ? d.selectedIcon : d.icon);
     if (index != 2 || badge == 0) return icon;
-    return Badge(label: Text(badge > 99 ? '99+' : '$badge'), child: icon);
+    final l10n = context.l10n;
+    // Heard with the tab as "Alerts, 3 new alerts", not "3 Alerts"
+    // (QA 4.8 BUG-8).
+    return Semantics(
+      label: badge > 99 ? l10n.alertsBadgeMany : l10n.alertsBadge(badge),
+      child: ExcludeSemantics(
+        child: Badge(label: Text(badge > 99 ? '99+' : '$badge'), child: icon),
+      ),
+    );
   }
 
   @override
@@ -82,8 +93,8 @@ class AppShell extends ConsumerWidget {
                 destinations: [
                   for (final (i, d) in destinations.indexed)
                     NavigationRailDestination(
-                      icon: _icon(d, i, badge),
-                      selectedIcon: _icon(d, i, badge, selected: true),
+                      icon: _icon(context, d, i, badge),
+                      selectedIcon: _icon(context, d, i, badge, selected: true),
                       label: Text(d.label),
                     ),
                 ],
@@ -103,13 +114,9 @@ class AppShell extends ConsumerWidget {
           destinations: [
             for (final (i, d) in destinations.indexed)
               NavigationDestination(
-                icon: _icon(d, i, badge),
-                selectedIcon: _icon(d, i, badge, selected: true),
+                icon: _icon(context, d, i, badge),
+                selectedIcon: _icon(context, d, i, badge, selected: true),
                 label: d.label,
-                // The count is read with the tab: "Alerts, 3 new alerts".
-                tooltip: i == 2 && badge > 0
-                    ? '${d.label}, ${context.l10n.alertsBadge(badge)}'
-                    : null,
               ),
           ],
         ),
@@ -122,7 +129,44 @@ class AppShell extends ConsumerWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _select(0);
       },
-      child: body,
+      child: _AlertsSeenOnEnter(
+        index: navigationShell.currentIndex,
+        child: body,
+      ),
     );
   }
+}
+
+/// Clears the Alerts badge each time the Alerts tab is entered, by a tap or
+/// a link. The shell keeps the tab's state, so the screen itself can't
+/// tell a second visit (QA 4.8 BUG-5).
+class _AlertsSeenOnEnter extends ConsumerStatefulWidget {
+  const new({required this.index, required this.child});
+
+  final int index;
+  final Widget child;
+
+  @override
+  ConsumerState<_AlertsSeenOnEnter> createState() => _AlertsSeenOnEnterState();
+}
+
+class _AlertsSeenOnEnterState extends ConsumerState<_AlertsSeenOnEnter> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.index == 2) _seen();
+  }
+
+  @override
+  void didUpdateWidget(_AlertsSeenOnEnter old) {
+    super.didUpdateWidget(old);
+    if (widget.index == 2 && old.index != 2) _seen();
+  }
+
+  void _seen() => WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted) unawaited(markAlertsSeen(ref));
+  });
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
