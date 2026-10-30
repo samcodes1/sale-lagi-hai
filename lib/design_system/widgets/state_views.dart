@@ -93,9 +93,12 @@ class InlineErrorBanner extends StatelessWidget {
 /// announce it without moving focus. [updatedLabel] says how old the shown
 /// content is ("Updated 2 hours ago").
 class OfflineBanner extends StatelessWidget {
-  const new({this.updatedLabel, super.key});
+  const new({this.updatedLabel, this.onRetry, super.key});
 
   final String? updatedLabel;
+
+  /// Shows Try again (where a reload can help, e.g. a deal's offline copy).
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +145,14 @@ class OfflineBanner extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (onRetry case final retry?)
+                  TextButton(
+                    onPressed: retry,
+                    style: TextButton.styleFrom(
+                      foregroundColor: scheme.onInverseSurface,
+                    ),
+                    child: Text(context.l10n.actionRetry),
+                  ),
               ],
             ),
           ),

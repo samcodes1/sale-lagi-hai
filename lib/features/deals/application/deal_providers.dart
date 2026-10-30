@@ -19,11 +19,13 @@ final dealRepositoryProvider = Provider<DealRepository>(
 
 /// The deal page's data. Fails with an `AppFailure` (a missing or hidden
 /// deal is a `NotFoundFailure`).
+/// Kept only while the page is open, so opening it again asks the server
+/// again (QA P4-R2-2).
 ///
 /// Offline, a deal seen before (saved, or on Home) opens from its last
 /// copy, marked with [DealDetail.cachedAt] (UX S08; QA P4-J1).
 final FutureProviderFamily<DealDetail, String> dealDetailProvider =
-    FutureProvider.family<DealDetail, String>((ref, id) async {
+    FutureProvider.autoDispose.family<DealDetail, String>((ref, id) async {
       final result = await ref.watch(dealRepositoryProvider).detail(id);
       switch (result) {
         case Success(:final value):

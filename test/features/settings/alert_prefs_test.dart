@@ -178,10 +178,15 @@ void main() {
             hasLength(sent),
             reason: 'nothing sent offline',
           );
-          expect(jsonDecode(store.values[alertPrefsQueueKey]!), {
-            'user': auth.currentUser!.id,
-            'changes': {'my_city': false},
-          });
+          expect(
+            jsonDecode(
+              store.values[alertPrefsQueueKeyFor(auth.currentUser!.id)]!,
+            ),
+            {
+              'user': auth.currentUser!.id,
+              'changes': {'my_city': false},
+            },
+          );
 
           network.add(NetworkStatus.online);
           await Future<void>.delayed(Duration.zero);
@@ -190,13 +195,18 @@ void main() {
           expect(function, 'update_alert_prefs');
           expect(params, {'my_city': false});
           expect(c.read(alertPrefsProvider.notifier).queued, isFalse);
-          expect(store.values.containsKey(alertPrefsQueueKey), isFalse);
+          expect(
+            store.values.containsKey(
+              alertPrefsQueueKeyFor(auth.currentUser!.id),
+            ),
+            isFalse,
+          );
         },
       );
 
       test('the queue outlives a restart, and goes out then', () async {
         await _signIn(auth);
-        store.values[alertPrefsQueueKey] = jsonEncode({
+        store.values[alertPrefsQueueKeyFor(auth.currentUser!.id)] = jsonEncode({
           'user': auth.currentUser!.id,
           'changes': {'frequency': 'high'},
         });
@@ -207,12 +217,15 @@ void main() {
         final (function, params) = backend.calls.last;
         expect(function, 'update_alert_prefs');
         expect(params, {'frequency': 'high'});
-        expect(store.values.containsKey(alertPrefsQueueKey), isFalse);
+        expect(
+          store.values.containsKey(alertPrefsQueueKeyFor(auth.currentUser!.id)),
+          isFalse,
+        );
       });
 
       test("another account's queue is ignored", () async {
         await _signIn(auth);
-        store.values[alertPrefsQueueKey] = jsonEncode({
+        store.values[alertPrefsQueueKeyFor(auth.currentUser!.id)] = jsonEncode({
           'user': 'someone-else',
           'changes': {'my_cards': false},
         });
@@ -227,7 +240,7 @@ void main() {
       test('a queued change the server refuses is dropped; the saved values '
           'show', () async {
         await _signIn(auth);
-        store.values[alertPrefsQueueKey] = jsonEncode({
+        store.values[alertPrefsQueueKeyFor(auth.currentUser!.id)] = jsonEncode({
           'user': auth.currentUser!.id,
           'changes': {'my_city': false},
         });
@@ -236,7 +249,10 @@ void main() {
         await c.read(alertPrefsProvider.future);
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
-        expect(store.values.containsKey(alertPrefsQueueKey), isFalse);
+        expect(
+          store.values.containsKey(alertPrefsQueueKeyFor(auth.currentUser!.id)),
+          isFalse,
+        );
         expect((await c.read(alertPrefsProvider.future))?.myCity, isTrue);
       });
     });

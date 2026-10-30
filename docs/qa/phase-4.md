@@ -1,5 +1,7 @@
 # QA Report — Phase 4 gate: Consumer app core (4.1–4.9)
-Verdict: **PASS**. No S1 or S2 bugs are open, and every gate step passes. New and open: **4 S3** (P4-J1, P4-F1, P4-R1, P4-P1) and **3 S4** (P4-D1, P4-P2, P4-T1). The carried-forward bugs keep their severity.
+Verdict, round 2 (`381aaae`): **FAIL**. One S2 is open: P4-R2-1, the offline settings queue writes one account's change into another's account. One new S3 is open too: P4-R2-2. Every round-1 bug and the three carried items are verified fixed. See [Round 2](#round-2-381aaae).
+
+Round 1 (`764d221`): **PASS**. No S1 or S2 bugs are open, and every gate step passes. New and open: **4 S3** (P4-J1, P4-F1, P4-R1, P4-P1) and **3 S4** (P4-D1, P4-P2, P4-T1). The carried-forward bugs keep their severity.
 
 - Date: 2026-10-30
 - Commit: `764d221` ("QA 4.8 round 2 and 4.9: PASS; sign-out leaves the phone as a guest's"), detached in `/home/user/slh-qa49`, cleaned with `git clean -xfd -e env/`
@@ -286,3 +288,117 @@ All in `docs/qa/screens/phase-4/`. They were taken at deviceScaleFactor 2 and sa
 - **One "fresh start" routine** for Clear everything and account deletion (P4-D1), so the next reset item isn't missed in one of them.
 - **Offline promise:** either deliver a cached deal page (P4-J1) or soften the banner copy ("Your saved deals still work").
 - **Release candidate:** run TalkBack, Accessibility Scanner, `integration_test` on an emulator, `flutter build apk --analyze-size`, gitleaks and osv-scanner in CI.
+
+## Round 2 (`381aaae`)
+### Run details
+- Date: 2026-10-30. Commit: `381aaae` ("Phase 4 gate: PASS; its S3/S4 findings fixed"), detached in `/home/user/slh-qa49`, cleaned with `git clean -xfd -e env/`.
+- What changed since `764d221`:
+  - `220f3fc`: the 4.9-N6 offline settings queue;
+  - `48b4f09`: the 4.9-V1 `TallTitleToolbar`;
+  - `b81c78c`: the 4.8 BUG-7 fix;
+  - `381aaae`: the fixes for this gate's 7 findings, and QA's files committed.
+- Same toolchain and environment as round 1.
+
+### Gate results
+| # | Step | Command | Result | Evidence |
+|---|---|---|---|---|
+| 1 | Dependencies | `flutter pub get` | PASS | No advisories |
+| 2 | Codegen is fresh | `dart run build_runner build -d && git status --porcelain` | PASS | "wrote 2 outputs"; no diff |
+| 3 | Format | `dart format --output=none --set-exit-if-changed lib test` | PASS | "Formatted 256 files (0 changed)", and clean with QA's new file |
+| 4 | Analyze | `flutter analyze` | PASS | "No issues found!", also with QA's new file |
+| 5 | Flutter tests | `flutter test --coverage --concurrency=3` | PASS | `+1804 ~8: All tests passed!` (4m09s), the same count as the coordinator's run. QA's Phase 4 files plus the edited QA files (inbox, deal page, round2), re-run together: `+219 ~2: All tests passed!`. QA's round-2 file: `+17 ~2` (2 new open bugs, skipped). P4-T1 didn't recur |
+| 6 | Coverage | `tool/check_coverage.dart --min 80` | PASS | **95.6%** (6970/7290). Phase 4 features 95.4%; application **95.4%**, domain **97.4%**. Changed files: `alert_prefs_providers` 84/93, `deal_providers` 28/30, `follow_providers` 45/45, `search_providers` 93/93, `network_picture` 10/10, `auth_providers` 112/118 |
+| 7 | DB tests | `tool/db_test.sh` | PASS | Lint 6/6. **49 files, 859 tests, PASS** |
+| 8 | Web build and journeys | `flutter build web --release …`; `drive_journeys.js` | PASS | 4 modes × 16 steps, 0 errors. Only host: `accounts.google.com` (4.2-A11). Urdu 200% app-bar titles now sit inside the taller bar (`screens/phase-4/round2/sheet_360x800_light_ur_ts2.png`). `main.dart.js` 4,328,088 B raw, 1,223,442 B gzip (+0.3% on round 1) |
+| 9 | Journeys and a11y audit | `phase4_journeys_qa_test.dart`, `phase4_a11y_audit_qa_test.dart` | PASS | All 25 journeys now run, with no skips: the 4 that were skipped as open bugs pass. The audit passes in all 8 modes on 31 screens, with the taller app bars |
+| 10 | Re-tests and regression hunt | `test/qa/phase4_r2_qa_test.dart` (new) | **FAIL** | P4-R2-1 (S2) and P4-R2-2 (S3) below |
+
+### Re-tests of round 1's bugs
+| Bug | Re-test | Result |
+|---|---|---|
+| P4-F1 (S3) | Sign in, then save, then sign out, with **0, 1, 200, 201 and 401** follows. A real brand is placed last, so it falls in the last chunk. Also an account holding 500 follows, pulled at sign-in then sent back at sign-out | **Fixed.** For each count, the calls are ⌈n/200⌉ (one call at 0), every call is ≤ 200, and every follow is sent once. The city and language go only in the first call and reach the profile. The last chunk's brand reaches the account. Sign-out leaves no follows, saves or account note, and nothing in the log. 500 follows go back in 3 calls |
+| P4-J1 (S3) | A saved deal offline: its copy, with the banner, "Updated …" and the "Details, terms and outlets show when you are back online" note. Save and Share still work. Reconnect: the full page loads by itself. A deal seen only on Home: opens from the Home copy. No copy: the offline error, then Try again after reconnecting loads the page. A deal the server says is gone (online): no copy is shown. The journeys file's J4b and the split `deal_page_qa_test` cases also pass | **Fixed**, except a connected-but-unreachable network: P4-R2-2 |
+| P4-R1 (S3) | J9 "P4-R1" (search, Dark, Clear everything) is unskipped. `search_providers_test`'s city test now waits a microtask; the area filter is still dropped on a city change | **Fixed** |
+| P4-P1 (S3) | A new widget test: `NetworkPicture` in a 200-wide box at DPR 3 uses `ResizeImage` with width 600 | **Fixed** (no developer test covered it; QA's covers it now) |
+| P4-D1 (S4) | J9b unskipped: the theme is `system` after deletion | **Fixed** |
+| P4-P2 (S4) | Following is built with slivers; the audit and BUG-7 tests pass on it | **Fixed** |
+| P4-T1 (S4) | Best of 3 runs, with the 400 ms budget unchanged. Passed in the full run | **Fixed** (the budget isn't weakened) |
+| 4.8 BUG-7 (S4) | `inbox_qa_test` reproducer unskipped and passes. New: a follow made while the brands list is still loading is kept. A failed (offline) load drops nothing. A follow of a brand that is no longer offered is dropped | **Fixed** |
+| 4.9-V1 (S4) | New: at 200% in Urdu, the app-bar title on Settings, Notifications and My cards ends inside the bar. Web screenshot. The phase-1 gallery walk now skips the contrast check only at stops where a button straddles a bar, the same false positive this report notes for onboarding; tap targets and labels are still checked there | **Fixed** |
+| 4.9-N6 (S3) | Offline: "Saved on this phone…". The queue is stored with its user. It survives a restart (offline, then online), is sent, and is removed; the switch shows the sent value | **Fixed for one account.** Across accounts: **P4-R2-1 (S2)** |
+
+### New bugs
+| ID | Sev | Title | Status |
+|---|---|---|---|
+| P4-R2-1 | **S2** | A change queued offline by one account is sent into the next account that opens Notifications, and is lost for its own account | Open |
+| P4-R2-2 | S3 | On a connection without internet, the offline copy of a deal sticks for the whole session, with "No internet" and no way to retry | Open |
+
+#### P4-R2-1 (S2): A's queued alert settings go into B's account
+- **Steps** (a shared phone; dev flavor; reproduced through the real screens):
+  1. A, signed in, opens Settings → Notifications.
+  2. The phone goes offline. A turns off "Brands you follow". The note reads "Saved on this phone…", and the queue is stored as `{user: A}`.
+  3. A signs out (still offline).
+  4. The network comes back. B signs in with a phone number and opens Notifications.
+- **Expected:** B's preferences are B's own (followed brands still on). A's queued change waits for A, and is sent when A is next signed in.
+- **Actual:**
+  - Right after B's `my_alert_prefs`, the app calls `update_alert_prefs {followed_brands: false}` as **B**. A spy on the fake server shows `update_alert_prefs as=<B's id> {followed_brands: false}`.
+  - B's account now has brand alerts turned off, which B never chose.
+  - A's queue is then cleared, so A never gets the change.
+  - This is the same class as 4.8 BUG-1 (S2): what one account did on a shared phone goes into another account.
+- **Why:**
+  - `AlertPrefsController._queued` is an instance field and isn't reset when `build()` runs for another user.
+  - The `networkStatusProvider` listener is registered at the start of `build()`, before `_readQueue(B)` replaces `_queued`. When B's build resumes the paused network provider, the listener sees "online" while `queued` is still A's.
+  - `_flush()` doesn't check whose queue it is sending: `_user` is set, but never compared with the signed-in user at send time.
+  - On success it removes the stored queue, A's.
+  - Also: one key holds one queue, so a change B queues offline would overwrite A's queue (the round-2 test "as it is today" pins today's behaviour).
+- **Where:** `lib/features/settings/application/alert_prefs_providers.dart`:
+  - `:44-73` (`build`: `_user = id`, the listener before `_queued = await _readQueue(id)`);
+  - `:112-135` (`_flush`, no owner check);
+  - `:90-104` (`_writeQueue`, a single key for every account).
+- **Evidence:** `test/qa/phase4_r2_qa_test.dart`:
+  - "P4-R2-1: another account never receives A's queued change…" (skipped as `P4-R2-1`; fails: B's `followed_brands` is `false`);
+  - "P4-R2-1 (as it is today)" (passes and pins today's behaviour).
+- **Suggested fix:**
+  - At the top of `build()`, set `_queued = const {}`, and read the queue before registering the listener.
+  - In `_flush()` and `change()`, send the queue only if its user is `authRepository.currentUser?.id`.
+  - Key the queue per account (`settings.alert_prefs.queued.v1.<uid>`), or keep a map by user, so another account neither sends nor overwrites it.
+  - Add the reproducer to the developer suite.
+
+#### P4-R2-2 (S3): the offline copy sticks when the network status never changes
+- **Steps:**
+  1. Save deal 4 and open Saved, so its copy is stored.
+  2. Restart with the phone "online" but the backend unreachable (Wi-Fi without internet, a captive portal, or a timeout).
+  3. Open deal 4: the copy, with "No internet…" and "Updated …".
+  4. The backend answers again. Leave the page and open it again, or pull down.
+- **Expected:** the page tries again and shows the whole deal, or at least offers Try again.
+- **Actual:** the copy stays for the whole session. There is no Try again and no pull to refresh.
+- **Why:**
+  - `dealDetailProvider` isn't `autoDispose`, so reopening the page reuses the copy.
+  - Its only reload is a `networkStatusProvider` listener for a change to online, and on such a network the status is already online and never changes.
+  - Before round 2, the same failure showed the error view with a working Try again.
+- **Where:** `lib/features/deals/application/deal_providers.dart:25-43`.
+- **Evidence:** `phase4_r2_qa_test.dart`:
+  - "P4-R2-2: connected but the server unreachable…" (skipped; fails);
+  - "P4-R2-2 (as it is today)" (passes: the copy is still shown, with no Try again).
+- **Suggested fix:**
+  - Make the provider `autoDispose`, or invalidate it when the page opens.
+  - Give the offline banner on a copy a Try again (or a `RefreshIndicator`) that invalidates it.
+  - Optionally, retry once with a short back-off when the status is already online.
+
+### Notes (not filed)
+- **A refused queued field blocks later changes:** suppose the flush on reconnect fails as offline (a flaky reconnect) and the server would refuse a queued field (for example, quiet hours changed on another phone). Each later online change then sends the queue with it, is refused and reverted, until the next load drops the queue. This is reasoned from the code (`alert_prefs_providers.dart:159-185`), not reproduced. Worth covering in the P4-R2-1 fix: on a refusal of the merged call, drop the queued fields, or send them separately.
+- **`NetworkPicture` passes only `cacheWidth`:** an image much wider than its box is decoded to the box's width, then scaled up to the box's height by `BoxFit.cover`, so it is soft. Consider `ResizeImage(policy: ResizeImagePolicy.fit)` with both dimensions.
+
+### Tests added by QA in round 2
+`test/qa/phase4_r2_qa_test.dart` (19 tests, 2 skipped as open bugs):
+- the F1 sync at 0, 1, 200, 201 and 401 follows, plus 500 from the account;
+- the offline deal page: a saved copy then a reconnect, a Home copy, no copy then Try again, a deal that is gone (no copy), and P4-R2-2 (two tests);
+- the N6 queue: a restart then online, and P4-R2-1 (two tests);
+- BUG-7: a follow made during the load is kept, and a failed load drops nothing;
+- the `NetworkPicture` decode size;
+- the Urdu 200% app-bar title is inside the bar.
+
+Screenshots: `docs/qa/screens/phase-4/round2/` (16 steps × 4 modes, `journeys-report.json`, and `sheet_360x800_light_ur_ts2.png`).
+
+### Round 2 verdict
+**FAIL.** P4-R2-1 (S2) is open. Every round-1 bug is fixed, and so are 4.8 BUG-7, 4.9-V1 and 4.9-N6 for a single account. After the P4-R2-1 fix, re-run `phase4_r2_qa_test.dart` with `--dart-define=QA_KNOWN_BUGS=true`, then remove both skips.

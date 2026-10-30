@@ -106,6 +106,9 @@ class _Body extends ConsumerWidget {
               l10n,
               AppFormatters.of(context),
             ).updated(at, now: now),
+            // The phone may say online while the server can't be reached:
+            // a way to ask again (QA P4-R2-2).
+            onRetry: () => ref.invalidate(dealDetailProvider(deal.id)),
           ),
         if (ended)
           Semantics(

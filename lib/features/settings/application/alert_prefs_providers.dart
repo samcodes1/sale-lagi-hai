@@ -19,8 +19,12 @@ final alertPrefsProvider =
       AlertPrefsController.new,
     );
 
-/// Where changes made offline wait to be sent (UX S19 "Queued").
+/// Where changes made offline wait to be sent (UX S19 "Queued"): one
+/// queue per account, under this key plus `.<user id>` (QA P4-R2-1).
 const alertPrefsQueueKey = 'settings.alert_prefs.queued.v1';
+
+/// The storage key of [user]'s queue.
+String alertPrefsQueueKeyFor(String user) => '$alertPrefsQueueKey.$user';
 
 final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
   /// Changes made offline, as `update_alert_prefs` fields, not yet sent
@@ -42,6 +46,10 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
 
   @override
   Future<AlertPrefs?> build() async {
+    // A new account (or none) starts with no queue in memory: another
+    // account's must never be sent under this one (QA P4-R2-1).
+    _queued = const {};
+    _user = null;
     final user = ref.watch(
       currentUserProvider.select(
         (u) => u.hasValue || u.hasError ? (id: u.value?.id) : null,
@@ -53,6 +61,9 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
     final id = user.id;
     if (id == null) return null;
     _user = id;
+    final queue = await _readQueue(id);
+    if (!ref.mounted) return null;
+    _queued = queue;
     // Back online: what waited goes out.
     ref.listen(networkStatusProvider, (_, next) {
       if (next.value == NetworkStatus.online && queued) unawaited(_flush());
@@ -65,7 +76,6 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
         value.isEmpty ? const AlertPrefs() : AlertPrefs.fromRow(value.first),
       Failure(:final failure) => throw failure,
     };
-    _queued = await _readQueue(id);
     if (!queued) return saved;
     if (!_offline) unawaited(Future.microtask(_flush));
     return AlertPrefs.fromRow({...saved.toRow(), ..._queued});
@@ -75,7 +85,7 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
     try {
       final raw = await ref
           .read(keyValueStoreProvider)
-          .getString(alertPrefsQueueKey);
+          .getString(alertPrefsQueueKeyFor(user));
       if (raw == null) return const {};
       final json = jsonDecode(raw);
       if (json is Map && json['user'] == user && json['changes'] is Map) {
@@ -88,14 +98,16 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
   }
 
   Future<void> _writeQueue() async {
+    final user = _user;
+    if (user == null) return;
     final store = ref.read(keyValueStoreProvider);
     try {
       if (_queued.isEmpty) {
-        await store.remove(alertPrefsQueueKey);
+        await store.remove(alertPrefsQueueKeyFor(user));
       } else {
         await store.setString(
-          alertPrefsQueueKey,
-          jsonEncode({'user': _user, 'changes': _queued}),
+          alertPrefsQueueKeyFor(user),
+          jsonEncode({'user': user, 'changes': _queued}),
         );
       }
     } on Object catch (error) {
@@ -111,7 +123,10 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
   /// shows what the server holds.
   Future<void> _flush() async {
     final sending = _queued;
-    if (sending.isEmpty) return;
+    final user = _user;
+    if (sending.isEmpty || user == null) return;
+    // Only under the account that queued it (QA P4-R2-1).
+    if (ref.read(authRepositoryProvider).currentUser?.id != user) return;
     final result = await _guard(() async {
       final rows = await ref
           .read(backendGatewayProvider)
@@ -156,6 +171,10 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
       await _writeQueue();
       return null;
     }
+    // What waited goes first, on its own: a queued field the server
+    // refuses is dropped there and can't block this change.
+    if (queued) await _flush();
+    if (!ref.mounted) return null;
     final sending = {..._queued, ...changed};
     final result = await _guard(() async {
       final rows = await ref

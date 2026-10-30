@@ -1,0 +1,134 @@
+[
+  {
+    "tag": "360x800_light_en",
+    "steps": [
+      "j1-language",
+      "j1-city",
+      "j1-home",
+      "j1-deal",
+      "j1-deal-saved",
+      "j1-saved",
+      "j4-home-offline",
+      "j4-saved-offline",
+      "j4-saved-deal-offline",
+      "j4-home-online",
+      "j5-profile-switched",
+      "j5-tab-",
+      "j5-tab-explore",
+      "j5-tab-alerts",
+      "j5-tab-saved",
+      "j6-search"
+    ],
+    "checks": {
+      "home": true,
+      "savedListed": true,
+      "offlineBanner": true,
+      "savedDealOffline": true,
+      "bannerGone": true,
+      "dir": []
+    },
+    "issues": [],
+    "hosts": [
+      "accounts.google.com"
+    ]
+  },
+  {
+    "tag": "360x800_dark_ur",
+    "steps": [
+      "j1-language",
+      "j1-city",
+      "j1-home",
+      "j1-deal",
+      "j1-deal-saved",
+      "j1-saved",
+      "j4-home-offline",
+      "j4-saved-offline",
+      "j4-saved-deal-offline",
+      "j4-home-online",
+      "j5-profile-switched",
+      "j5-tab-",
+      "j5-tab-explore",
+      "j5-tab-alerts",
+      "j5-tab-saved",
+      "j6-search"
+    ],
+    "checks": {
+      "home": true,
+      "savedListed": false,
+      "offlineBanner": true,
+      "savedDealOffline": false,
+      "bannerGone": true,
+      "dir": []
+    },
+    "issues": [],
+    "hosts": [
+      "accounts.google.com"
+    ]
+  },
+  {
+    "tag": "360x800_light_ur_ts2",
+    "steps": [
+      "j1-language",
+      "j1-city",
+      "j1-home",
+      "j1-deal",
+      "j1-deal-saved",
+      "j1-saved",
+      "j4-home-offline",
+      "j4-saved-offline",
+      "j4-saved-deal-offline",
+      "j4-home-online",
+      "j5-profile-switched",
+      "j5-tab-",
+      "j5-tab-explore",
+      "j5-tab-alerts",
+      "j5-tab-saved",
+      "j6-search"
+    ],
+    "checks": {
+      "home": true,
+      "savedListed": false,
+      "offlineBanner": true,
+      "savedDealOffline": false,
+      "bannerGone": true,
+      "dir": []
+    },
+    "issues": [],
+    "hosts": [
+      "accounts.google.com"
+    ]
+  },
+  {
+    "tag": "412x915_dark_en",
+    "steps": [
+      "j1-language",
+      "j1-city",
+      "j1-home",
+      "j1-deal",
+      "j1-deal-saved",
+      "j1-saved",
+      "j4-home-offline",
+      "j4-saved-offline",
+      "j4-saved-deal-offline",
+      "j4-home-online",
+      "j5-profile-switched",
+      "j5-tab-",
+      "j5-tab-explore",
+      "j5-tab-alerts",
+      "j5-tab-saved",
+      "j6-search"
+    ],
+    "checks": {
+      "home": true,
+      "savedListed": true,
+      "offlineBanner": true,
+      "savedDealOffline": true,
+      "bannerGone": true,
+      "dir": []
+    },
+    "issues": [],
+    "hosts": [
+      "accounts.google.com"
+    ]
+  }
+]

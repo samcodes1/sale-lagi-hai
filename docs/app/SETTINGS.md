@@ -42,6 +42,8 @@ Settings (screen S18) opens from Profile, at `/settings`. Its pages open over th
 - **N6 (S3), fixed after the gate:** with the phone offline, a change stays on screen and waits on the phone (`settings.alert_prefs.queued.v1`, tied to the account), with "Saved on this phone. It will be sent when you are back online."
   - It goes out when the phone is back online, or at the next load (after a restart too), together with any later change.
   - A refusal from the server drops it and shows the saved values.
+  - **One queue per account** (Phase 4 round 2, P4-R2-1): `settings.alert_prefs.queued.v1.<user id>`. It's cleared from memory whenever the account changes, and only sent while that account is signed in. Another account never receives it; it waits for its own account.
+  - A change made online sends what waited first, on its own, so a refused queued field can't block it.
   - With the phone online, a failed save still reverts with a note (UX S19: "Save failed → revert + toast"; offline: "Queued").
 - **V1 (S4), fixed after the gate:** the app bar grows by what large text adds to its title (`TallTitleToolbar` in `app.dart`), so a Nastaliq title at 200% stays inside it. At 100% it keeps Material's 56dp.
 - **Open, carried forward:** the system time picker clips its AM/PM toggle at 200%. It's Material's own dialog, and the text is never shrunk to fit.
