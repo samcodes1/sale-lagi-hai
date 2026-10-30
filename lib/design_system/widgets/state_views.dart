@@ -142,17 +142,23 @@ class OfflineBanner extends StatelessWidget {
                             color: scheme.onInverseSurface,
                           ),
                         ),
+                      // Under the text, not beside it: a long label at
+                      // large sizes (Urdu at 200%) would squeeze the text
+                      // to nothing (QA P4-R3-1).
+                      if (onRetry case final retry?)
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: TextButton(
+                            onPressed: retry,
+                            style: TextButton.styleFrom(
+                              foregroundColor: scheme.onInverseSurface,
+                            ),
+                            child: Text(context.l10n.actionRetry),
+                          ),
+                        ),
                     ],
                   ),
                 ),
-                if (onRetry case final retry?)
-                  TextButton(
-                    onPressed: retry,
-                    style: TextButton.styleFrom(
-                      foregroundColor: scheme.onInverseSurface,
-                    ),
-                    child: Text(context.l10n.actionRetry),
-                  ),
               ],
             ),
           ),

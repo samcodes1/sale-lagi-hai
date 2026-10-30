@@ -1,5 +1,7 @@
 # QA Report — Phase 4 gate: Consumer app core (4.1–4.9)
-Verdict, round 2 (`381aaae`): **FAIL**. One S2 is open: P4-R2-1, the offline settings queue writes one account's change into another's account. One new S3 is open too: P4-R2-2. Every round-1 bug and the three carried items are verified fixed. See [Round 2](#round-2-381aaae).
+Verdict, round 3 (`5e6b6bb`): **PASS**. P4-R2-1 (S2) and P4-R2-2 (S3) are verified fixed. One new S3 is open: P4-R3-1, the offline banner with Try again overflows in Urdu at 200%. See [Round 3](#round-3-5e6b6bb).
+
+Round 2 (`381aaae`): **FAIL**. One S2 is open: P4-R2-1, the offline settings queue writes one account's change into another's account. One new S3 is open too: P4-R2-2. Every round-1 bug and the three carried items are verified fixed. See [Round 2](#round-2-381aaae).
 
 Round 1 (`764d221`): **PASS**. No S1 or S2 bugs are open, and every gate step passes. New and open: **4 S3** (P4-J1, P4-F1, P4-R1, P4-P1) and **3 S4** (P4-D1, P4-P2, P4-T1). The carried-forward bugs keep their severity.
 
@@ -402,3 +404,73 @@ Screenshots: `docs/qa/screens/phase-4/round2/` (16 steps × 4 modes, `journeys-r
 
 ### Round 2 verdict
 **FAIL.** P4-R2-1 (S2) is open. Every round-1 bug is fixed, and so are 4.8 BUG-7, 4.9-V1 and 4.9-N6 for a single account. After the P4-R2-1 fix, re-run `phase4_r2_qa_test.dart` with `--dart-define=QA_KNOWN_BUGS=true`, then remove both skips.
+
+## Round 3 (`5e6b6bb`)
+### Run details
+- Date: 2026-10-30. Commit: `5e6b6bb` ("Phase 4 round 2: per-account settings queue; offline copy never sticks"), detached in `/home/user/slh-qa49`, cleaned with `git clean -xfd -e env/`.
+- What changed since `381aaae`:
+  - `alert_prefs_providers.dart`: one queue per account (`alertPrefsQueueKeyFor`). `build()` resets `_queued`/`_user` and reads the queue before the listener. `_flush()` checks the owner. An online `change()` flushes the queue on its own first.
+  - `deal_providers.dart`: `autoDispose`.
+  - `state_views.dart`: `OfflineBanner.onRetry`, used by the deal copy.
+  - Test edits: `alert_prefs_test.dart` uses the per-account key. QA's round-2 reproducers are unskipped, and its two "as it is today" tests now assert the fixed behaviour.
+- Same toolchain and environment as rounds 1 and 2.
+
+### Gate results
+| # | Step | Command | Result | Evidence |
+|---|---|---|---|---|
+| 1–4 | Dependencies, codegen, format, analyze | as in round 1 | PASS | No advisories. Codegen leaves no diff. "Formatted 257 files (0 changed)". "No issues found!", also with QA's new file |
+| 5 | Flutter tests | `flutter test --coverage --concurrency=3` | PASS | `+1823 ~8: All tests passed!` (4m20s), as in the coordinator's run. All Phase 4 QA files, QA's new round-3 file and `alert_prefs_test.dart`, re-run together: `+85 ~2: All tests passed!`. The 2 skips are P4-R3-1 |
+| 6 | Coverage | `tool/check_coverage.dart --min 80` | PASS | **95.7%** (6990/7307). Application **95.7%**, domain **97.4%**. `alert_prefs_providers` 95/104, `deal_providers` 29/30, `state_views` 75/75 |
+| 7 | DB tests | `tool/db_test.sh` | PASS | **49 files, 859 tests, PASS** |
+| 8 | Journeys and a11y audit | `phase4_journeys_qa_test.dart`, `phase4_a11y_audit_qa_test.dart` | PASS | 25 journeys, and 31 screens × 8 modes |
+| 9 | Re-tests and regression hunt | `test/qa/phase4_r3_qa_test.dart` (new, 18 tests) | PASS, with one S3 | 16 pass. The 2 skipped (Urdu 200%, light and dark) are P4-R3-1 and fail when enabled |
+
+The web build wasn't re-run for this round. The deal copy can't be reached on the web build, because the demo backend there is in memory and never goes offline; the widget tests cover it.
+
+### Re-tests
+| Bug | Re-test | Result |
+|---|---|---|
+| P4-R2-1 (S2) | QA's two round-2 tests (now asserting the fix), plus round 3's new tests:<ul><li>**two accounts, one phone:** A queues offline, signs out; B signs in online; B queues its own offline, signs out; A again, then B again;</li><li>**a flush in flight when the account changes:** A's `update_alert_prefs` is held at the server while A signs out and B signs in and queues offline, then released;</li><li>**a restart:** offline, then online;</li><li>**sign-out:** what is left on the phone</li></ul> | **Fixed.**<ul><li>B is never sent anything while signed in as B, and B's account and switches stay B's own.</li><li>Each queue is stored under its own account and waits for it. A's change reaches only A's account, and B's waits for B.</li><li>The in-flight call lands as A. B's queue is untouched, and nothing of B's is sent.</li><li>After a restart, the queue is sent online, removed, and the switch shows the sent value.</li><li>After sign-out, only `…queued.v1.<A>` is left, holding A's change; the guest view sends nothing</li></ul> |
+| The blocked-changes note | Round 3: a flaky reconnect keeps the queue (the server can't be reached while the phone says online). The server then refuses the queued field, and the user changes another switch | **Fixed.** The other change saves with no failure toast. The refused field is dropped, the queue is removed, and both switches show what the server holds |
+| P4-R2-2 (S3) | QA's round-2 test, now asserting the fix: on reopening, the full page loads. Round 3: Try again on the copy while still unreachable shows the copy again, with no error. Once reachable, Try again shows the full page without leaving it, and Saved state survives. Home's offline banner has no Try again | **Fixed** |
+| Clear everything and account deletion | Round 3: a change is queued offline, then the phone is cleared, or the account is deleted | **Nothing is left behind:** no queue key and no non-cache key. No exception |
+
+### New bug
+| ID | Sev | Title | Status |
+|---|---|---|---|
+| P4-R3-1 | S3 | In Urdu at 200% text, the deal copy's offline banner overflows: Try again is about 525 dp wide on a 360 dp screen, and the banner grows thousands of dp tall | Open |
+
+#### P4-R3-1 (S3): the banner with Try again overflows in Urdu at 200%
+- **Steps:**
+  1. Save deal 4.
+  2. Restart offline, with the phone in Urdu at 200% text, 360×800.
+  3. Open deal 4 from Saved.
+- **Expected:** the banner's message, its age and Try again fit the width, with Try again fully on screen. English at 200% and Urdu at 100% fit.
+- **Actual:**
+  - "A RenderFlex overflowed by 234 pixels on the right".
+  - "دوبارہ کوشش کریں", in Nastaliq at 200%, makes the `TextButton` about 525 dp wide (`Rect.fromLTRB(16, …, 541.7, …)`), so part of it is off screen.
+  - The `Expanded` message beside it gets almost no width, so it wraps into a column thousands of dp tall, and the banner pushes the deal's content far down the page.
+  - Release builds draw the same layout with the overflow clipped.
+  - The flow still works: leaving and reopening the deal (now `autoDispose`) loads it again.
+- **Where:** `lib/design_system/widgets/state_views.dart:119-157` (the `Row` in `OfflineBanner`, with the `TextButton` after the `Expanded`).
+- **Evidence:** `test/qa/phase4_r3_qa_test.dart`:
+  - "ur light 200% / ur dark 200%: the copy with its Try again meets the guidelines, with no overflow" (skipped as `P4-R3-1`; fails when enabled);
+  - "P4-R3-1 (as it is today)" (passes and pins today's behaviour).
+- **Suggested fix:**
+  - Put Try again below the text when space is short. Use a `Wrap`, or an `OverflowBar`-style layout, or place it in the `Column` under the age when the text is scaled up (`MediaQuery.textScalerOf(context).scale(1) > 1.3`).
+  - Alternatively, use a shorter Urdu label (for example "دوبارہ").
+  - Add the Urdu 200% case to the developer's `state_views` tests.
+
+### Notes (not filed)
+- **Queues of accounts that never come back:** a queue (with its account's uuid) stays on the phone until that account signs in again, or the phone is cleared. Nothing else reads it. This is consistent with the account note, `account.on_phone.v1`.
+
+### Tests added by QA in round 3
+`test/qa/phase4_r3_qa_test.dart` (18 tests, 2 skipped as P4-R3-1). Its `_Prefs` fake applies an in-flight request as the account that sent it.
+- **Queue:** two accounts on one phone in both directions, an in-flight flush across an account switch, a restart, clear and delete leaving nothing, and what sign-out leaves.
+- **Blocked changes:** the refused-field case.
+- **Try again on the copy:** still unreachable, then reachable. Home's banner has no Try again.
+- **The copy page in 8 modes:** guidelines, a 48 dp Try again inside the screen, and no overflow.
+- **P4-R3-1 "as it is today".**
+
+### Round 3 verdict
+**PASS.** No S1 or S2 bugs are open. P4-R2-1 (S2) and P4-R2-2 (S3) are fixed, along with all of round 1's bugs. Open and carried forward: P4-R3-1 (S3), 4.2-A11 (S4), and the S4s listed as open in earlier reports. Phase 4 can close.
