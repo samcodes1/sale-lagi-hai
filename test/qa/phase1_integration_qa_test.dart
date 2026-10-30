@@ -152,6 +152,30 @@ bool _clippedRetryOnScreen(WidgetTester tester) {
   return false;
 }
 
+/// True when a button is partly under the app bar or the navigation bar
+/// (a scroll stop can land there, more so since the app bar grows with
+/// large text: 4.9-V1). The contrast guideline samples the button's whole
+/// box, bar included, so it would compare the bar's colour with the
+/// button's; tap targets and labels are still checked at that stop.
+bool _buttonUnderBar(WidgetTester tester) {
+  final bars = [
+    for (final bar in [
+      ...find.byType(AppBar).evaluate(),
+      ...find.byType(NavigationBar).evaluate(),
+    ])
+      tester.getRect(find.byElementPredicate((e) => e == bar)),
+  ];
+  for (final b
+      in find.byWidgetPredicate((w) => w is ButtonStyleButton).evaluate()) {
+    final r = tester.getRect(find.byElementPredicate((e) => e == b));
+    for (final bar in bars) {
+      final overlap = r.intersect(bar);
+      if (overlap.width > 0 && overlap.height > 0 && overlap != r) return true;
+    }
+  }
+  return false;
+}
+
 /// Scrolls the page's main list from top to bottom. At every stop: no
 /// exception (overflow), and the a11y guidelines on what is on screen.
 Future<int> _walk(WidgetTester tester, String name) async {
@@ -162,7 +186,7 @@ Future<int> _walk(WidgetTester tester, String name) async {
     await _guidelines(
       tester,
       '$name stop $i',
-      contrast: !_clippedRetryOnScreen(tester),
+      contrast: !_clippedRetryOnScreen(tester) && !_buttonUnderBar(tester),
     );
     stops++;
     final position = tester.state<ScrollableState>(list).position;

@@ -43,8 +43,8 @@ Settings (screen S18) opens from Profile, at `/settings`. Its pages open over th
   - It goes out when the phone is back online, or at the next load (after a restart too), together with any later change.
   - A refusal from the server drops it and shows the saved values.
   - With the phone online, a failed save still reverts with a note (UX S19: "Save failed → revert + toast"; offline: "Queued").
-- **Open, carried forward:**
-  - **V1 (S4):** at 200% text, Urdu app-bar titles draw below the toolbar, and the system time picker clips its AM/PM toggle.
+- **V1 (S4), fixed after the gate:** the app bar grows by what large text adds to its title (`TallTitleToolbar` in `app.dart`), so a Nastaliq title at 200% stays inside it. At 100% it keeps Material's 56dp.
+- **Open, carried forward:** the system time picker clips its AM/PM toggle at 200%. It's Material's own dialog, and the text is never shrunk to fit.
 
 ## Theme
 - `themeModeProvider` holds `AppThemeMode {system, light, dark}`. It is saved under `settings.theme`.

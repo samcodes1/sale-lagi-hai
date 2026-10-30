@@ -502,6 +502,24 @@ void main() {
     ),
   );
 
+  testWidgets('the app bar grows with a tall title; at 100% it is the usual '
+      'height (QA 4.9-V1)', (tester) async {
+    await _app(tester, at: '/settings/notifications');
+    expect(tester.getSize(find.byType(AppBar)).height, kToolbarHeight);
+
+    await _app(tester, at: '/settings/notifications', locale: AppLocales.urdu);
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearAllTestValues);
+    await tester.pumpAndSettle();
+    final bar = tester.getRect(find.byType(AppBar));
+    final title = tester.getRect(
+      find.descendant(of: find.byType(AppBar), matching: find.byType(Text)),
+    );
+    expect(bar.height, greaterThan(kToolbarHeight));
+    expect(title.top, greaterThanOrEqualTo(bar.top));
+    expect(title.bottom, lessThanOrEqualTo(bar.bottom));
+  });
+
   for (final locale in AppLocales.supported) {
     for (final (name, at, signedIn) in [
       ('settings', '/settings', false),

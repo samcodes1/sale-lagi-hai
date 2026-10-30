@@ -50,6 +50,36 @@ class App extends ConsumerWidget {
         script: script,
         highContrast: true,
       ),
+      builder: (context, child) => TallTitleToolbar(child: child!),
+    );
+  }
+}
+
+/// Grows the app bar with large text, so a title (above all a tall
+/// Nastaliq one at 200%) stays inside it instead of drawing below
+/// (QA 4.9-V1). Text is never shrunk to fit.
+class TallTitleToolbar extends StatelessWidget {
+  const new({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.appBarTheme.titleTextStyle;
+    final size = style?.fontSize;
+    if (size == null) return child;
+    final lineHeight = style?.height ?? 1.2;
+    // Only what scaling adds: at 100% the bar keeps its usual height.
+    final extra =
+        (MediaQuery.textScalerOf(context).scale(size) - size) * lineHeight;
+    if (extra <= 0) return child;
+    final height = kToolbarHeight + extra;
+    return Theme(
+      data: theme.copyWith(
+        appBarTheme: theme.appBarTheme.copyWith(toolbarHeight: height),
+      ),
+      child: child,
     );
   }
 }
