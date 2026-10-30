@@ -6,6 +6,7 @@
 // Tests marked `skip: knownBug(...)` assert the expected behaviour of an
 // open bug; run them with `--dart-define=QA_KNOWN_BUGS=true`.
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,6 +52,13 @@ final class _PerUser extends RulesGateway {
 
   int insertCount = 0;
 
+  /// No network: every request fails as the HTTP client does.
+  bool offline = false;
+
+  void _network() {
+    if (offline) throw const SocketException('offline');
+  }
+
   /// The inbox: rows for every user; reads see the caller's only.
   final alerts = <Map<String, Object?>>[];
   Completer<void>? holdNextPage;
@@ -59,6 +67,7 @@ final class _PerUser extends RulesGateway {
 
   @override
   Future<List<Map<String, Object?>>> select(TableQuery query) async {
+    _network();
     final uid = auth.currentUser?.id;
     if (query.table == 'notifications') {
       if (query.offset > 0) {
@@ -81,6 +90,7 @@ final class _PerUser extends RulesGateway {
 
   @override
   Future<void> insert(String table, Map<String, Object?> row) async {
+    _network();
     insertCount++;
     final existing = await demo.select(TableQuery(table));
     final duplicate = existing.any(
@@ -99,6 +109,7 @@ final class _PerUser extends RulesGateway {
     String function, [
     Map<String, Object?> params = const {},
   ]) async {
+    _network();
     final uid = auth.currentUser?.id;
     switch (function) {
       case 'unread_alert_count':
@@ -125,6 +136,12 @@ final class _PerUser extends RulesGateway {
         return const [];
     }
     return await super.rpc(function, params);
+  }
+
+  @override
+  Future<void> delete(String table, Map<String, Object?> match) async {
+    _network();
+    await super.delete(table, match);
   }
 
   /// equals, inList, order, offset and limit, as PostgREST applies them.
@@ -679,6 +696,300 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.bySemanticsLabel(RegExp('^Unread')), findsNWidgets(1));
       handle.dispose();
+    });
+
+    // Round 2 (c91434c).
+    testWidgets('R2: the Alerts tab is heard with its count: "2 new alerts", '
+        'and past 99 "More than 99 new alerts"', (tester) async {
+      final handle = tester.ensureSemantics();
+      await _signIn(auth, _phoneA);
+      final a = auth.currentUser!.id;
+      backend.addAlerts(
+        a,
+        2,
+        at: DateTime.now().toUtc().subtract(const Duration(minutes: 1)),
+      );
+      final h = await open(tester, '/', signedIn: false);
+      expect(find.bySemanticsLabel(RegExp('2 new alerts')), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp(r'^2$')), findsNothing);
+      backend.addAlerts(
+        a,
+        120,
+        at: DateTime.now().toUtc().subtract(const Duration(minutes: 1)),
+      );
+      h.container.invalidate(alertsBadgeProvider);
+      await tester.pumpAndSettle();
+      expect(
+        find.bySemanticsLabel(RegExp('More than 99 new alerts')),
+        findsOneWidget,
+      );
+      expect(find.bySemanticsLabel(RegExp(r'99\+')), findsNothing);
+      handle.dispose();
+    });
+
+    testWidgets('R2: entering Alerts clears the badge even when the phone '
+        'clock is an hour behind the server', (tester) async {
+      await _signIn(auth, _phoneA);
+      backend.addAlerts(auth.currentUser!.id, 3);
+      final behind = DateTime.now().subtract(const Duration(hours: 1));
+      final h = await open(tester, '/', signedIn: false, clock: () => behind);
+      expect(
+        find.descendant(of: find.byType(Badge), matching: find.text('3')),
+        findsOneWidget,
+      );
+      h.router.go('/alerts');
+      await tester.pumpAndSettle();
+      h.router.go('/');
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(of: find.byType(Badge), matching: find.text('3')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('R2: entering Alerts offline still clears the badge', (
+      tester,
+    ) async {
+      await _signIn(auth, _phoneA);
+      backend.addAlerts(
+        auth.currentUser!.id,
+        2,
+        at: DateTime.now().toUtc().subtract(const Duration(minutes: 5)),
+      );
+      final h = await open(tester, '/', signedIn: false);
+      expect(
+        find.descendant(of: find.byType(Badge), matching: find.text('2')),
+        findsOneWidget,
+      );
+      backend.offline = true;
+      h.router.go('/alerts');
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      backend.offline = false;
+      h.router.go('/');
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(of: find.byType(Badge), matching: find.text('2')),
+        findsNothing,
+      );
+    });
+  });
+
+  group('round 2: sign-in (c91434c)', () {
+    Future<ProviderContainer> ready() async {
+      final c = container()
+        ..listen(savedDealsProvider, (_, _) {})
+        ..listen(myCardsProvider, (_, _) {});
+      await Future<void>.delayed(Duration.zero);
+      return c;
+    }
+
+    Future<Set<String>> rows(String table, String column) async => {
+      for (final r in await backend.demo.select(TableQuery(table)))
+        if (r[column] != null) '${r['user_id']}/${r[column]}',
+    };
+
+    final card = demoCardProducts.first['id']! as String;
+    final card2 = demoCardProducts[1]['id']! as String;
+    final brand = demoBrands.firstWhere((b) => b['is_active'] == true)['id']!;
+
+    test('the same account again: what was saved as a guest in between is '
+        'kept on the phone and goes up in one call', () async {
+      final c = await ready();
+      await auth.signInWithGoogle();
+      final a = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      await c.read(savedDealsProvider.notifier).toggle(_deal(1));
+      await c.read(signOutProvider)();
+      // As a guest, then the same Google account again.
+      await c.read(savedDealsProvider.notifier).toggle(_deal(2));
+      await c.read(myCardsProvider.notifier).add(card);
+      await auth.signInWithGoogle();
+      expect(auth.currentUser!.id, a);
+      backend
+        ..insertCount = 0
+        ..guestItemCalls = 0;
+      await c.read(guestSyncProvider)();
+      expect(c.read(savedDealsProvider), [_deal(2), _deal(1)]);
+      expect(c.read(myCardsProvider), [card]);
+      expect(await rows('saves', 'deal_id'), {
+        '$a/${_deal(1)}',
+        '$a/${_deal(2)}',
+      });
+      expect(await rows('user_cards', 'card_product_id'), {'$a/$card'});
+      expect(backend.guestItemCalls, 1);
+      expect(backend.insertCount, 0);
+      expect(store.values[accountOnPhoneKey], a);
+    });
+
+    test('a first-time guest: saves, cards and follows go into the account, '
+        'and stay on the phone', () async {
+      final c = await ready();
+      await c.read(savedDealsProvider.notifier).toggle(_deal(1));
+      await c.read(savedDealsProvider.notifier).toggle(_deal(2));
+      await c.read(myCardsProvider.notifier).add(card);
+      await c
+          .read(preferencesProvider.notifier)
+          .addFollows(brandIds: [brand as String]);
+      expect(store.values[accountOnPhoneKey], isNull);
+      await _signIn(auth, _phoneA);
+      final a = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      expect(c.read(savedDealsProvider), [_deal(2), _deal(1)]);
+      expect(c.read(myCardsProvider), [card]);
+      expect(c.read(preferencesProvider).brandIds, [brand]);
+      expect(await rows('saves', 'deal_id'), {
+        '$a/${_deal(1)}',
+        '$a/${_deal(2)}',
+      });
+      expect(await rows('user_cards', 'card_product_id'), {'$a/$card'});
+      expect(await rows('follows', 'brand_id'), {'$a/$brand'});
+      expect(backend.profiles[a]?['home_city_id'], karachiId);
+      expect(store.values[accountOnPhoneKey], a);
+    });
+
+    test('offline at sign-in: nothing on the phone is dropped, and it goes '
+        'up at the next sign-in', () async {
+      final c = await ready();
+      await c.read(savedDealsProvider.notifier).toggle(_deal(1));
+      await c.read(myCardsProvider.notifier).add(card);
+      backend.offline = true;
+      await auth.signInWithGoogle();
+      final a = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      expect(c.read(savedDealsProvider), [_deal(1)]);
+      expect(c.read(myCardsProvider), [card]);
+      expect(store.values[accountOnPhoneKey], a);
+      backend.offline = false;
+      expect(await rows('saves', 'deal_id'), isEmpty);
+      await c.read(signOutProvider)();
+      await auth.signInWithGoogle();
+      await c.read(guestSyncProvider)();
+      expect(await rows('saves', 'deal_id'), {'$a/${_deal(1)}'});
+      expect(await rows('user_cards', 'card_product_id'), {'$a/$card'});
+      expect(c.read(savedDealsProvider), [_deal(1)]);
+    });
+
+    test("offline at another account's sign-in: the first account's lists "
+        'still never reach it', () async {
+      final c = await ready();
+      await _signIn(auth, _phoneA);
+      final a = auth.currentUser!.id;
+      await backend.insert('saves', {'user_id': a, 'deal_id': _deal(3)});
+      await c.read(guestSyncProvider)();
+      expect(c.read(savedDealsProvider), [_deal(3)]);
+      await c.read(signOutProvider)();
+      backend.offline = true;
+      await _signIn(auth, _phoneB);
+      final b = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      expect(c.read(savedDealsProvider), isEmpty);
+      backend.offline = false;
+      // A later save of B's goes up, and nothing of A's with it.
+      await c.read(savedDealsProvider.notifier).toggle(_deal(4));
+      expect((await rows('saves', 'deal_id')).where((r) => r.startsWith(b)), [
+        '$b/${_deal(4)}',
+      ]);
+    });
+
+    test('the same account again keeps the follows; another account does not '
+        'get them', () async {
+      final c = await ready();
+      await auth.signInWithGoogle();
+      final a = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      await c
+          .read(preferencesProvider.notifier)
+          .addFollows(brandIds: [brand as String]);
+      await c.read(signOutProvider)();
+      await auth.signInWithGoogle();
+      await c.read(guestSyncProvider)();
+      expect(c.read(preferencesProvider).brandIds, [brand]);
+      expect(await rows('follows', 'brand_id'), {'$a/$brand'});
+      await c.read(signOutProvider)();
+      await _signIn(auth, _phoneB);
+      final b = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      expect(c.read(preferencesProvider).brandIds, isEmpty);
+      expect(
+        (await rows('follows', 'brand_id')).where((r) => r.startsWith(b)),
+        isEmpty,
+      );
+    });
+
+    test('a shared phone, both ways: A then B then A again, each account '
+        'ends with only its own saves and cards', () async {
+      final c = await ready();
+      await auth.signInWithGoogle();
+      final a = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      await c.read(savedDealsProvider.notifier).toggle(_deal(1));
+      await c.read(myCardsProvider.notifier).add(card);
+      await c.read(signOutProvider)();
+      await _signIn(auth, _phoneB);
+      final b = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      await c.read(savedDealsProvider.notifier).toggle(_deal(2));
+      await c.read(myCardsProvider.notifier).add(card2);
+      await c.read(signOutProvider)();
+      await auth.signInWithGoogle();
+      await c.read(guestSyncProvider)();
+      expect(await rows('saves', 'deal_id'), {
+        '$a/${_deal(1)}',
+        '$b/${_deal(2)}',
+      });
+      expect(await rows('user_cards', 'card_product_id'), {
+        '$a/$card',
+        '$b/$card2',
+      });
+      // A's own come back onto the phone.
+      expect(c.read(savedDealsProvider), [_deal(1)]);
+      expect(c.read(myCardsProvider), [card]);
+    });
+
+    test('BUG-9: after signing out, the account’s saved deals and cards no '
+        'longer show on the phone', () async {
+      final c = await ready();
+      await _signIn(auth, _phoneA);
+      final a = auth.currentUser!.id;
+      // Saved and added on A's own phone.
+      await backend.insert('saves', {'user_id': a, 'deal_id': _deal(3)});
+      await backend.insert('user_cards', {
+        'user_id': a,
+        'card_product_id': card,
+      });
+      await c.read(guestSyncProvider)();
+      expect(c.read(savedDealsProvider), [_deal(3)]);
+      await c.read(signOutProvider)();
+      expect(
+        c.read(savedDealsProvider),
+        isNot(contains(_deal(3))),
+        reason: 'the next person on the phone sees what A saved',
+      );
+      expect(
+        c.read(myCardsProvider),
+        isEmpty,
+        reason: "and which bank cards A holds, as 'My Cards'",
+      );
+    });
+
+    test('BUG-9: what a guest saves after another account signed out goes '
+        'into their account when they sign in', () async {
+      final c = await ready();
+      await _signIn(auth, _phoneA);
+      await c.read(guestSyncProvider)();
+      await c.read(signOutProvider)();
+      // B, as a guest on the same phone.
+      await c.read(savedDealsProvider.notifier).toggle(_deal(5));
+      await c.read(myCardsProvider.notifier).add(card2);
+      await _signIn(auth, _phoneB);
+      final b = auth.currentUser!.id;
+      await c.read(guestSyncProvider)();
+      expect(c.read(savedDealsProvider), [
+        _deal(5),
+      ], reason: 'dropped from the phone without a word');
+      expect(await rows('saves', 'deal_id'), {'$b/${_deal(5)}'});
+      expect(await rows('user_cards', 'card_product_id'), {'$b/$card2'});
     });
   });
 }

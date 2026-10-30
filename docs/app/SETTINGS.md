@@ -25,6 +25,24 @@ Settings (screen S18) opens from Profile, at `/settings`. Its pages open over th
 - **Legal** (`/settings/legal/terms`, `/settings/legal/privacy`): bundled text in the app's language, so it works offline. `# ` lines are headings and `- ` lines are list items. Any other document name goes to Settings. A text that can't be read shows the error view, not an endless spinner.
 - **About** (`/settings/about`): the name, tagline, version ("1.0.0 (1)") and open-source licences. **Contact us** shows only when the build has a `SUPPORT_EMAIL`.
 
+## Changed after the 4.9 QA gate (PASS)
+- **N1 (S3):** Android's status check reports "denied" even when it won't ask again. So the page now:
+  - remembers "blocked" from the request's answer, until a check says granted;
+  - re-checks when the app comes back to the front, not straight after opening Settings;
+  - shows the note whenever push is on in the account but the phone doesn't allow it.
+- **N2 (S3):** a second tap while the system dialog is up doesn't ask again. A platform error from the permission plugin counts as denied, never as allowed. `unavailable` now means only that there is no plugin (web, tests).
+- **N4 (S3):** a failed save puts back only the fields it changed. A later change that was saved stays.
+- **N5 (S4):** if the server has no row and saves nothing, the change is reverted.
+- **C1/C2 (S3/S4):** the card-number check, in the app and the database, also reads Urdu and Arabic-Indic digits, and dots, double spaces or " - " between the groups.
+- **L1 (S3):** the privacy policy points to the Google Play listing's email, and to About only when the build shows a contact address.
+- **P1:** "Clear everything" also resets the theme.
+- **S1:** the city row shows no name, rather than "All Pakistan", while a chosen city's name can't load.
+- **M1:** capitals in the support address's domain are accepted.
+- **T1:** out-of-range times from the database (24:00) fall back to the default.
+- **Open, carried forward:**
+  - **N6 (S3):** offline changes are reverted with a note, not queued as the UX spec says. A queue needs to be kept on the phone and replayed when back online.
+  - **V1 (S4):** at 200% text, Urdu app-bar titles draw below the toolbar, and the system time picker clips its AM/PM toggle.
+
 ## Theme
 - `themeModeProvider` holds `AppThemeMode {system, light, dark}`. It is saved under `settings.theme`.
 - `bootstrap` reads it before the first frame (`StartupSettings.theme`), so the app never flashes the wrong theme.

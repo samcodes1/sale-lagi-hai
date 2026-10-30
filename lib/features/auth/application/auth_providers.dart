@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/core/backend/backend_errors.dart';
 import 'package:sale_lagi_hai/core/backend/backend_gateway.dart';
@@ -23,6 +25,79 @@ final authRepositoryProvider = Provider<AuthRepository>(
 final currentUserProvider = StreamProvider<AppUser?>(
   (ref) => ref.watch(authRepositoryProvider).userChanges(),
 );
+
+/// Signs out, leaving the phone as a guest's (QA 4.8 BUG-9): the phone's
+/// saved deals, cards and follows go into the account first (one call),
+/// then from the phone, so the next person doesn't see them and what they
+/// save as a guest goes into their own account. If that can't be sent
+/// (offline), the lists stay on the phone rather than be lost; the note of
+/// whose they are still keeps them out of any other account.
+final signOutProvider = Provider<Future<Result<void>> Function()>(
+  (ref) => () async {
+    final saved = await _sendLists(ref);
+    final result = await ref.read(authRepositoryProvider).signOut();
+    if (result is Success && saved) await _forgetAccount(ref);
+    return result;
+  },
+);
+
+/// Sends the phone's lists into the signed-in account; whether they are
+/// all there.
+Future<bool> _sendLists(Ref ref) async {
+  if (ref.read(authRepositoryProvider).currentUser == null) return false;
+  await (
+    ref.read(savedDealsProvider.notifier).loaded,
+    ref.read(myCardsProvider.notifier).loaded,
+  ).wait;
+  final preferences = ref.read(preferencesProvider);
+  final dealIds = ref.read(savedDealsProvider);
+  final cardIds = ref.read(myCardsProvider);
+  final backend = ref.read(backendGatewayProvider);
+  final logger = ref.read(loggerProvider);
+  final result = await guard(
+    () => [
+      if (dealIds.isNotEmpty || cardIds.isNotEmpty)
+        backend.rpc('sync_guest_items', {
+          'deal_ids': dealIds,
+          'card_product_ids': cardIds,
+        }),
+      if (preferences.brandIds.isNotEmpty ||
+          preferences.categoryFollowIds.isNotEmpty)
+        backend.rpc('sync_guest_preferences', {
+          'brand_ids': preferences.brandIds,
+          'category_ids': preferences.categoryFollowIds,
+        }),
+    ].wait,
+    logger: logger,
+    mappers: const [backendErrorMapper],
+  );
+  if (result case Failure(:final failure)) {
+    logger.warning(
+      'Could not send the lists before signing out',
+      context: {'code': failure.code},
+    );
+    return false;
+  }
+  return true;
+}
+
+Future<void> _forgetAccount(Ref ref) async {
+  await [
+    ref.read(savedDealsProvider.notifier).forget(),
+    ref.read(myCardsProvider.notifier).forget(),
+    ref.read(preferencesProvider.notifier).setFollows(),
+  ].wait;
+  try {
+    await ref.read(keyValueStoreProvider).remove(accountOnPhoneKey);
+  } on Object catch (error) {
+    ref
+        .read(loggerProvider)
+        .warning(
+          'Could not forget whose lists were on this phone',
+          context: {'error': error.runtimeType.toString()},
+        );
+  }
+}
 
 /// Where the phone notes which account its saved deals, cards and follows
 /// belong to (the last one that signed in on it).

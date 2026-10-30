@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/app/router/routes.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
+import 'package:sale_lagi_hai/core/theme/theme_mode_controller.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
@@ -57,6 +58,7 @@ class PrivacyScreen extends ConsumerWidget {
           );
     }
     await ref.read(preferencesProvider.notifier).reset();
+    ref.read(themeModeProvider.notifier).reset();
     messenger
       ?..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(note)));

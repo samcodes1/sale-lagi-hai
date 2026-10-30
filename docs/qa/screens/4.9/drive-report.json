@@ -1,0 +1,520 @@
+[
+ {
+  "tag": "360x800_light_en",
+  "page": "settings",
+  "nodes": [
+   "button:Back:48x48",
+   "radio:English:360x56",
+   "radio:اردو:360x56",
+   "button:City\nKarachi:360x60",
+   "radio:As on this phone:360x56",
+   "radio:Light:360x56",
+   "radio:Dark:360x56",
+   "button:Notifications:360x56",
+   "button:Privacy:360x56",
+   "button:Terms of use:360x56",
+   "button:Privacy policy:360x56",
+   "button:About:360x7"
+  ]
+ },
+ {
+  "tag": "360x800_light_en",
+  "page": "notifications",
+  "nodes": [
+   "button:Back:48x48",
+   "switch:Push notifications\nAlerts on this phone,:360x80",
+   "switch:Brands you follow:360x56",
+   "switch:Categories you follow:360x56",
+   "switch:Offers for your cards:360x56",
+   "switch:New deals in your city:360x56",
+   "switch:Price drops on saved deals:360x56",
+   "switch:Saved deals ending soon:360x56",
+   "radio:At most 1 a day:360x56",
+   "radio:At most 3 a day:360x56",
+   "radio:At most 6 a day:360x56",
+   "button:From 10:00 PM:360x19",
+   "button:Until 8:00 AM:360x56"
+  ]
+ },
+ {
+  "tag": "360x800_light_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "page": "settings",
+  "nodes": [
+   "button:Back:48x48",
+   "radio:English:360x64",
+   "radio:اردو:360x64",
+   "button:City\nKarachi:360x105",
+   "radio:As on this phone:360x64",
+   "radio:Light:360x64",
+   "radio:Dark:360x64",
+   "button:Notifications:360x64",
+   "button:Privacy:360x64",
+   "button:Terms of use:360x1",
+   "button:Privacy policy:360x64",
+   "button:About:360x64"
+  ]
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "page": "notifications",
+  "nodes": [
+   "button:Back:48x48",
+   "switch:Push notifications\nAlerts on this phone,:360x235",
+   "switch:Brands you follow:360x112",
+   "switch:Categories you follow:360x112",
+   "switch:Offers for your cards:360x112",
+   "switch:New deals in your city:360x57",
+   "switch:Price drops on saved deals:360x112",
+   "switch:Saved deals ending soon:360x83"
+  ]
+ },
+ {
+  "tag": "360x800_light_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "360x800_light_ur",
+  "page": "settings",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "radio:English:360x56",
+   "radio:اردو:360x56",
+   "button:شہر\nکراچی:360x83",
+   "radio:فون کے مطابق:360x56",
+   "radio:روشن:360x56",
+   "radio:گہرا:360x56",
+   "button:نوٹیفکیشنز:360x56",
+   "button:رازداری:360x56",
+   "button:استعمال کی شرائط:360x56",
+   "button:رازداری کی پالیسی:360x41",
+   "button:تعارف:360x56"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur",
+  "page": "notifications",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "switch:پُش نوٹیفکیشنز\nاس فون پر الرٹس، ان باکس :360x121",
+   "switch:فالو کیے ہوئے برانڈز:360x56",
+   "switch:فالو کیے ہوئے زمرے:360x56",
+   "switch:آپ کے کارڈز کی آفرز:360x56",
+   "switch:آپ کے شہر کی نئی ڈیلز:360x56",
+   "switch:محفوظ کردہ ڈیلز کی قیمت میں کمی:360x56",
+   "switch:جلد ختم ہونے والی محفوظ ڈیلز:360x56",
+   "radio:دن میں زیادہ سے زیادہ ایک:360x56",
+   "radio:دن میں زیادہ سے زیادہ تین:360x56",
+   "radio:دن میں زیادہ سے زیادہ چھ:360x56",
+   "button:⁦10:00 PM⁩ سے:360x56",
+   "button:⁦8:00 AM⁩ تک:360x56"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "page": "settings",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "radio:English:360x74",
+   "radio:اردو:360x74",
+   "button:شہر\nکراچی:360x150",
+   "radio:فون کے مطابق:360x74",
+   "radio:روشن:360x74",
+   "radio:گہرا:360x74",
+   "button:نوٹیفکیشنز:360x67",
+   "button:رازداری:360x74",
+   "button:استعمال کی شرائط:360x74",
+   "button:رازداری کی پالیسی:360x17"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "page": "notifications",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "switch:پُش نوٹیفکیشنز\nاس فون پر الرٹس، ان باکس :360x302",
+   "switch:فالو کیے ہوئے برانڈز:360x74",
+   "switch:فالو کیے ہوئے زمرے:360x74",
+   "switch:آپ کے کارڈز کی آفرز:360x132",
+   "switch:آپ کے شہر کی نئی ڈیلز:360x77",
+   "switch:محفوظ کردہ ڈیلز کی قیمت میں کمی:360x132",
+   "switch:جلد ختم ہونے والی محفوظ ڈیلز:360x63"
+  ]
+ },
+ {
+  "tag": "360x800_light_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "360x800_dark_en",
+  "page": "settings",
+  "nodes": [
+   "button:Back:48x48",
+   "radio:English:360x56",
+   "radio:اردو:360x56",
+   "button:City\nKarachi:360x60",
+   "radio:As on this phone:360x56",
+   "radio:Light:360x56",
+   "radio:Dark:360x56",
+   "button:Notifications:360x56",
+   "button:Privacy:360x56",
+   "button:Terms of use:360x56",
+   "button:Privacy policy:360x56",
+   "button:About:360x7"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en",
+  "page": "notifications",
+  "nodes": [
+   "button:Back:48x48",
+   "switch:Push notifications\nAlerts on this phone,:360x80",
+   "switch:Brands you follow:360x56",
+   "switch:Categories you follow:360x56",
+   "switch:Offers for your cards:360x56",
+   "switch:New deals in your city:360x56",
+   "switch:Price drops on saved deals:360x56",
+   "switch:Saved deals ending soon:360x56",
+   "radio:At most 1 a day:360x56",
+   "radio:At most 3 a day:360x56",
+   "radio:At most 6 a day:360x56",
+   "button:From 10:00 PM:360x19",
+   "button:Until 8:00 AM:360x56"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "page": "settings",
+  "nodes": [
+   "button:Back:48x48",
+   "radio:English:360x64",
+   "radio:اردو:360x64",
+   "button:City\nKarachi:360x105",
+   "radio:As on this phone:360x64",
+   "radio:Light:360x64",
+   "radio:Dark:360x64",
+   "button:Notifications:360x64",
+   "button:Privacy:360x64",
+   "button:Terms of use:360x1",
+   "button:Privacy policy:360x64",
+   "button:About:360x64"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "page": "notifications",
+  "nodes": [
+   "button:Back:48x48",
+   "switch:Push notifications\nAlerts on this phone,:360x235",
+   "switch:Brands you follow:360x112",
+   "switch:Categories you follow:360x112",
+   "switch:Offers for your cards:360x112",
+   "switch:New deals in your city:360x57",
+   "switch:Price drops on saved deals:360x112",
+   "switch:Saved deals ending soon:360x83"
+  ]
+ },
+ {
+  "tag": "360x800_dark_en_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "page": "settings",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "radio:English:360x56",
+   "radio:اردو:360x56",
+   "button:شہر\nکراچی:360x83",
+   "radio:فون کے مطابق:360x56",
+   "radio:روشن:360x56",
+   "radio:گہرا:360x56",
+   "button:نوٹیفکیشنز:360x56",
+   "button:رازداری:360x56",
+   "button:استعمال کی شرائط:360x56",
+   "button:رازداری کی پالیسی:360x41",
+   "button:تعارف:360x56"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "page": "notifications",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "switch:پُش نوٹیفکیشنز\nاس فون پر الرٹس، ان باکس :360x121",
+   "switch:فالو کیے ہوئے برانڈز:360x56",
+   "switch:فالو کیے ہوئے زمرے:360x56",
+   "switch:آپ کے کارڈز کی آفرز:360x56",
+   "switch:آپ کے شہر کی نئی ڈیلز:360x56",
+   "switch:محفوظ کردہ ڈیلز کی قیمت میں کمی:360x56",
+   "switch:جلد ختم ہونے والی محفوظ ڈیلز:360x56",
+   "radio:دن میں زیادہ سے زیادہ ایک:360x56",
+   "radio:دن میں زیادہ سے زیادہ تین:360x56",
+   "radio:دن میں زیادہ سے زیادہ چھ:360x56",
+   "button:⁦10:00 PM⁩ سے:360x56",
+   "button:⁦8:00 AM⁩ تک:360x56"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "page": "settings",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "radio:English:360x74",
+   "radio:اردو:360x74",
+   "button:شہر\nکراچی:360x150",
+   "radio:فون کے مطابق:360x74",
+   "radio:روشن:360x74",
+   "radio:گہرا:360x74",
+   "button:نوٹیفکیشنز:360x67",
+   "button:رازداری:360x74",
+   "button:استعمال کی شرائط:360x74",
+   "button:رازداری کی پالیسی:360x17"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "page": "notifications",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "switch:پُش نوٹیفکیشنز\nاس فون پر الرٹس، ان باکس :360x302",
+   "switch:فالو کیے ہوئے برانڈز:360x74",
+   "switch:فالو کیے ہوئے زمرے:360x74",
+   "switch:آپ کے کارڈز کی آفرز:360x132",
+   "switch:آپ کے شہر کی نئی ڈیلز:360x77",
+   "switch:محفوظ کردہ ڈیلز کی قیمت میں کمی:360x132",
+   "switch:جلد ختم ہونے والی محفوظ ڈیلز:360x63"
+  ]
+ },
+ {
+  "tag": "360x800_dark_ur_ts2",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "412x915_light_en",
+  "page": "settings",
+  "nodes": [
+   "button:Back:48x48",
+   "radio:English:412x56",
+   "radio:اردو:412x56",
+   "button:City\nKarachi:412x60",
+   "radio:As on this phone:412x56",
+   "radio:Light:412x56",
+   "radio:Dark:412x56",
+   "button:Notifications:412x56",
+   "button:Privacy:412x56",
+   "button:Terms of use:412x56",
+   "button:Privacy policy:412x56",
+   "button:About:412x56"
+  ]
+ },
+ {
+  "tag": "412x915_light_en",
+  "page": "notifications",
+  "nodes": [
+   "button:Back:48x48",
+   "switch:Push notifications\nAlerts on this phone,:412x60",
+   "switch:Brands you follow:412x56",
+   "switch:Categories you follow:412x56",
+   "switch:Offers for your cards:412x56",
+   "switch:New deals in your city:412x56",
+   "switch:Price drops on saved deals:412x56",
+   "switch:Saved deals ending soon:412x56",
+   "radio:At most 1 a day:412x56",
+   "radio:At most 3 a day:412x56",
+   "radio:At most 6 a day:412x56",
+   "button:From 10:00 PM:412x56",
+   "button:Until 8:00 AM:412x56"
+  ]
+ },
+ {
+  "tag": "412x915_light_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "412x915_light_ur",
+  "page": "settings",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "radio:English:412x56",
+   "radio:اردو:412x56",
+   "button:شہر\nکراچی:412x83",
+   "radio:فون کے مطابق:412x56",
+   "radio:روشن:412x56",
+   "radio:گہرا:412x56",
+   "button:نوٹیفکیشنز:412x56",
+   "button:رازداری:412x56",
+   "button:استعمال کی شرائط:412x56",
+   "button:رازداری کی پالیسی:412x56",
+   "button:تعارف:412x56"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur",
+  "page": "notifications",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "switch:پُش نوٹیفکیشنز\nاس فون پر الرٹس، ان باکس :412x83",
+   "switch:فالو کیے ہوئے برانڈز:412x56",
+   "switch:فالو کیے ہوئے زمرے:412x56",
+   "switch:آپ کے کارڈز کی آفرز:412x56",
+   "switch:آپ کے شہر کی نئی ڈیلز:412x56",
+   "switch:محفوظ کردہ ڈیلز کی قیمت میں کمی:412x56",
+   "switch:جلد ختم ہونے والی محفوظ ڈیلز:412x56",
+   "radio:دن میں زیادہ سے زیادہ ایک:412x56",
+   "radio:دن میں زیادہ سے زیادہ تین:412x56",
+   "radio:دن میں زیادہ سے زیادہ چھ:412x56",
+   "button:⁦10:00 PM⁩ سے:412x56",
+   "button:⁦8:00 AM⁩ تک:412x54"
+  ]
+ },
+ {
+  "tag": "412x915_light_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "412x915_dark_en",
+  "page": "settings",
+  "nodes": [
+   "button:Back:48x48",
+   "radio:English:412x56",
+   "radio:اردو:412x56",
+   "button:City\nKarachi:412x60",
+   "radio:As on this phone:412x56",
+   "radio:Light:412x56",
+   "radio:Dark:412x56",
+   "button:Notifications:412x56",
+   "button:Privacy:412x56",
+   "button:Terms of use:412x56",
+   "button:Privacy policy:412x56",
+   "button:About:412x56"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en",
+  "page": "notifications",
+  "nodes": [
+   "button:Back:48x48",
+   "switch:Push notifications\nAlerts on this phone,:412x60",
+   "switch:Brands you follow:412x56",
+   "switch:Categories you follow:412x56",
+   "switch:Offers for your cards:412x56",
+   "switch:New deals in your city:412x56",
+   "switch:Price drops on saved deals:412x56",
+   "switch:Saved deals ending soon:412x56",
+   "radio:At most 1 a day:412x56",
+   "radio:At most 3 a day:412x56",
+   "radio:At most 6 a day:412x56",
+   "button:From 10:00 PM:412x56",
+   "button:Until 8:00 AM:412x56"
+  ]
+ },
+ {
+  "tag": "412x915_dark_en",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "page": "settings",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "radio:English:412x56",
+   "radio:اردو:412x56",
+   "button:شہر\nکراچی:412x83",
+   "radio:فون کے مطابق:412x56",
+   "radio:روشن:412x56",
+   "radio:گہرا:412x56",
+   "button:نوٹیفکیشنز:412x56",
+   "button:رازداری:412x56",
+   "button:استعمال کی شرائط:412x56",
+   "button:رازداری کی پالیسی:412x56",
+   "button:تعارف:412x56"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "page": "notifications",
+  "nodes": [
+   "button:پیچھے:48x48",
+   "switch:پُش نوٹیفکیشنز\nاس فون پر الرٹس، ان باکس :412x83",
+   "switch:فالو کیے ہوئے برانڈز:412x56",
+   "switch:فالو کیے ہوئے زمرے:412x56",
+   "switch:آپ کے کارڈز کی آفرز:412x56",
+   "switch:آپ کے شہر کی نئی ڈیلز:412x56",
+   "switch:محفوظ کردہ ڈیلز کی قیمت میں کمی:412x56",
+   "switch:جلد ختم ہونے والی محفوظ ڈیلز:412x56",
+   "radio:دن میں زیادہ سے زیادہ ایک:412x56",
+   "radio:دن میں زیادہ سے زیادہ تین:412x56",
+   "radio:دن میں زیادہ سے زیادہ چھ:412x56",
+   "button:⁦10:00 PM⁩ سے:412x56",
+   "button:⁦8:00 AM⁩ تک:412x54"
+  ]
+ },
+ {
+  "tag": "412x915_dark_ur",
+  "issues": [],
+  "hosts": [
+   "accounts.google.com"
+  ],
+  "shots": 15
+ }
+]

@@ -39,7 +39,10 @@ final class AlertPrefs {
       final parts = value.split(':');
       final hour = int.tryParse(parts.first);
       final minute = parts.length > 1 ? int.tryParse(parts[1]) : 0;
-      return hour == null || minute == null ? or : (hour: hour, minute: minute);
+      // Postgres `time` allows 24:00; a picker can't (QA 4.9-T1).
+      if (hour == null || minute == null || hour > 23 || minute > 59) return or;
+      if (hour < 0 || minute < 0) return or;
+      return (hour: hour, minute: minute);
     }
 
     bool flag(String key) => row[key] is! bool || row[key]! as bool;
@@ -72,6 +75,22 @@ final class AlertPrefs {
   final bool myCity;
   final bool savedPriceDrops;
   final bool savedExpiring;
+
+  /// As an `alert_prefs` row ("22:00" times), as [AlertPrefs.fromRow]
+  /// reads it back.
+  Map<String, Object?> toRow() => {
+    'push_enabled': pushEnabled,
+    'frequency': frequency.name,
+    'quiet_start': wireTime(quietStart),
+    'quiet_end': wireTime(quietEnd),
+    'time_zone': timeZone,
+    'followed_brands': followedBrands,
+    'followed_categories': followedCategories,
+    'my_cards': myCards,
+    'my_city': myCity,
+    'saved_price_drops': savedPriceDrops,
+    'saved_expiring': savedExpiring,
+  };
 
   /// "22:00" for the database.
   static String wireTime(({int hour, int minute}) t) {

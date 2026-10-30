@@ -118,7 +118,9 @@ final class AppConfig {
   }
 
   // The same rule as LinkService.email: one plain address.
-  static final _email = RegExp(r'^[^@\s?&#/:,;%]+@[^@\s?&#/:,;%]+\.[a-z]{2,}$');
+  static final _email = RegExp(
+    r'^[^@\s?&#/:,;%]+@[^@\s?&#/:,;%]+\.[a-zA-Z]{2,}$',
+  );
 
   static final _googleClientId = RegExp(
     r'^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$',

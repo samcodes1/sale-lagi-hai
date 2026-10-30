@@ -131,10 +131,12 @@ void main() {
       });
     }
 
-    test('a platform error is "unavailable", never a crash', () async {
+    // Since QA 4.9-N2, a platform error is "denied" (never a grant);
+    // "unavailable" is only for no plugin at all.
+    test('a platform error is "denied", never a crash', () async {
       _answer(0, error: true);
       const service = PlatformNotificationPermission();
-      expect(await service.request(), AlertPermission.unavailable);
+      expect(await service.request(), AlertPermission.denied);
       expect(await service.openSettings(), isFalse);
     });
 

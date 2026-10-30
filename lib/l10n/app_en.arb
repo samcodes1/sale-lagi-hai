@@ -179,7 +179,7 @@
   "profileSignedInPhone": "Signed in with your phone",
   "profileSignedInGoogle": "Signed in with Google",
   "actionSignOut": "Sign out",
-  "signedOutToast": "Signed out. Your choices stay on this phone.",
+  "signedOutToast": "Signed out. Your saved deals, cards and follows come back when you sign in.",
   "settingsAccount": "Account",
   "actionDeleteAccount": "Delete account",
   "deleteTitle": "Delete your account",

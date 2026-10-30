@@ -35,6 +35,10 @@ final class ThemeModeController extends Notifier<AppThemeMode> {
   @override
   AppThemeMode build() => ref.watch(savedThemeModeProvider);
 
+  /// Back to the phone's setting, without saving (the store was just
+  /// cleared: "Clear everything on this phone", QA 4.9-P1).
+  void reset() => state = AppThemeMode.system;
+
   /// Switches and saves. A failed save is logged; the switch still applies
   /// for this session.
   Future<void> select(AppThemeMode mode) async {

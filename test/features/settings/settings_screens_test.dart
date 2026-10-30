@@ -287,9 +287,14 @@ void main() {
       expect(h.alerts.requested, 0, reason: 'Android would not ask again');
       expect(_prefs(h)?.pushEnabled, isFalse);
 
-      h.alerts.current = AlertPermission.granted;
       await _tap(tester, 'Open settings');
       expect(h.alerts.settingsOpened, 1);
+      expect(find.textContaining('turned off for this app'), findsOneWidget);
+      // Allowed there, then back in the app: re-checked.
+      h.alerts.current = AlertPermission.granted;
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
       expect(find.textContaining('turned off for this app'), findsNothing);
     });
 

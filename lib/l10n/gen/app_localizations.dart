@@ -917,7 +917,7 @@ abstract class AppLocalizations {
   /// No description provided for @signedOutToast.
   ///
   /// In en, this message translates to:
-  /// **'Signed out. Your choices stay on this phone.'**
+  /// **'Signed out. Your saved deals, cards and follows come back when you sign in.'**
   String get signedOutToast;
 
   /// No description provided for @settingsAccount.

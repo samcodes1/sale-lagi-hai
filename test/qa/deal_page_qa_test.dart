@@ -290,6 +290,12 @@ void main() {
       await _signIn(auth);
       await c.read(guestSyncProvider)();
       expect(backend.refused, isEmpty, reason: '${backend.inserts}');
+      // Since 4.8 they go up in one call (sync_guest_items), as the caller.
+      expect(
+        (await backend.select(const TableQuery('saves')))
+            .map((s) => '${s['user_id']}/${s['deal_id']}'),
+        ['${auth.currentUser!.id}/${_deal(4)}'],
+      );
     });
 
     test('a failed read of the saved file, then a save: the earlier saves '

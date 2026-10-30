@@ -28,7 +28,7 @@ final class UrlLauncherLinkService implements LinkService {
 
   static final _e164 = RegExp(r'^\+92[0-9]{9,10}$');
   static final _address = RegExp(
-    r'^[^@\s?&#/:,;%]+@[^@\s?&#/:,;%]+\.[a-z]{2,}$',
+    r'^[^@\s?&#/:,;%]+@[^@\s?&#/:,;%]+\.[a-zA-Z]{2,}$',
   );
 
   static Future<bool> _launch(Uri uri, LaunchMode mode) async {

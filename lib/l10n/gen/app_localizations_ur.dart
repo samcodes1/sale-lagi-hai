@@ -562,7 +562,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get signedOutToast =>
-      'سائن آؤٹ ہو گئے۔ آپ کی پسند اسی فون پر محفوظ ہے۔';
+      'سائن آؤٹ ہو گئے۔ سائن اِن کرنے پر آپ کی محفوظ ڈیلز، کارڈز اور فالوز واپس آ جائیں گے۔';
 
   @override
   String get settingsAccount => 'اکاؤنٹ';
@@ -1101,7 +1101,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get alertsBadgeMany => '99 سے زیادہ نئے الرٹس';
+  String get alertsBadgeMany => '⁦99⁩ سے زیادہ نئے الرٹس';
 
   @override
   String get reportNoteCardNumber =>

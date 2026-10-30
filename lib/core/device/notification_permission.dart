@@ -10,7 +10,7 @@ enum AlertPermission {
   /// notifications on.
   permanentlyDenied,
 
-  /// This platform can't tell (or has no plugin).
+  /// This platform has no permission to ask for (no plugin: web, tests).
   unavailable,
 }
 
@@ -48,7 +48,9 @@ final class PlatformNotificationPermission
     } on MissingPluginException {
       return AlertPermission.unavailable;
     } on PlatformException {
-      return AlertPermission.unavailable;
+      // An error is never a grant: "a request is already running" comes
+      // back as one (QA 4.9-N2).
+      return AlertPermission.denied;
     }
   }
 

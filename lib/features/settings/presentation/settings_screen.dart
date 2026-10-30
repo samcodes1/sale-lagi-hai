@@ -48,7 +48,13 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.location_city_outlined),
             title: Text(l10n.settingsCity),
-            subtitle: Text(city?.name(urdu: urdu) ?? l10n.allPakistan),
+            // A chosen city whose name can't load yet shows no name, never
+            // "All Pakistan" (QA 4.9-S1).
+            subtitle: city != null
+                ? Text(city.name(urdu: urdu))
+                : cityId == null
+                ? Text(l10n.allPakistan)
+                : null,
             trailing: const Icon(Icons.chevron_right),
             onTap: () => pickCity(context, ref),
           ),

@@ -26,17 +26,40 @@ class NotificationSettingsScreen extends ConsumerStatefulWidget {
 
 class _NotificationSettingsScreenState
     extends ConsumerState<NotificationSettingsScreen> {
+  /// The last status check.
   AlertPermission? _permission;
+
+  /// Android said it won't ask again. Its status check can't say so (it
+  /// reports "denied" either way), so this is remembered from the request
+  /// until a check says granted (QA 4.9-N1).
+  bool _blocked = false;
+
+  /// The system dialog is up: another tap must not ask again (QA 4.9-N2).
+  bool _asking = false;
+
+  /// Coming back from the phone's settings re-checks.
+  late final AppLifecycleListener _lifecycle;
 
   @override
   void initState() {
     super.initState();
+    _lifecycle = AppLifecycleListener(onResume: _checkPermission);
     unawaited(_checkPermission());
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
   }
 
   Future<void> _checkPermission() async {
     final status = await ref.read(notificationPermissionProvider).status();
-    if (mounted) setState(() => _permission = status);
+    if (!mounted) return;
+    setState(() {
+      _permission = status;
+      if (status == AlertPermission.granted) _blocked = false;
+    });
   }
 
   Future<void> _save(AlertPrefs next) async {
@@ -54,11 +77,21 @@ class _NotificationSettingsScreenState
   /// turns it on.
   Future<void> _setPush(AlertPrefs prefs, {required bool on}) async {
     if (!on) return await _save(_with(prefs, pushEnabled: false));
-    final permission = ref.read(notificationPermissionProvider);
-    var status = await permission.status();
-    if (status == AlertPermission.denied) status = await permission.request();
+    if (_asking) return;
+    _asking = true;
+    final AlertPermission status;
+    try {
+      final permission = ref.read(notificationPermissionProvider);
+      final now = await permission.status();
+      status = now == AlertPermission.denied ? await permission.request() : now;
+    } finally {
+      _asking = false;
+    }
     if (!mounted) return;
-    setState(() => _permission = status);
+    setState(() {
+      _permission = status;
+      _blocked = status == AlertPermission.permanentlyDenied;
+    });
     if (status == AlertPermission.granted ||
         status == AlertPermission.unavailable) {
       await _save(_with(prefs, pushEnabled: true));
@@ -116,8 +149,12 @@ class _NotificationSettingsScreenState
     final local = MaterialLocalizations.of(context);
     String time(({int hour, int minute}) t) =>
         local.formatTimeOfDay(TimeOfDay(hour: t.hour, minute: t.minute));
-    // Android won't ask again: only its settings page can turn them on.
-    final blocked = _permission == AlertPermission.permanentlyDenied;
+    // Android won't ask again, or push is on in the account but this
+    // phone doesn't allow it: only its settings page can turn them on.
+    final blocked =
+        _blocked ||
+        _permission == AlertPermission.permanentlyDenied ||
+        (prefs.pushEnabled && (_permission == AlertPermission.denied));
 
     Widget heading(String text) => Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(
@@ -163,12 +200,9 @@ class _NotificationSettingsScreenState
                 children: [
                   Text(l10n.notifBlocked),
                   TextButton(
-                    onPressed: () async {
-                      await ref
-                          .read(notificationPermissionProvider)
-                          .openSettings();
-                      await _checkPermission();
-                    },
+                    // Re-checked when the app comes back (onResume).
+                    onPressed: () =>
+                        ref.read(notificationPermissionProvider).openSettings(),
                     child: Text(l10n.actionOpenSettings),
                   ),
                 ],

@@ -147,6 +147,18 @@ abstract class StoredStringList extends Notifier<List<String>> {
     return ref.mounted ? state : null;
   }
 
+  /// Empties the list and removes its stored copy (signing out: nothing of
+  /// the account is left behind, not even an empty file).
+  Future<void> forget() async {
+    if (state.isNotEmpty || _pending != null) await update((_) => const []);
+    if (!ref.mounted) return;
+    try {
+      await ref.read(keyValueStoreProvider).remove(storageKey);
+    } on Object catch (error) {
+      if (ref.mounted) _warn('Could not remove $what', error);
+    }
+  }
+
   Future<void> _write(List<String> list) async {
     try {
       await ref

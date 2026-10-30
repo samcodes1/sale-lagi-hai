@@ -559,7 +559,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actionSignOut => 'Sign out';
 
   @override
-  String get signedOutToast => 'Signed out. Your choices stay on this phone.';
+  String get signedOutToast =>
+      'Signed out. Your saved deals, cards and follows come back when you sign in.';
 
   @override
   String get settingsAccount => 'Account';

@@ -145,19 +145,28 @@ void main() {
     expect(find.text('Continue with Google'), findsNothing);
   });
 
-  testWidgets('signing out keeps the choices on this phone', (tester) async {
+  testWidgets('signing out: the follows go into the account, then from the '
+      'phone; language and city stay (QA 4.8 BUG-9)', (tester) async {
     final h = _harness();
     await h.pump(tester);
+    final city = h.preferences.cityId;
     await _openProfile(tester, h);
     await _signInWithPhone(tester);
     await tapText(tester, 'Sign out');
     expect(h.auth.currentUser, isNull);
     expect(
-      find.text('Signed out. Your choices stay on this phone.'),
+      find.text(
+        'Signed out. Your saved deals, cards and follows come back when you '
+        'sign in.',
+      ),
       findsOneWidget,
     );
-    expect(h.preferences.brandIds, [_karahiHouse]);
+    expect(h.preferences.brandIds, isEmpty);
+    expect(h.preferences.cityId, city);
     expect(h.preferences.onboarded, isTrue);
+    // Back in the same account: they come back.
+    await _signInWithPhone(tester);
+    expect(h.preferences.brandIds, [_karahiHouse]);
   });
 
   testWidgets('deleting the account: what goes, a confirmation, then a fresh '

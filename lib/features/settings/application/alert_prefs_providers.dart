@@ -46,50 +46,41 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
   }
 
   /// Shows [next] at once and saves the fields that changed. On failure
-  /// the old values come back and the failure is returned, so the screen
-  /// can say so (UX S19: "Save failed → revert + toast").
+  /// those fields come back as they were and the failure is returned, so
+  /// the screen can say so (UX S19: "Save failed → revert + toast"). Only
+  /// those: a later change that was saved stays (QA 4.9-N4).
   Future<AppFailure?> change(AlertPrefs next) async {
     final before = state.value;
     if (before == null || before == next) return null;
+    final was = before.toRow();
+    final now = next.toRow();
+    final changed = {
+      for (final MapEntry(:key, :value) in now.entries)
+        if (was[key] != value && key != 'time_zone') key: value,
+    };
+    if (changed.isEmpty) return null;
     state = AsyncData(next);
-    String? when(({int hour, int minute}) a, ({int hour, int minute}) b) =>
-        a == b ? null : AlertPrefs.wireTime(b);
-    bool? flag({required bool from, required bool to}) =>
-        from == to ? null : to;
-    final result = await _guard(
-      () => ref.read(backendGatewayProvider).rpc('update_alert_prefs', {
-        'push_enabled': ?flag(from: before.pushEnabled, to: next.pushEnabled),
-        'frequency': ?(before.frequency == next.frequency
-            ? null
-            : next.frequency.name),
-        'quiet_start': ?when(before.quietStart, next.quietStart),
-        'quiet_end': ?when(before.quietEnd, next.quietEnd),
-        'followed_brands': ?flag(
-          from: before.followedBrands,
-          to: next.followedBrands,
-        ),
-        'followed_categories': ?flag(
-          from: before.followedCategories,
-          to: next.followedCategories,
-        ),
-        'my_cards': ?flag(from: before.myCards, to: next.myCards),
-        'my_city': ?flag(from: before.myCity, to: next.myCity),
-        'saved_price_drops': ?flag(
-          from: before.savedPriceDrops,
-          to: next.savedPriceDrops,
-        ),
-        'saved_expiring': ?flag(
-          from: before.savedExpiring,
-          to: next.savedExpiring,
-        ),
-      }),
-    );
+    final result = await _guard(() async {
+      final rows = await ref
+          .read(backendGatewayProvider)
+          .rpc('update_alert_prefs', changed);
+      // No row: nothing was saved (QA 4.9-N5).
+      if (rows.isEmpty) throw const UnexpectedFailure();
+    });
     if (!ref.mounted) return null;
     switch (result) {
       case Success():
         return null;
       case Failure(:final failure):
-        state = AsyncData(before);
+        final current = state.value?.toRow() ?? now;
+        state = AsyncData(
+          AlertPrefs.fromRow({
+            ...current,
+            // Back as it was, unless changed again since.
+            for (final key in changed.keys)
+              if (current[key] == changed[key]) key: was[key],
+          }),
+        );
         return failure;
     }
   }

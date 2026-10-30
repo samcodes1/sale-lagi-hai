@@ -137,7 +137,7 @@ class _AccountSection extends ConsumerWidget {
           onTap: () async {
             final messenger = ScaffoldMessenger.maybeOf(context);
             final done = l10n.signedOutToast;
-            final result = await ref.read(authRepositoryProvider).signOut();
+            final result = await ref.read(signOutProvider)();
             if (result is Success) {
               messenger
                 ?..hideCurrentSnackBar()

@@ -149,7 +149,7 @@
   "profileSignedInPhone": "آپ فون نمبر سے سائن اِن ہیں",
   "profileSignedInGoogle": "آپ گوگل سے سائن اِن ہیں",
   "actionSignOut": "سائن آؤٹ",
-  "signedOutToast": "سائن آؤٹ ہو گئے۔ آپ کی پسند اسی فون پر محفوظ ہے۔",
+  "signedOutToast": "سائن آؤٹ ہو گئے۔ سائن اِن کرنے پر آپ کی محفوظ ڈیلز، کارڈز اور فالوز واپس آ جائیں گے۔",
   "settingsAccount": "اکاؤنٹ",
   "actionDeleteAccount": "اکاؤنٹ ڈیلیٹ کریں",
   "deleteTitle": "اپنا اکاؤنٹ ڈیلیٹ کریں",
