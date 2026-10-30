@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
@@ -63,5 +65,35 @@ final class Follows {
 final followedBrandsProvider = FutureProvider<List<Brand>>((ref) async {
   final ids = ref.watch(preferencesProvider.select((p) => p.brandIds));
   if (ids.isEmpty) return const [];
-  return await ref.watch(catalogRepositoryProvider).brandsByIds(ids);
+  final brands = await ref.watch(catalogRepositoryProvider).brandsByIds(ids);
+  // A brand that is no longer offered can't be listed, so it isn't kept
+  // either (QA 4.8 BUG-7).
+  final offered = {for (final b in brands) b.id};
+  if (ids.any((id) => !offered.contains(id))) {
+    final preferences = ref.read(preferencesProvider.notifier);
+    unawaited(
+      Future.microtask(() => preferences.keepFollows(brandIds: offered)),
+    );
+  }
+  return brands;
+});
+
+/// The followed categories that are offered, in catalog order. Once the
+/// catalog has loaded, follows of categories it no longer has are dropped
+/// (QA 4.8 BUG-7).
+final followedCategoriesProvider = Provider<List<Category>>((ref) {
+  final ids = ref.watch(preferencesProvider.select((p) => p.categoryFollowIds));
+  final all = ref.watch(categoriesProvider);
+  if (ids.isEmpty || all is! AsyncData<List<Category>>) return const [];
+  final offered = {for (final c in all.value) c.id};
+  if (offered.isNotEmpty && ids.any((id) => !offered.contains(id))) {
+    final preferences = ref.read(preferencesProvider.notifier);
+    unawaited(
+      Future.microtask(() => preferences.keepFollows(categoryIds: offered)),
+    );
+  }
+  return [
+    for (final c in all.value)
+      if (ids.contains(c.id)) c,
+  ];
 });

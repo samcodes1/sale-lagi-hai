@@ -14,6 +14,7 @@ import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
 import 'package:sale_lagi_hai/features/alerts/application/alerts_providers.dart';
 import 'package:sale_lagi_hai/features/alerts/domain/app_alert.dart';
+import 'package:sale_lagi_hai/features/follows/application/follow_providers.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 
 /// Alerts tab (screen S15): the inbox, newest first, grouped Today and
@@ -194,6 +195,11 @@ class _FollowingEntry extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final p = ref.watch(preferencesProvider);
+    // Loading them drops follows of what is no longer offered, so the
+    // count matches the Following list (QA 4.8 BUG-7).
+    ref
+      ..watch(followedBrandsProvider)
+      ..watch(followedCategoriesProvider);
     return Semantics(
       button: true,
       child: InkWell(

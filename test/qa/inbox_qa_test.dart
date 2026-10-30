@@ -33,7 +33,6 @@ import 'package:sale_lagi_hai/l10n/gen/app_localizations.dart';
 
 import '../features/onboarding/onboarding_harness.dart';
 import '../helpers/fakes.dart';
-import 'known_bugs.dart';
 import 'qa_backend_rules.dart';
 
 String _deal(int n) => demoDeals.firstWhere((d) => d.n == n).id;
@@ -627,7 +626,7 @@ void main() {
       h.router.go('/alerts');
       await tester.pumpAndSettle();
       expect(find.text('1 brand · no categories'), findsOneWidget);
-    }, skip: knownBug('4.8 BUG-7') != false);
+    });
 
     for (final (name, locale, brightness, hc, scale) in const [
       ('en dark', AppLocales.english, Brightness.dark, false, 1.0),

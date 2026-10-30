@@ -34,7 +34,7 @@
 - **BUG-6 (S4):** Undo puts the deal back where it was.
 - **BUG-8 (S4):** screen readers hear the badge with the tab ("Alerts, 2 new alerts"; past 99, "More than 99 new alerts").
 - **BUG-10 (S4):** the generated Urdu strings are regenerated.
-- **Open:** BUG-7 (S4). A followed brand or category that was switched off is counted, but not listed, so it can't be unfollowed.
+- **BUG-7 (S4), fixed after round 2:** once the followed brands (or the categories) have loaded, follows of ones no longer offered are dropped from the phone (`keepFollows`), so the Following count matches its list. A failed load drops nothing.
 
 ## Backend (`20261029240000_inbox.sql`)
 - `mark_alerts_read(ids)` and `unread_alert_count(since)`, security invoker, signed-in only. Marking touches only `read_at` of the caller's rows, as the column grant and policy already require.

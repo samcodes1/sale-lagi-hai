@@ -8,8 +8,6 @@ import 'package:sale_lagi_hai/design_system/icons/category_icons.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
-import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
-import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
 import 'package:sale_lagi_hai/features/follows/application/follow_providers.dart';
 import 'package:sale_lagi_hai/features/follows/presentation/follow_button.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
@@ -26,10 +24,7 @@ class FollowingScreen extends ConsumerWidget {
     final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
     final preferences = ref.watch(preferencesProvider);
     final brands = ref.watch(followedBrandsProvider);
-    final categories = [
-      for (final c in ref.watch(categoriesProvider).value ?? const <Category>[])
-        if (preferences.categoryFollowIds.contains(c.id)) c,
-    ];
+    final categories = ref.watch(followedCategoriesProvider);
     final nothing =
         preferences.brandIds.isEmpty && preferences.categoryFollowIds.isEmpty;
 

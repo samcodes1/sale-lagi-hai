@@ -129,6 +129,28 @@ final class PreferencesController extends Notifier<ShopperPreferences> {
     ),
   );
 
+  /// Drops followed brands and categories that are no longer offered
+  /// (switched off or removed), so the Following count matches its list
+  /// and nothing is left that can't be unfollowed (QA 4.8 BUG-7). Only
+  /// called after a successful read of what is offered.
+  Future<void> keepFollows({Set<String>? brandIds, Set<String>? categoryIds}) {
+    final brands = [
+      for (final id in state.brandIds)
+        if (brandIds == null || brandIds.contains(id)) id,
+    ];
+    final categories = [
+      for (final id in state.categoryFollowIds)
+        if (categoryIds == null || categoryIds.contains(id)) id,
+    ];
+    if (brands.length == state.brandIds.length &&
+        categories.length == state.categoryFollowIds.length) {
+      return Future.value();
+    }
+    return _update(
+      state.copyWith(brandIds: brands, categoryFollowIds: categories),
+    );
+  }
+
   /// Adds follows kept in the account (signed in on another phone): the
   /// phone keeps its own, and gains these.
   Future<void> addFollows({

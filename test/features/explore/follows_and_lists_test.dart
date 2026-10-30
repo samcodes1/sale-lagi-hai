@@ -49,6 +49,55 @@ void main() {
   final threads = brandBySlug('demo-threads')['id']! as String;
   final food = categoryId('food-and-restaurants');
 
+  group('follows of what is no longer offered (QA 4.8 BUG-7)', () {
+    const gone = '00000000-0000-4000-b000-00000000dead';
+
+    test('a brand that is gone is dropped once the list has loaded', () async {
+      final c = container();
+      await c
+          .read(preferencesProvider.notifier)
+          .addFollows(brandIds: [threads, gone]);
+      final sub = c.listen(followedBrandsProvider, (_, _) {});
+      addTearDown(sub.close);
+      expect((await c.read(followedBrandsProvider.future)).map((b) => b.id), [
+        threads,
+      ]);
+      await Future<void>.delayed(Duration.zero);
+      expect(c.read(preferencesProvider).brandIds, [threads]);
+    });
+
+    test(
+      'a category that is gone is dropped once the catalog has loaded',
+      () async {
+        final c = container();
+        await c
+            .read(preferencesProvider.notifier)
+            .addFollows(categoryIds: [food, gone]);
+        final sub = c.listen(followedCategoriesProvider, (_, _) {});
+        addTearDown(sub.close);
+        await c.read(categoriesProvider.future);
+        expect(c.read(followedCategoriesProvider).map((c) => c.id), [food]);
+        await Future<void>.delayed(Duration.zero);
+        expect(c.read(preferencesProvider).categoryFollowIds, [food]);
+      },
+    );
+
+    test('a failed load drops nothing', () async {
+      final c = container(gateway: _Failing());
+      await c
+          .read(preferencesProvider.notifier)
+          .addFollows(brandIds: [threads, gone]);
+      final sub = c.listen(followedBrandsProvider, (_, _) {});
+      addTearDown(sub.close);
+      await expectLater(
+        c.read(followedBrandsProvider.future),
+        throwsA(anything),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(c.read(preferencesProvider).brandIds, [threads, gone]);
+    });
+  });
+
   group('follows', () {
     test('a guest follows on the phone only', () async {
       final c = container();
@@ -186,4 +235,25 @@ final class _SyncFails implements BackendGateway {
   @override
   Future<void> delete(String table, Map<String, Object?> match) =>
       _demo.delete(table, match);
+}
+
+/// Every read fails, as offline.
+final class _Failing implements BackendGateway {
+  @override
+  Future<List<Map<String, Object?>>> select(TableQuery query) =>
+      Future.error(const OfflineFailure());
+
+  @override
+  Future<List<Map<String, Object?>>> rpc(
+    String function, [
+    Map<String, Object?> params = const {},
+  ]) => Future.error(const OfflineFailure());
+
+  @override
+  Future<void> insert(String table, Map<String, Object?> row) =>
+      Future.error(const OfflineFailure());
+
+  @override
+  Future<void> delete(String table, Map<String, Object?> match) =>
+      Future.error(const OfflineFailure());
 }
