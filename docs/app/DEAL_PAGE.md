@@ -27,6 +27,10 @@
 - **BUG-6:** Save is a toggle for screen readers.
 - Links that can't open say "Couldn't open that" (`openLink`), also on brand pages.
 
+## Changed after the Phase 4 gate (PASS)
+- **P4-J1 (S3):** offline, a deal seen before opens from its last copy, from the Saved list's copy or Home's sections. It has the offline banner with the copy's age, and says details, terms and outlets show when back online (UX S08). Only an offline or timed-out read falls back to it.
+- **P4-P1 (S3):** deal pictures, on cards and on the page, are decoded at the size they are shown (`NetworkPicture`, `cacheWidth`), not the upload's.
+
 ## Tests
 - `test/features/deals/deal_detail_data_test.dart`:
   - outlet filtering per scope, the text, not found, malformed outlets;

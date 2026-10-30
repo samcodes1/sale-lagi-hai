@@ -17,6 +17,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/backend/backend_gateway.dart';
 import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
 import 'package:sale_lagi_hai/core/backend/demo/demo_data.dart';
+import 'package:sale_lagi_hai/core/backend/demo/demo_gateway.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/links/link_service.dart';
@@ -602,10 +603,9 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('offline: an error with Try again, which works once back', (
-      tester,
-    ) async {
-      final backend = FlakyGateway();
+    testWidgets('offline with no copy: an error with Try again, which works '
+        'once back', (tester) async {
+      final backend = _AllFlaky();
       final (_, _) = await open(tester, 7, backend: backend);
       expect(find.byType(ErrorView), findsOneWidget);
       backend.fail = false;
@@ -613,6 +613,17 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ErrorView), findsNothing);
       expect(find.text('Save'), findsOneWidget);
+    });
+
+    testWidgets('offline after Home showed it: the last copy, marked as such '
+        '(QA P4-J1)', (tester) async {
+      final (_, _) = await open(tester, 7, backend: FlakyGateway());
+      expect(find.byType(ErrorView), findsNothing);
+      expect(find.byType(OfflineBanner), findsOneWidget);
+      expect(
+        find.text('Details, terms and outlets show when you are back online.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('ur 200% on 360 × 800: the report sheet offers every reason '
@@ -735,3 +746,32 @@ String _karachiName(int i) =>
 
 int _byName(Map<String, Object?> a, Map<String, Object?> b) =>
     (a['name']! as String).compareTo(b['name']! as String);
+
+/// Every read and call fails until [fail] is cleared: no Home copy either.
+final class _AllFlaky implements BackendGateway {
+  final _demo = DemoGateway();
+  bool fail = true;
+
+  @override
+  Future<List<Map<String, Object?>>> select(TableQuery query) async {
+    if (fail) throw const OfflineFailure();
+    return await _demo.select(query);
+  }
+
+  @override
+  Future<List<Map<String, Object?>>> rpc(
+    String function, [
+    Map<String, Object?> params = const {},
+  ]) async {
+    if (fail) throw const OfflineFailure();
+    return await _demo.rpc(function, params);
+  }
+
+  @override
+  Future<void> insert(String table, Map<String, Object?> row) =>
+      _demo.insert(table, row);
+
+  @override
+  Future<void> delete(String table, Map<String, Object?> match) =>
+      _demo.delete(table, match);
+}

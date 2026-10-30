@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/app/router/routes.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
+import 'package:sale_lagi_hai/core/l10n/deal_time_labels.dart';
 import 'package:sale_lagi_hai/core/l10n/failure_messages.dart';
 import 'package:sale_lagi_hai/core/l10n/formatters.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
@@ -17,6 +18,7 @@ import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_bottom_sheet.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
+import 'package:sale_lagi_hai/design_system/widgets/network_picture.dart';
 import 'package:sale_lagi_hai/design_system/widgets/price_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
@@ -98,6 +100,13 @@ class _Body extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsetsDirectional.only(bottom: BrandSpacing.s10),
       children: [
+        if (detail.cachedAt case final at?)
+          OfflineBanner(
+            updatedLabel: DealTimeLabels(
+              l10n,
+              AppFormatters.of(context),
+            ).updated(at, now: now),
+          ),
         if (ended)
           Semantics(
             liveRegion: true,
@@ -131,12 +140,9 @@ class _Body extends ConsumerWidget {
                     ),
                   ),
                 )
-              : Image.network(
+              : NetworkPicture(
                   image,
-                  fit: BoxFit.cover,
-                  excludeFromSemantics: true,
-                  errorBuilder: (_, _, _) =>
-                      ColoredBox(color: scheme.surfaceContainerHigh),
+                  fallback: ColoredBox(color: scheme.surfaceContainerHigh),
                 ),
         ),
         Padding(
@@ -406,6 +412,9 @@ class _Where extends ConsumerWidget {
     final links = ref.read(linkServiceProvider);
     if (detail.deal.scope == DealScope.online) {
       return Text(l10n.dealOnlineOnly, style: theme.textTheme.bodyLarge);
+    }
+    if (detail.cachedAt != null) {
+      return Text(l10n.dealOfflineDetails, style: theme.textTheme.bodyLarge);
     }
     if (detail.outlets.isEmpty) {
       return Text(

@@ -230,6 +230,24 @@ void main() {
       expect(c.read(preferencesProvider).brandIds, [_threads]);
     });
 
+    test('follows go up in calls of at most 200 (QA P4-F1)', () {
+      final brands = [for (var i = 0; i < 250; i++) 'b$i'];
+      final categories = [for (var i = 0; i < 160; i++) 'c$i'];
+      final chunks = followChunks(brands, categories);
+      expect(chunks, hasLength(3));
+      for (final c in chunks) {
+        final count =
+            (c['brand_ids']! as List).length +
+            (c['category_ids']! as List).length;
+        expect(count, lessThanOrEqualTo(followsPerCall));
+      }
+      expect([for (final c in chunks) ...c['brand_ids']! as List], brands);
+      expect([
+        for (final c in chunks) ...c['category_ids']! as List,
+      ], categories);
+      expect(followChunks(const [], const []), isEmpty);
+    });
+
     group('whose lists are on the phone (QA 4.8 BUG-1)', () {
       late DemoGateway backend;
       late DemoAuthRepository auth;

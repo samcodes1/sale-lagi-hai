@@ -703,6 +703,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dealNoOutlets => 'Ask at your nearest outlet.';
 
   @override
+  String get dealOfflineDetails =>
+      'Details, terms and outlets show when you are back online.';
+
+  @override
   String get actionDirections => 'Directions';
 
   @override

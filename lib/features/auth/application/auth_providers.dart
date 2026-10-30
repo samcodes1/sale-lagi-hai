@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meta/meta.dart';
 import 'package:sale_lagi_hai/core/backend/backend_errors.dart';
 import 'package:sale_lagi_hai/core/backend/backend_gateway.dart';
 import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
@@ -41,6 +42,38 @@ final signOutProvider = Provider<Future<Result<void>> Function()>(
   },
 );
 
+/// The follows as `sync_guest_preferences` calls of at most
+/// [followsPerCall] ids each, the server's cap (QA P4-F1).
+@visibleForTesting
+List<Map<String, Object?>> followChunks(
+  List<String> brandIds,
+  List<String> categoryIds,
+) {
+  final all = [
+    for (final id in brandIds) (true, id),
+    for (final id in categoryIds) (false, id),
+  ];
+  return [
+    for (var i = 0; i < all.length; i += followsPerCall)
+      () {
+        final part = all.sublist(i, (i + followsPerCall).clamp(0, all.length));
+        return <String, Object?>{
+          'brand_ids': [
+            for (final (brand, id) in part)
+              if (brand) id,
+          ],
+          'category_ids': [
+            for (final (brand, id) in part)
+              if (!brand) id,
+          ],
+        };
+      }(),
+  ];
+}
+
+/// `sync_guest_preferences` takes at most this many follows a call.
+const followsPerCall = 200;
+
 /// Sends the phone's lists into the signed-in account; whether they are
 /// all there.
 Future<bool> _sendLists(Ref ref) async {
@@ -61,12 +94,11 @@ Future<bool> _sendLists(Ref ref) async {
           'deal_ids': dealIds,
           'card_product_ids': cardIds,
         }),
-      if (preferences.brandIds.isNotEmpty ||
-          preferences.categoryFollowIds.isNotEmpty)
-        backend.rpc('sync_guest_preferences', {
-          'brand_ids': preferences.brandIds,
-          'category_ids': preferences.categoryFollowIds,
-        }),
+      for (final chunk in followChunks(
+        preferences.brandIds,
+        preferences.categoryFollowIds,
+      ))
+        backend.rpc('sync_guest_preferences', chunk),
     ].wait,
     logger: logger,
     mappers: const [backendErrorMapper],
@@ -158,17 +190,24 @@ final guestSyncProvider = Provider<Future<void> Function()>(
     // Rows go in as auth.uid() on the server, so never in another's name
     // (QA 4.4 BUG-1, 4.5 BUG-1). One call each, whatever the count
     // (QA 4.8 BUG-3); ones already in the account are skipped.
+    final follows = followChunks(
+      preferences.brandIds,
+      preferences.categoryFollowIds,
+    );
     for (final (what, function, params) in [
+      // City and language with the first 200 follows, the rest in calls
+      // of their own, each under the server's cap (QA P4-F1).
       (
         'Could not sync guest choices',
         'sync_guest_preferences',
         <String, Object?>{
           'city': preferences.cityId,
           'lang': ref.read(localeControllerProvider).languageCode,
-          'brand_ids': preferences.brandIds,
-          'category_ids': preferences.categoryFollowIds,
+          ...?follows.firstOrNull,
         },
       ),
+      for (final chunk in follows.skip(1))
+        ('Could not sync guest follows', 'sync_guest_preferences', chunk),
       if (dealIds.isNotEmpty || cardIds.isNotEmpty)
         (
           'Could not sync saved deals and cards',

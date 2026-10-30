@@ -1166,6 +1166,12 @@ abstract class AppLocalizations {
   /// **'Ask at your nearest outlet.'**
   String get dealNoOutlets;
 
+  /// No description provided for @dealOfflineDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details, terms and outlets show when you are back online.'**
+  String get dealOfflineDetails;
+
   /// No description provided for @actionDirections.
   ///
   /// In en, this message translates to:

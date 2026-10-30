@@ -174,7 +174,7 @@ Everything above for the whole phase, plus a regression run of all earlier tests
 |---|---|---|
 | 5.1 FCM integration | Token lifecycle, topics (city/category/brand), foreground and background handling, notification channels | Tests |
 | 5.2 Alert engine | Rules for brand sale live, new deal from a followed business, saved deal ending soon, daily digest; frequency caps, quiet hours | Rule-engine tests |
-| 5.3 Deep links | Android App Links for `/deal/<id>`, `/brand/<slug>` and so on, plus verification | Link routing tests |
+| 5.3 Deep links | Android App Links for `/deal/<id>`, `/brand/<slug>` and so on, plus verification | Link routing tests; links from any other host are refused (go_router ignores the host: Phase 4 gate note) |
 | 5.4 Share cards | A generated image card for WhatsApp/Instagram sharing with a deep link | Golden tests |
 | 5.5 Engagement | In-app review prompt, invite-a-friend referral | Tests |
 | **Phase 5 gate** | | End-to-end: a deal published → push received → tap → deal opens |

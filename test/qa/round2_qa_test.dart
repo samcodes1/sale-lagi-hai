@@ -81,9 +81,15 @@ void main() {
       // at ~177 ms; long word runs ~45 ms.
       for (final unit in ['eyJ', 'a', '1-', '12345-', '۰۳', 'a@b.']) {
         final input = (unit * (8190 ~/ unit.length + 1)).substring(0, 8190);
-        final sw = Stopwatch()..start();
-        _redactor.redact(input);
-        expect(sw.elapsedMilliseconds, lessThan(400), reason: unit);
+        // The fastest of three, so a busy machine (tests running side by
+        // side) doesn't fail it; the budget is unchanged (QA P4-T1).
+        var best = 1 << 30;
+        for (var run = 0; run < 3; run++) {
+          final sw = Stopwatch()..start();
+          _redactor.redact(input);
+          if (sw.elapsedMilliseconds < best) best = sw.elapsedMilliseconds;
+        }
+        expect(best, lessThan(400), reason: unit);
       }
     });
   });

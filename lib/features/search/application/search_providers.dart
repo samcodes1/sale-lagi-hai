@@ -53,11 +53,16 @@ final class SearchController extends Notifier<SearchState> {
   SearchState build() {
     ref
       ..onDispose(() => _settle?.cancel())
-      // Areas belong to a city: a new city drops the area filter.
+      // Areas belong to a city: a new city drops the area filter. After
+      // the current frame's work, since the city can change while the
+      // tree builds (Clear everything; QA P4-R1).
       ..listen(homeCityProvider, (previous, next) {
-        if (previous != next) {
-          state = state.copyWith(filters: state.filters.forOtherCity());
-        }
+        if (previous == next || state.filters.areaId == null) return;
+        scheduleMicrotask(() {
+          if (ref.mounted) {
+            state = state.copyWith(filters: state.filters.forOtherCity());
+          }
+        });
       });
     return const SearchState();
   }

@@ -72,55 +72,69 @@ class FollowingScreen extends ConsumerWidget {
               actionLabel: l10n.actionExplore,
               onAction: () => const ExploreRoute().go(context),
             )
-          : ListView(
-              children: [
+          // Built as they scroll in: a long follow list stays cheap
+          // (QA P4-P2).
+          : CustomScrollView(
+              slivers: [
                 if (preferences.brandIds.isNotEmpty) ...[
-                  heading(l10n.followingBrands),
+                  SliverToBoxAdapter(child: heading(l10n.followingBrands)),
                   switch (brands) {
-                    AsyncData(:final value) => Column(
-                      children: [
-                        for (final b in value)
-                          row(
-                            leading: const Icon(Icons.storefront_outlined),
+                    AsyncData(:final value) => SliverList.builder(
+                      itemCount: value.length,
+                      itemBuilder: (context, i) {
+                        final b = value[i];
+                        return row(
+                          leading: const Icon(Icons.storefront_outlined),
+                          name: b.displayName(urdu: urdu),
+                          onOpen: () =>
+                              BrandRoute(slug: b.slug).push<void>(context),
+                          follow: FollowButton(
+                            target: FollowTarget.brand,
+                            id: b.id,
                             name: b.displayName(urdu: urdu),
-                            onOpen: () =>
-                                BrandRoute(slug: b.slug).push<void>(context),
-                            follow: FollowButton(
-                              target: FollowTarget.brand,
-                              id: b.id,
-                              name: b.displayName(urdu: urdu),
-                            ),
                           ),
-                      ],
+                        );
+                      },
                     ),
-                    AsyncError(:final error) => InlineErrorBanner(
-                      failure: error is AppFailure
-                          ? error
-                          : const UnexpectedFailure(),
-                      onRetry: () => ref.invalidate(followedBrandsProvider),
+                    AsyncError(:final error) => SliverToBoxAdapter(
+                      child: InlineErrorBanner(
+                        failure: error is AppFailure
+                            ? error
+                            : const UnexpectedFailure(),
+                        onRetry: () => ref.invalidate(followedBrandsProvider),
+                      ),
                     ),
-                    _ => const Padding(
-                      padding: EdgeInsetsDirectional.all(BrandSpacing.s5),
-                      child: SkeletonBox(height: 48),
+                    _ => const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.all(BrandSpacing.s5),
+                        child: SkeletonBox(height: 48),
+                      ),
                     ),
                   },
                 ],
                 if (categories.isNotEmpty) ...[
-                  heading(l10n.followingCategories),
-                  for (final c in categories)
-                    row(
-                      leading: Icon(categoryIcon(c.icon)),
-                      name: c.name(urdu: urdu),
-                      onOpen: () =>
-                          CategoryRoute(slug: c.slug).push<void>(context),
-                      follow: FollowButton(
-                        target: FollowTarget.category,
-                        id: c.id,
+                  SliverToBoxAdapter(child: heading(l10n.followingCategories)),
+                  SliverList.builder(
+                    itemCount: categories.length,
+                    itemBuilder: (context, i) {
+                      final c = categories[i];
+                      return row(
+                        leading: Icon(categoryIcon(c.icon)),
                         name: c.name(urdu: urdu),
-                      ),
-                    ),
+                        onOpen: () =>
+                            CategoryRoute(slug: c.slug).push<void>(context),
+                        follow: FollowButton(
+                          target: FollowTarget.category,
+                          id: c.id,
+                          name: c.name(urdu: urdu),
+                        ),
+                      );
+                    },
+                  ),
                 ],
-                const SizedBox(height: BrandSpacing.s8),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: BrandSpacing.s8),
+                ),
               ],
             ),
     );

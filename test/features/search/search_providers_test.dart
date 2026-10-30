@@ -141,6 +141,9 @@ void main() {
           .read(searchProvider.notifier)
           .setFilters(SearchFilters(areaId: _clifton, minPercent: 25));
       await c.read(preferencesProvider.notifier).setCity(lahoreId);
+      c.read(searchProvider);
+      // Applied after the change settles (QA P4-R1).
+      await Future<void>.delayed(Duration.zero);
       expect(
         c.read(searchProvider).filters,
         const SearchFilters(minPercent: 25),

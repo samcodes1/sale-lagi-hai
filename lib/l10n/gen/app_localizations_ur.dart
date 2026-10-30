@@ -705,6 +705,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get dealNoOutlets => 'اپنی قریبی دکان پر پوچھیں۔';
 
   @override
+  String get dealOfflineDetails =>
+      'تفصیل، شرائط اور دکانیں انٹرنیٹ واپس آنے پر نظر آئیں گی۔';
+
+  @override
   String get actionDirections => 'راستہ';
 
   @override

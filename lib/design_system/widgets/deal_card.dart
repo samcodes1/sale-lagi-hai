@@ -10,6 +10,7 @@ import 'package:sale_lagi_hai/design_system/theme/accent_primary.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
+import 'package:sale_lagi_hai/design_system/widgets/network_picture.dart';
 import 'package:sale_lagi_hai/design_system/widgets/price_text.dart';
 
 enum DealCardSize {
@@ -324,12 +325,7 @@ class _DealImage extends StatelessWidget {
     final plate = _BrandPlate(name: deal.brandName);
     final url = deal.imageUrl;
     if (url == null) return plate;
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      excludeFromSemantics: true,
-      errorBuilder: (_, _, _) => plate,
-    );
+    return NetworkPicture(url, fallback: plate);
   }
 }
 

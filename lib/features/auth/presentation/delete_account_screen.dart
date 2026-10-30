@@ -7,6 +7,7 @@ import 'package:sale_lagi_hai/core/l10n/failure_messages.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
+import 'package:sale_lagi_hai/core/theme/theme_mode_controller.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/domain/auth_repository.dart';
@@ -99,6 +100,8 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
           .warning('Could not clear local data', error: error);
     }
     await ref.read(preferencesProvider.notifier).reset();
+    // The theme goes with everything else (QA P4-D1).
+    ref.read(themeModeProvider.notifier).reset();
     messenger
       ?..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(message)));

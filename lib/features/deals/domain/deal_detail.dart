@@ -39,9 +39,14 @@ final class DealDetail {
     this.termsUr,
     this.sourceUrl,
     this.outlets = const [],
+    this.cachedAt,
   });
 
   final Deal deal;
+
+  /// Set on an offline copy (the card as last seen, QA P4-J1): when it was
+  /// read. Such a copy has no description, terms or outlets.
+  final DateTime? cachedAt;
   final String? descriptionEn;
   final String? descriptionUr;
   final String? termsEn;

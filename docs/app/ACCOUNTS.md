@@ -17,6 +17,8 @@ Profile → **Sign in** opens `/sign-in`, above the tabs.
   - Language, city and the theme stay.
   - If the lists can't be sent, they stay on the phone. A different account signing in then drops them rather than copying them into itself (QA 4.8 BUG-1 and BUG-9; see SAVED_AND_ALERTS.md).
 
+- **More than 200 follows (QA P4-F1):** follows go up in calls of at most 200 (`followChunks`), at sign-in and at sign-out. At sign-in, the city and language go in a call of their own, so a long follow list can't stop them.
+
 ## Deleting the account (UX flow F7, a Play requirement)
 Profile → **Delete account** opens `/profile/account/delete` (signed-in shoppers only). The page lists what goes and what stays, and asks for one confirmation.
 
@@ -35,6 +37,8 @@ Profile → **Delete account** opens `/profile/account/delete` (signed-in shoppe
 The function fails closed. Without `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, or with any problem in the request (wrong method, missing or malformed token), nothing is deleted. Logs never hold ids or tokens.
 
 **Still to do (Phase 9):** a web deletion page that works without the app, linked from the Play Data safety form.
+
+- After deleting, the theme also goes back to the phone's setting (QA P4-D1).
 
 ## Configuration
 | Setting | Where | Notes |
