@@ -56,8 +56,11 @@ final class FakeAlerts implements NotificationPermissionService {
   int requested = 0;
   int settingsOpened = 0;
 
+  /// What [status] says, before any request.
+  AlertPermission current = AlertPermission.denied;
+
   @override
-  Future<AlertPermission> status() async => AlertPermission.denied;
+  Future<AlertPermission> status() async => current;
 
   @override
   Future<AlertPermission> request() async {
@@ -108,6 +111,12 @@ final class Harness {
     this.overrides = const [],
     InMemoryKeyValueStore? store,
     this.network = NetworkStatus.online,
+    this.config = const AppConfig(
+      flavor: Flavor.dev,
+      appName: 'SLH',
+      supabaseUrl: '',
+      supabasePublishableKey: '',
+    ),
   }) : store = store ?? InMemoryKeyValueStore(),
        auth = auth ?? DemoAuthRepository(),
        location = FakeLocation(
@@ -126,6 +135,7 @@ final class Harness {
   final InMemoryKeyValueStore store;
   final NetworkStatus network;
   final DemoAuthRepository auth;
+  final AppConfig config;
   late ProviderContainer container;
 
   GoRouter get router => container.read(routerProvider);
@@ -143,14 +153,7 @@ final class Harness {
     addTearDown(tester.view.reset);
     container = ProviderContainer(
       overrides: [
-        appConfigProvider.overrideWithValue(
-          const AppConfig(
-            flavor: Flavor.dev,
-            appName: 'SLH',
-            supabaseUrl: '',
-            supabasePublishableKey: '',
-          ),
-        ),
+        appConfigProvider.overrideWithValue(config),
         backendGatewayProvider.overrideWithValue(backend),
         deviceLocaleProvider.overrideWithValue(device),
         keyValueStoreProvider.overrideWithValue(store),

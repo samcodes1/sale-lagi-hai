@@ -27,7 +27,9 @@ final class UrlLauncherLinkService implements LinkService {
   const new();
 
   static final _e164 = RegExp(r'^\+92[0-9]{9,10}$');
-  static final _address = RegExp(r'^[^@\s?&#/:]+@[^@\s?&#/:]+\.[a-z]{2,}$');
+  static final _address = RegExp(
+    r'^[^@\s?&#/:,;%]+@[^@\s?&#/:,;%]+\.[a-z]{2,}$',
+  );
 
   static Future<bool> _launch(Uri uri, LaunchMode mode) async {
     try {
@@ -85,12 +87,16 @@ final class UrlLauncherLinkService implements LinkService {
     );
   }
 
+  /// A mailto link to [address] if it is a plain address (no subject,
+  /// body or other recipients smuggled in), else `null`.
+  @visibleForTesting
+  static Uri? mailtoUri(String address) =>
+      _address.hasMatch(address) ? Uri(scheme: 'mailto', path: address) : null;
+
   @override
   Future<bool> email(String address) async {
-    if (!_address.hasMatch(address)) return false;
-    return await _launch(
-      Uri(scheme: 'mailto', path: address),
-      LaunchMode.externalApplication,
-    );
+    final uri = mailtoUri(address);
+    if (uri == null) return false;
+    return await _launch(uri, LaunchMode.externalApplication);
   }
 }

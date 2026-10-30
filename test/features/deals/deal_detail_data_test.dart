@@ -197,6 +197,32 @@ void main() {
       },
     );
 
+    test('a note with a card number is refused before sending', () async {
+      final backend = DemoGateway();
+      final report = container(backend).read(reportDealProvider);
+      final result = await report(
+        _deal(2),
+        ReportReason.other,
+        note: 'I paid with 4111 1111 1111 1111 and it failed',
+      );
+      expect(
+        result.failureOrNull,
+        isA<ValidationFailure>().having((f) => f.fieldErrors, 'fieldErrors', {
+          'note': 'card_number',
+        }),
+      );
+      expect(await backend.select(const TableQuery('reports')), isEmpty);
+      // Phone numbers and prices are fine.
+      expect(
+        await report(
+          _deal(2),
+          ReportReason.other,
+          note: 'Called 0300 1234567, price was Rs 2,999',
+        ),
+        const Success(ReportOutcome.sent),
+      );
+    });
+
     test('reasons map to the database enum', () {
       expect(ReportReason.values.map((r) => r.wire), [
         'expired',

@@ -224,6 +224,43 @@ void main() {
     });
   });
 
+  group('SUPPORT_EMAIL', () {
+    test('optional: absent or empty hides Contact us', () {
+      expect(AppConfig.fromMap(validValues()).supportEmail, isEmpty);
+      expect(
+        AppConfig.fromMap({...validValues(), 'SUPPORT_EMAIL': ' '})
+            .supportEmail,
+        isEmpty,
+      );
+    });
+
+    test('one plain address is kept, trimmed', () {
+      expect(
+        AppConfig.fromMap({
+          ...validValues(),
+          'SUPPORT_EMAIL': ' help@salelagihai.pk ',
+        }).supportEmail,
+        'help@salelagihai.pk',
+      );
+    });
+
+    test('anything else is rejected', () {
+      for (final bad in [
+        'help',
+        'help@salelagihai',
+        'a@b.pk?subject=hi',
+        'a,b@c.pk',
+        'https://salelagihai.pk',
+      ]) {
+        expect(
+          () => AppConfig.fromMap({...validValues(), 'SUPPORT_EMAIL': bad}),
+          throwsConfigProblem('SUPPORT_EMAIL'),
+          reason: bad,
+        );
+      }
+    });
+  });
+
   group('verifyBuildFlavor', () {
     final config = AppConfig.fromMap(validValues());
 

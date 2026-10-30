@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/core/backend/backend_errors.dart';
 import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
@@ -24,8 +26,15 @@ final class AlertPrefsController extends AsyncNotifier<AlertPrefs?> {
 
   @override
   Future<AlertPrefs?> build() async {
-    final user = ref.watch(currentUserProvider.select((u) => u.value?.id));
-    if (user == null) return null;
+    final user = ref.watch(
+      currentUserProvider.select(
+        (u) => u.hasValue || u.hasError ? (id: u.value?.id) : null,
+      ),
+    );
+    // Still loading the sign-in state: stay loading (a signed-in shopper
+    // never sees the guest view first); the state's arrival rebuilds this.
+    if (user == null) return await Completer<AlertPrefs?>().future;
+    if (user.id == null) return null;
     final result = await _guard(
       () => ref.read(backendGatewayProvider).rpc('my_alert_prefs'),
     );

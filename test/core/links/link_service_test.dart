@@ -32,11 +32,37 @@ void main() {
     expect(wa.queryParameters['text'], 'Khaadi: 40% off & more');
   });
 
+  test('email only goes to one plain address', () {
+    expect(
+      UrlLauncherLinkService.mailtoUri('help@salelagihai.pk').toString(),
+      'mailto:help@salelagihai.pk',
+    );
+    for (final bad in [
+      '',
+      'help',
+      'help@',
+      'help@salelagihai',
+      'a@b.pk?subject=hi',
+      'a@b.pk&cc=c@d.pk',
+      'a@b.pk,c@d.pk',
+      'a,b@c.pk',
+      'a;b@c.pk',
+      'a%2Cb@c.pk',
+      'a b@c.pk',
+      'a@b@c.pk',
+      'javascript:a@b.pk',
+    ]) {
+      expect(UrlLauncherLinkService.mailtoUri(bad), isNull, reason: bad);
+    }
+  });
+
   test('without a plugin, nothing opens and nothing throws', () async {
     const links = UrlLauncherLinkService();
     expect(await links.openWeb('https://brand.pk'), isFalse);
     expect(await links.openWeb('http://brand.pk'), isFalse);
     expect(await links.call('+923001234567'), isFalse);
     expect(await links.call('0300 1234567; rm'), isFalse);
+    expect(await links.email('help@salelagihai.pk'), isFalse);
+    expect(await links.email('a@b.pk?subject=hi'), isFalse);
   });
 }

@@ -1,12 +1,22 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show FutureProviderFamily;
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
+import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
 
 /// The legal documents bundled with the app, by name.
 enum LegalDoc { terms, privacy }
+
+/// The bundled text of a legal document in a language.
+final FutureProviderFamily<String, (LegalDoc, String)> legalTextProvider =
+    FutureProvider.autoDispose.family<String, (LegalDoc, String)>(
+      (ref, key) =>
+          rootBundle.loadString('assets/legal/${key.$1.name}_${key.$2}.txt'),
+    );
 
 /// A legal page in the app's language: bundled text (no network needed),
 /// where `# ` lines are headings and `- ` lines are list items.
@@ -22,16 +32,14 @@ class LegalScreen extends ConsumerWidget {
     final title = doc == LegalDoc.terms ? l10n.legalTerms : l10n.legalPrivacy;
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: FutureBuilder<String>(
-        future: rootBundle.loadString('assets/legal/${doc.name}_$lang.txt'),
-        builder: (context, snapshot) {
-          final text = snapshot.data;
-          if (text == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return _LegalText(text);
-        },
-      ),
+      body: switch (ref.watch(legalTextProvider((doc, lang)))) {
+        AsyncData(:final value) => _LegalText(value),
+        AsyncError() => ErrorView(
+          failure: const UnexpectedFailure(),
+          onRetry: () => ref.invalidate(legalTextProvider((doc, lang))),
+        ),
+        _ => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
