@@ -1,35 +1,25 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
 import 'package:sale_lagi_hai/app/router/routes.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
-import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/domain/auth_repository.dart';
 import 'package:sale_lagi_hai/features/auth/domain/phone_number.dart';
+import 'package:sale_lagi_hai/features/profile/presentation/language_choice.dart';
 
 /// Profile tab: the account (sign in to sync, or who is signed in, sign
-/// out, delete), the language (and, outside production, developer tools).
-/// Cards and notification settings arrive later in Phase 4.
+/// out, delete), My cards, the language, Settings (and, outside
+/// production, developer tools).
 class ProfileScreen extends ConsumerWidget {
   const new({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final locale = ref.watch(localeControllerProvider);
     final isProduction = ref.watch(appConfigProvider).flavor.isProduction;
-
-    void select(Locale? value) {
-      if (value != null) {
-        // Saving is fire-and-forget; failures are logged by the controller.
-        unawaited(ref.read(localeControllerProvider.notifier).select(value));
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navProfile)),
@@ -44,27 +34,13 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () => const MyCardsRoute().push<void>(context),
           ),
           const Divider(),
+          const LanguageChoice(),
+          const Divider(),
           ListTile(
-            title: Semantics(
-              header: true,
-              child: Text(
-                l10n.settingsLanguage,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-          ),
-          RadioGroup<Locale>(
-            groupValue: locale,
-            onChanged: select,
-            child: Column(
-              children: [
-                for (final (option, label) in [
-                  (AppLocales.english, l10n.languageEnglish),
-                  (AppLocales.urdu, l10n.languageUrdu),
-                ])
-                  RadioListTile<Locale>(value: option, title: Text(label)),
-              ],
-            ),
+            leading: const Icon(Icons.settings_outlined),
+            title: Text(l10n.settingsTitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => const SettingsRoute().push<void>(context),
           ),
           if (!isProduction) ...[
             const Divider(),

@@ -139,6 +139,10 @@ final class _Links implements LinkService {
     calls.add('call $e164');
     return true;
   }
+
+  // (Developer, 4.9: LinkService gained email.)
+  @override
+  Future<bool> email(String address) async => true;
 }
 
 final Finder _page = find.byWidgetPredicate(

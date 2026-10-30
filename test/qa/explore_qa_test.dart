@@ -96,6 +96,10 @@ final class _Links implements LinkService {
 
   @override
   Future<bool> call(String e164) async => true;
+
+  // (Developer, 4.9: LinkService gained email.)
+  @override
+  Future<bool> email(String address) async => true;
 }
 
 Future<void> _signIn(DemoAuthRepository auth) async {

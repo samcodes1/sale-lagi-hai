@@ -322,13 +322,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get languageUrdu => 'اردو';
 
   @override
-  String get themeSystem => 'سسٹم کے مطابق';
+  String get themeSystem => 'فون کے مطابق';
 
   @override
-  String get themeLight => 'لائٹ';
+  String get themeLight => 'روشن';
 
   @override
-  String get themeDark => 'ڈارک';
+  String get themeDark => 'گہرا';
 
   @override
   String get actionContinue => 'آگے چلیں';
@@ -1103,4 +1103,155 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get reportNoteCardNumber =>
       'براہِ کرم کارڈ نمبر نہ لکھیں۔ ہمیں ان کی کبھی ضرورت نہیں ہوتی۔';
+
+  @override
+  String get settingsTitle => 'سیٹنگز';
+
+  @override
+  String get settingsCity => 'شہر';
+
+  @override
+  String get settingsTheme => 'ظاہری انداز';
+
+  @override
+  String get settingsNotifications => 'نوٹیفکیشنز';
+
+  @override
+  String get settingsPrivacy => 'رازداری';
+
+  @override
+  String get settingsLegal => 'قانونی';
+
+  @override
+  String get legalTerms => 'استعمال کی شرائط';
+
+  @override
+  String get legalPrivacy => 'رازداری کی پالیسی';
+
+  @override
+  String get settingsAbout => 'تعارف';
+
+  @override
+  String aboutVersion(String version) {
+    return 'ورژن ⁦$version⁩';
+  }
+
+  @override
+  String get aboutLicenses => 'اوپن سورس لائسنس';
+
+  @override
+  String get aboutContact => 'ہم سے رابطہ کریں';
+
+  @override
+  String get aboutTagline => 'پاکستان کی ہر سیل، ایک جگہ۔';
+
+  @override
+  String get notifSignIn =>
+      'کون سے الرٹس ملیں، یہ چننے کے لیے سائن اِن کریں۔ فالو کرنا اکاؤنٹ کے بغیر بھی ہوتا ہے۔';
+
+  @override
+  String get notifPush => 'پُش نوٹیفکیشنز';
+
+  @override
+  String get notifPushHint => 'اس فون پر الرٹس، ان باکس کے ساتھ ساتھ۔';
+
+  @override
+  String get notifBlocked =>
+      'آپ کے فون کی سیٹنگز میں اس ایپ کے نوٹیفکیشنز بند ہیں۔';
+
+  @override
+  String get notifTopics => 'کس بارے میں بتائیں';
+
+  @override
+  String get topicBrands => 'فالو کیے ہوئے برانڈز';
+
+  @override
+  String get topicCategories => 'فالو کیے ہوئے زمرے';
+
+  @override
+  String get topicCards => 'آپ کے کارڈز کی آفرز';
+
+  @override
+  String get topicCity => 'آپ کے شہر کی نئی ڈیلز';
+
+  @override
+  String get topicPriceDrops => 'محفوظ کردہ ڈیلز کی قیمت میں کمی';
+
+  @override
+  String get topicExpiring => 'جلد ختم ہونے والی محفوظ ڈیلز';
+
+  @override
+  String get notifFrequency => 'کتنی بار';
+
+  @override
+  String get freqLow => 'دن میں زیادہ سے زیادہ ایک';
+
+  @override
+  String get freqNormal => 'دن میں زیادہ سے زیادہ تین';
+
+  @override
+  String get freqHigh => 'دن میں زیادہ سے زیادہ چھ';
+
+  @override
+  String get notifQuiet => 'خاموش اوقات';
+
+  @override
+  String quietFrom(String time) {
+    return '⁦$time⁩ سے';
+  }
+
+  @override
+  String quietTo(String time) {
+    return '⁦$time⁩ تک';
+  }
+
+  @override
+  String get quietHint =>
+      'ان اوقات میں کوئی پُش نہیں (پاکستان کا وقت)۔ یہ صبح تک انتظار کرتی ہیں۔';
+
+  @override
+  String get quietSame => 'خاموش اوقات کا آغاز اور اختتام الگ ہونا چاہیے۔';
+
+  @override
+  String get notifSaveFailed => 'یہ محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get privacyOnPhone => 'اس فون پر';
+
+  @override
+  String get privacyOnPhoneBody =>
+      'آپ کی زبان، شہر، فالو، محفوظ کردہ ڈیلز، حالیہ تلاش اور کارڈز۔ آپ کا اندازاً مقام صرف \"آپ کے قریب\" کے لیے استعمال ہوتا ہے، اور کبھی محفوظ نہیں ہوتا۔';
+
+  @override
+  String get privacyInAccount => 'آپ کے اکاؤنٹ میں';
+
+  @override
+  String get privacyInAccountBody =>
+      'اگر آپ سائن اِن کریں: یہی پسند، تاکہ دوسرے فون پر بھی ملے، اور آپ کی الرٹ سیٹنگز اور الرٹس۔';
+
+  @override
+  String get privacyNever =>
+      'کبھی نہیں: کارڈ نمبر، آپ کا درست مقام، یا برانڈز کو بیچا گیا کچھ بھی۔';
+
+  @override
+  String get actionClearSearches => 'حالیہ تلاش صاف کریں';
+
+  @override
+  String get actionClearCache => 'ڈیلز کی محفوظ کاپیاں صاف کریں';
+
+  @override
+  String get actionClearPhone => 'اس فون پر سب کچھ صاف کریں';
+
+  @override
+  String get clearPhoneTitle => 'یہ فون صاف کریں؟';
+
+  @override
+  String get clearPhoneBody =>
+      'اس فون پر آپ کی پسند، فالو، محفوظ کردہ ڈیلز اور کارڈز ہٹ جائیں گے، اور آپ سائن آؤٹ ہو جائیں گے۔ اکاؤنٹ میں موجود سب کچھ رہے گا۔';
+
+  @override
+  String get actionClear => 'صاف کریں';
+
+  @override
+  String get clearedToast => 'صاف ہو گیا۔';
 }

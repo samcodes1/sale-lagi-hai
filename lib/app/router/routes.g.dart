@@ -54,6 +54,39 @@ RouteBase get $appShellRoute => StatefulShellRouteData.$route(
               parentNavigatorKey: FollowingRoute.$parentNavigatorKey,
               factory: $FollowingRoute._fromState,
             ),
+            GoRouteData.$route(
+              path: 'settings',
+              hasOverriddenOnExit: false,
+              parentNavigatorKey: SettingsRoute.$parentNavigatorKey,
+              factory: $SettingsRoute._fromState,
+              routes: [
+                GoRouteData.$route(
+                  path: 'notifications',
+                  hasOverriddenOnExit: false,
+                  parentNavigatorKey:
+                      NotificationSettingsRoute.$parentNavigatorKey,
+                  factory: $NotificationSettingsRoute._fromState,
+                ),
+                GoRouteData.$route(
+                  path: 'privacy',
+                  hasOverriddenOnExit: false,
+                  parentNavigatorKey: PrivacyRoute.$parentNavigatorKey,
+                  factory: $PrivacyRoute._fromState,
+                ),
+                GoRouteData.$route(
+                  path: 'legal/:doc',
+                  hasOverriddenOnExit: false,
+                  parentNavigatorKey: LegalRoute.$parentNavigatorKey,
+                  factory: $LegalRoute._fromState,
+                ),
+                GoRouteData.$route(
+                  path: 'about',
+                  hasOverriddenOnExit: false,
+                  parentNavigatorKey: AboutRoute.$parentNavigatorKey,
+                  factory: $AboutRoute._fromState,
+                ),
+              ],
+            ),
           ],
         ),
       ],
@@ -263,6 +296,112 @@ mixin $FollowingRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/following');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $SettingsRoute on GoRouteData {
+  static SettingsRoute _fromState(GoRouterState state) => const SettingsRoute();
+
+  @override
+  String get location => GoRouteData.$location('/settings');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $NotificationSettingsRoute on GoRouteData {
+  static NotificationSettingsRoute _fromState(GoRouterState state) =>
+      const NotificationSettingsRoute();
+
+  @override
+  String get location => GoRouteData.$location('/settings/notifications');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $PrivacyRoute on GoRouteData {
+  static PrivacyRoute _fromState(GoRouterState state) => const PrivacyRoute();
+
+  @override
+  String get location => GoRouteData.$location('/settings/privacy');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $LegalRoute on GoRouteData {
+  static LegalRoute _fromState(GoRouterState state) =>
+      LegalRoute(doc: state.pathParameters['doc']!);
+
+  LegalRoute get _self => this as LegalRoute;
+
+  @override
+  String get location => GoRouteData.$location(
+    '/settings/legal/${Uri.encodeComponent(_self.doc)}',
+  );
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+mixin $AboutRoute on GoRouteData {
+  static AboutRoute _fromState(GoRouterState state) => const AboutRoute();
+
+  @override
+  String get location => GoRouteData.$location('/settings/about');
 
   @override
   void go(BuildContext context) => context.go(location);

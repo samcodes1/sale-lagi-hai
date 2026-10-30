@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Opens things outside the app. Only these kinds, each with a fixed
-/// scheme: web pages (https only, in Custom Tabs), maps, WhatsApp and a
-/// phone call. Nothing else from deal data is ever launched.
+/// scheme: web pages (https only, in Custom Tabs), maps, WhatsApp, a phone
+/// call and an email to an address. Nothing else from deal data is ever
+/// launched.
 abstract interface class LinkService {
   /// An https page in an in-app browser tab. Anything else is refused.
   Future<bool> openWeb(String url);
@@ -17,12 +18,16 @@ abstract interface class LinkService {
 
   /// The dialler with [e164] filled in (never calls by itself).
   Future<bool> call(String e164);
+
+  /// A new email to [address] (Contact us). Only a plain address.
+  Future<bool> email(String address);
 }
 
 final class UrlLauncherLinkService implements LinkService {
   const new();
 
   static final _e164 = RegExp(r'^\+92[0-9]{9,10}$');
+  static final _address = RegExp(r'^[^@\s?&#/:]+@[^@\s?&#/:]+\.[a-z]{2,}$');
 
   static Future<bool> _launch(Uri uri, LaunchMode mode) async {
     try {
@@ -76,6 +81,15 @@ final class UrlLauncherLinkService implements LinkService {
     if (!_e164.hasMatch(e164)) return false;
     return await _launch(
       Uri(scheme: 'tel', path: e164),
+      LaunchMode.externalApplication,
+    );
+  }
+
+  @override
+  Future<bool> email(String address) async {
+    if (!_address.hasMatch(address)) return false;
+    return await _launch(
+      Uri(scheme: 'mailto', path: address),
       LaunchMode.externalApplication,
     );
   }

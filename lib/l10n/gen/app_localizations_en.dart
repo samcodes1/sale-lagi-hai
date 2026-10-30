@@ -322,7 +322,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageUrdu => 'اردو';
 
   @override
-  String get themeSystem => 'System default';
+  String get themeSystem => 'As on this phone';
 
   @override
   String get themeLight => 'Light';
@@ -1099,4 +1099,155 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reportNoteCardNumber =>
       'Please leave out card numbers. We never need them.';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsCity => 'City';
+
+  @override
+  String get settingsTheme => 'Appearance';
+
+  @override
+  String get settingsNotifications => 'Notifications';
+
+  @override
+  String get settingsPrivacy => 'Privacy';
+
+  @override
+  String get settingsLegal => 'Legal';
+
+  @override
+  String get legalTerms => 'Terms of use';
+
+  @override
+  String get legalPrivacy => 'Privacy policy';
+
+  @override
+  String get settingsAbout => 'About';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutLicenses => 'Open-source licences';
+
+  @override
+  String get aboutContact => 'Contact us';
+
+  @override
+  String get aboutTagline => 'Every sale in Pakistan, in one place.';
+
+  @override
+  String get notifSignIn =>
+      'Sign in to choose which alerts you get. Follows work without an account too.';
+
+  @override
+  String get notifPush => 'Push notifications';
+
+  @override
+  String get notifPushHint => 'Alerts on this phone, as well as in the inbox.';
+
+  @override
+  String get notifBlocked =>
+      'Notifications are turned off for this app in your phone\'s settings.';
+
+  @override
+  String get notifTopics => 'What to tell you about';
+
+  @override
+  String get topicBrands => 'Brands you follow';
+
+  @override
+  String get topicCategories => 'Categories you follow';
+
+  @override
+  String get topicCards => 'Offers for your cards';
+
+  @override
+  String get topicCity => 'New deals in your city';
+
+  @override
+  String get topicPriceDrops => 'Price drops on saved deals';
+
+  @override
+  String get topicExpiring => 'Saved deals ending soon';
+
+  @override
+  String get notifFrequency => 'How often';
+
+  @override
+  String get freqLow => 'At most 1 a day';
+
+  @override
+  String get freqNormal => 'At most 3 a day';
+
+  @override
+  String get freqHigh => 'At most 6 a day';
+
+  @override
+  String get notifQuiet => 'Quiet hours';
+
+  @override
+  String quietFrom(String time) {
+    return 'From $time';
+  }
+
+  @override
+  String quietTo(String time) {
+    return 'Until $time';
+  }
+
+  @override
+  String get quietHint =>
+      'No pushes in these hours (Pakistan time). They wait until the morning.';
+
+  @override
+  String get quietSame => 'Quiet hours need a different start and end.';
+
+  @override
+  String get notifSaveFailed => 'Couldn\'t save that. Try again.';
+
+  @override
+  String get privacyOnPhone => 'On this phone';
+
+  @override
+  String get privacyOnPhoneBody =>
+      'Your language, city, follows, saved deals, recent searches and cards. Your approximate location is used only for \"Near you\", and never stored.';
+
+  @override
+  String get privacyInAccount => 'In your account';
+
+  @override
+  String get privacyInAccountBody =>
+      'If you sign in: the same choices, so they follow you to another phone, plus your alert settings and alerts.';
+
+  @override
+  String get privacyNever =>
+      'Never: card numbers, your exact location, or anything sold to brands.';
+
+  @override
+  String get actionClearSearches => 'Clear recent searches';
+
+  @override
+  String get actionClearCache => 'Clear saved copies of deals';
+
+  @override
+  String get actionClearPhone => 'Clear everything on this phone';
+
+  @override
+  String get clearPhoneTitle => 'Clear this phone?';
+
+  @override
+  String get clearPhoneBody =>
+      'Your choices, follows, saved deals and cards on this phone are removed, and you are signed out. What is in your account stays.';
+
+  @override
+  String get actionClear => 'Clear';
+
+  @override
+  String get clearedToast => 'Cleared.';
 }

@@ -27,6 +27,11 @@ import 'package:sale_lagi_hai/features/onboarding/presentation/language_step.dar
 import 'package:sale_lagi_hai/features/profile/presentation/profile_screen.dart';
 import 'package:sale_lagi_hai/features/saved/presentation/saved_screen.dart';
 import 'package:sale_lagi_hai/features/search/presentation/search_screen.dart';
+import 'package:sale_lagi_hai/features/settings/presentation/about_screen.dart';
+import 'package:sale_lagi_hai/features/settings/presentation/legal_screen.dart';
+import 'package:sale_lagi_hai/features/settings/presentation/notification_settings_screen.dart';
+import 'package:sale_lagi_hai/features/settings/presentation/privacy_screen.dart';
+import 'package:sale_lagi_hai/features/settings/presentation/settings_screen.dart';
 
 part 'routes.g.dart';
 
@@ -50,6 +55,15 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
             TypedGoRoute<SearchRoute>(path: 'search'),
             TypedGoRoute<MyCardsRoute>(path: 'cards'),
             TypedGoRoute<FollowingRoute>(path: 'following'),
+            TypedGoRoute<SettingsRoute>(
+              path: 'settings',
+              routes: [
+                TypedGoRoute<NotificationSettingsRoute>(path: 'notifications'),
+                TypedGoRoute<PrivacyRoute>(path: 'privacy'),
+                TypedGoRoute<LegalRoute>(path: 'legal/:doc'),
+                TypedGoRoute<AboutRoute>(path: 'about'),
+              ],
+            ),
           ],
         ),
       ],
@@ -240,6 +254,68 @@ final class FollowingRoute extends GoRouteData with $FollowingRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       const FollowingScreen();
+}
+
+/// `/settings` and its pages.
+final class SettingsRoute extends GoRouteData with $SettingsRoute {
+  const new();
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const SettingsScreen();
+}
+
+final class NotificationSettingsRoute extends GoRouteData
+    with $NotificationSettingsRoute {
+  const new();
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const NotificationSettingsScreen();
+}
+
+final class PrivacyRoute extends GoRouteData with $PrivacyRoute {
+  const new();
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const PrivacyScreen();
+}
+
+/// `/settings/legal/terms` or `/settings/legal/privacy`; anything else
+/// goes to Settings.
+final class LegalRoute extends GoRouteData with $LegalRoute {
+  const new({required this.doc});
+
+  final String doc;
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
+      LegalDoc.values.any((d) => d.name == doc)
+      ? null
+      : const SettingsRoute().location;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      LegalScreen(doc: LegalDoc.values.byName(doc));
+}
+
+final class AboutRoute extends GoRouteData with $AboutRoute {
+  const new();
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) =>
+      const AboutScreen();
 }
 
 // ------------------------------------------------------------- account ---

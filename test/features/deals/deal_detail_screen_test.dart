@@ -42,6 +42,12 @@ final class FakeLinks implements LinkService {
     calls.add('call $e164');
     return works;
   }
+
+  @override
+  Future<bool> email(String address) async {
+    calls.add('email $address');
+    return works;
+  }
 }
 
 String _deal(int n) => demoDeals.firstWhere((d) => d.n == n).id;

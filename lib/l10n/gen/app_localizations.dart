@@ -539,7 +539,7 @@ abstract class AppLocalizations {
   /// No description provided for @themeSystem.
   ///
   /// In en, this message translates to:
-  /// **'System default'**
+  /// **'As on this phone'**
   String get themeSystem;
 
   /// No description provided for @themeLight.
@@ -1807,6 +1807,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please leave out card numbers. We never need them.'**
   String get reportNoteCardNumber;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get settingsCity;
+
+  /// No description provided for @settingsTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsTheme;
+
+  /// No description provided for @settingsNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotifications;
+
+  /// No description provided for @settingsPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get settingsPrivacy;
+
+  /// No description provided for @settingsLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get settingsLegal;
+
+  /// No description provided for @legalTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of use'**
+  String get legalTerms;
+
+  /// No description provided for @legalPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get legalPrivacy;
+
+  /// No description provided for @settingsAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsAbout;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String aboutVersion(String version);
+
+  /// No description provided for @aboutLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Open-source licences'**
+  String get aboutLicenses;
+
+  /// No description provided for @aboutContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get aboutContact;
+
+  /// No description provided for @aboutTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Every sale in Pakistan, in one place.'**
+  String get aboutTagline;
+
+  /// No description provided for @notifSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to choose which alerts you get. Follows work without an account too.'**
+  String get notifSignIn;
+
+  /// No description provided for @notifPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get notifPush;
+
+  /// No description provided for @notifPushHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts on this phone, as well as in the inbox.'**
+  String get notifPushHint;
+
+  /// No description provided for @notifBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are turned off for this app in your phone\'s settings.'**
+  String get notifBlocked;
+
+  /// No description provided for @notifTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'What to tell you about'**
+  String get notifTopics;
+
+  /// No description provided for @topicBrands.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands you follow'**
+  String get topicBrands;
+
+  /// No description provided for @topicCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories you follow'**
+  String get topicCategories;
+
+  /// No description provided for @topicCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers for your cards'**
+  String get topicCards;
+
+  /// No description provided for @topicCity.
+  ///
+  /// In en, this message translates to:
+  /// **'New deals in your city'**
+  String get topicCity;
+
+  /// No description provided for @topicPriceDrops.
+  ///
+  /// In en, this message translates to:
+  /// **'Price drops on saved deals'**
+  String get topicPriceDrops;
+
+  /// No description provided for @topicExpiring.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved deals ending soon'**
+  String get topicExpiring;
+
+  /// No description provided for @notifFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'How often'**
+  String get notifFrequency;
+
+  /// No description provided for @freqLow.
+  ///
+  /// In en, this message translates to:
+  /// **'At most 1 a day'**
+  String get freqLow;
+
+  /// No description provided for @freqNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'At most 3 a day'**
+  String get freqNormal;
+
+  /// No description provided for @freqHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'At most 6 a day'**
+  String get freqHigh;
+
+  /// No description provided for @notifQuiet.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet hours'**
+  String get notifQuiet;
+
+  /// No description provided for @quietFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From {time}'**
+  String quietFrom(String time);
+
+  /// No description provided for @quietTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Until {time}'**
+  String quietTo(String time);
+
+  /// No description provided for @quietHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No pushes in these hours (Pakistan time). They wait until the morning.'**
+  String get quietHint;
+
+  /// No description provided for @quietSame.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet hours need a different start and end.'**
+  String get quietSame;
+
+  /// No description provided for @notifSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save that. Try again.'**
+  String get notifSaveFailed;
+
+  /// No description provided for @privacyOnPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'On this phone'**
+  String get privacyOnPhone;
+
+  /// No description provided for @privacyOnPhoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your language, city, follows, saved deals, recent searches and cards. Your approximate location is used only for \"Near you\", and never stored.'**
+  String get privacyOnPhoneBody;
+
+  /// No description provided for @privacyInAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'In your account'**
+  String get privacyInAccount;
+
+  /// No description provided for @privacyInAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If you sign in: the same choices, so they follow you to another phone, plus your alert settings and alerts.'**
+  String get privacyInAccountBody;
+
+  /// No description provided for @privacyNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never: card numbers, your exact location, or anything sold to brands.'**
+  String get privacyNever;
+
+  /// No description provided for @actionClearSearches.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear recent searches'**
+  String get actionClearSearches;
+
+  /// No description provided for @actionClearCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear saved copies of deals'**
+  String get actionClearCache;
+
+  /// No description provided for @actionClearPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear everything on this phone'**
+  String get actionClearPhone;
+
+  /// No description provided for @clearPhoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear this phone?'**
+  String get clearPhoneTitle;
+
+  /// No description provided for @clearPhoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choices, follows, saved deals and cards on this phone are removed, and you are signed out. What is in your account stays.'**
+  String get clearPhoneBody;
+
+  /// No description provided for @actionClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get actionClear;
+
+  /// No description provided for @clearedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared.'**
+  String get clearedToast;
 }
 
 class _AppLocalizationsDelegate
