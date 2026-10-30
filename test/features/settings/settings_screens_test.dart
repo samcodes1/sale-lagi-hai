@@ -14,6 +14,7 @@ import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/device/notification_permission.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/links/link_service.dart';
+import 'package:sale_lagi_hai/core/network/connectivity_service.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/theme/theme_mode_controller.dart';
 import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
@@ -324,6 +325,29 @@ void main() {
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
       expect(_prefs(h)?.quietStart, (hour: 22, minute: 0));
+    });
+
+    testWidgets('offline: a change stays, and says it will be sent', (
+      tester,
+    ) async {
+      final h = Harness(
+        saved: const ShopperPreferences(onboarded: true, cityId: karachiId),
+        auth: await _signedIn(),
+        config: _config,
+        network: NetworkStatus.offline,
+      );
+      await h.pump(tester);
+      h.router.go('/settings/notifications');
+      await tester.pumpAndSettle();
+      await _tap(tester, 'New deals in your city');
+      expect(
+        find.text(
+          'Saved on this phone. It will be sent when you are back online.',
+        ),
+        findsOneWidget,
+      );
+      expect(_prefs(h)?.myCity, isFalse);
+      expect(_switch(tester, 'New deals in your city'), isFalse);
     });
 
     testWidgets('a failed save comes back as it was, with a note', (

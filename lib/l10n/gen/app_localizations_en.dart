@@ -1216,6 +1216,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifSaveFailed => 'Couldn\'t save that. Try again.';
 
   @override
+  String get notifQueued =>
+      'Saved on this phone. It will be sent when you are back online.';
+
+  @override
   String get privacyOnPhone => 'On this phone';
 
   @override

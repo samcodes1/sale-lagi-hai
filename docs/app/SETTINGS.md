@@ -39,8 +39,11 @@ Settings (screen S18) opens from Profile, at `/settings`. Its pages open over th
 - **S1:** the city row shows no name, rather than "All Pakistan", while a chosen city's name can't load.
 - **M1:** capitals in the support address's domain are accepted.
 - **T1:** out-of-range times from the database (24:00) fall back to the default.
+- **N6 (S3), fixed after the gate:** with the phone offline, a change stays on screen and waits on the phone (`settings.alert_prefs.queued.v1`, tied to the account), with "Saved on this phone. It will be sent when you are back online."
+  - It goes out when the phone is back online, or at the next load (after a restart too), together with any later change.
+  - A refusal from the server drops it and shows the saved values.
+  - With the phone online, a failed save still reverts with a note (UX S19: "Save failed → revert + toast"; offline: "Queued").
 - **Open, carried forward:**
-  - **N6 (S3):** offline changes are reverted with a note, not queued as the UX spec says. A queue needs to be kept on the phone and replayed when back online.
   - **V1 (S4):** at 200% text, Urdu app-bar titles draw below the toolbar, and the system time picker clips its AM/PM toggle.
 
 ## Theme

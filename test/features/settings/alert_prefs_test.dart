@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sale_lagi_hai/core/backend/backend_gateway.dart';
@@ -5,6 +8,7 @@ import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
 import 'package:sale_lagi_hai/core/backend/demo/demo_gateway.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/logging/app_logger.dart';
+import 'package:sale_lagi_hai/core/network/connectivity_service.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
@@ -20,6 +24,9 @@ final class _Recording implements BackendGateway {
   bool failUpdates = false;
   bool failReads = false;
 
+  /// Updates are refused as the database would refuse a bad value.
+  bool refuseUpdates = false;
+
   @override
   Future<List<Map<String, Object?>>> rpc(
     String function, [
@@ -31,6 +38,9 @@ final class _Recording implements BackendGateway {
     }
     if (failUpdates && function == 'update_alert_prefs') {
       throw const OfflineFailure();
+    }
+    if (refuseUpdates && function == 'update_alert_prefs') {
+      throw const ValidationFailure();
     }
     return await _demo.rpc(function, params);
   }
@@ -111,11 +121,14 @@ void main() {
   group('the alert prefs of the signed-in shopper', () {
     late _Recording backend;
     late DemoAuthRepository auth;
+    late InMemoryKeyValueStore store;
+    late StreamController<NetworkStatus> network;
 
     ProviderContainer container() {
       final c = ProviderContainer(
         overrides: [
-          keyValueStoreProvider.overrideWithValue(InMemoryKeyValueStore()),
+          keyValueStoreProvider.overrideWithValue(store),
+          networkStatusProvider.overrideWith((ref) => network.stream),
           loggerProvider.overrideWithValue(AppLogger(sinks: [])),
           backendGatewayProvider.overrideWithValue(backend),
           authRepositoryProvider.overrideWithValue(auth),
@@ -132,6 +145,100 @@ void main() {
     setUp(() {
       backend = _Recording();
       auth = DemoAuthRepository();
+      store = InMemoryKeyValueStore();
+      network = StreamController<NetworkStatus>.broadcast();
+      addTearDown(network.close);
+    });
+
+    Future<void> goOffline(ProviderContainer c) async {
+      final sub = c.listen(networkStatusProvider, (_, _) {});
+      addTearDown(sub.close);
+      network.add(NetworkStatus.offline);
+      await Future<void>.delayed(Duration.zero);
+    }
+
+    group('offline (UX S19 "Queued", QA 4.9-N6)', () {
+      test(
+        'a change is kept on the phone, not sent, and sent when back',
+        () async {
+          await _signIn(auth);
+          final c = container();
+          await c.read(alertPrefsProvider.future);
+          await goOffline(c);
+          final sent = backend.calls.length;
+          const next = AlertPrefs(myCity: false);
+          expect(
+            await c.read(alertPrefsProvider.notifier).change(next),
+            isNull,
+          );
+          expect(c.read(alertPrefsProvider).value, next);
+          expect(c.read(alertPrefsProvider.notifier).queued, isTrue);
+          expect(
+            backend.calls,
+            hasLength(sent),
+            reason: 'nothing sent offline',
+          );
+          expect(jsonDecode(store.values[alertPrefsQueueKey]!), {
+            'user': auth.currentUser!.id,
+            'changes': {'my_city': false},
+          });
+
+          network.add(NetworkStatus.online);
+          await Future<void>.delayed(Duration.zero);
+          await Future<void>.delayed(Duration.zero);
+          final (function, params) = backend.calls.last;
+          expect(function, 'update_alert_prefs');
+          expect(params, {'my_city': false});
+          expect(c.read(alertPrefsProvider.notifier).queued, isFalse);
+          expect(store.values.containsKey(alertPrefsQueueKey), isFalse);
+        },
+      );
+
+      test('the queue outlives a restart, and goes out then', () async {
+        await _signIn(auth);
+        store.values[alertPrefsQueueKey] = jsonEncode({
+          'user': auth.currentUser!.id,
+          'changes': {'frequency': 'high'},
+        });
+        final c = container();
+        final shown = await c.read(alertPrefsProvider.future);
+        expect(shown?.frequency, AlertFrequency.high);
+        await Future<void>.delayed(Duration.zero);
+        final (function, params) = backend.calls.last;
+        expect(function, 'update_alert_prefs');
+        expect(params, {'frequency': 'high'});
+        expect(store.values.containsKey(alertPrefsQueueKey), isFalse);
+      });
+
+      test("another account's queue is ignored", () async {
+        await _signIn(auth);
+        store.values[alertPrefsQueueKey] = jsonEncode({
+          'user': 'someone-else',
+          'changes': {'my_cards': false},
+        });
+        final c = container();
+        expect((await c.read(alertPrefsProvider.future))?.myCards, isTrue);
+        expect(
+          backend.calls.map((c) => c.$1),
+          isNot(contains('update_alert_prefs')),
+        );
+      });
+
+      test('a queued change the server refuses is dropped; the saved values '
+          'show', () async {
+        await _signIn(auth);
+        store.values[alertPrefsQueueKey] = jsonEncode({
+          'user': auth.currentUser!.id,
+          'changes': {'my_city': false},
+        });
+        backend.refuseUpdates = true;
+        final c = container();
+        await c.read(alertPrefsProvider.future);
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        expect(store.values.containsKey(alertPrefsQueueKey), isFalse);
+        expect((await c.read(alertPrefsProvider.future))?.myCity, isTrue);
+      });
     });
 
     test('guests have none, and nothing is asked of the server', () async {

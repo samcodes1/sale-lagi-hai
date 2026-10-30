@@ -2018,6 +2018,12 @@ abstract class AppLocalizations {
   /// **'Couldn\'t save that. Try again.'**
   String get notifSaveFailed;
 
+  /// No description provided for @notifQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this phone. It will be sent when you are back online.'**
+  String get notifQueued;
+
   /// No description provided for @privacyOnPhone.
   ///
   /// In en, this message translates to:

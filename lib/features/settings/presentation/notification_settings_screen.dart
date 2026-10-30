@@ -64,9 +64,15 @@ class _NotificationSettingsScreenState
 
   Future<void> _save(AlertPrefs next) async {
     final messenger = ScaffoldMessenger.maybeOf(context);
-    final note = context.l10n.notifSaveFailed;
-    final failure = await ref.read(alertPrefsProvider.notifier).change(next);
-    if (failure != null) {
+    final l10n = context.l10n;
+    final prefs = ref.read(alertPrefsProvider.notifier);
+    final failure = await prefs.change(next);
+    final note = failure != null
+        ? l10n.notifSaveFailed
+        : prefs.queued
+        ? l10n.notifQueued
+        : null;
+    if (note != null) {
       messenger
         ?..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(note)));

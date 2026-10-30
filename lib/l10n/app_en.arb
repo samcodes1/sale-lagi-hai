@@ -397,6 +397,7 @@
   "quietHint": "No pushes in these hours (Pakistan time). They wait until the morning.",
   "quietSame": "Quiet hours need a different start and end.",
   "notifSaveFailed": "Couldn't save that. Try again.",
+  "notifQueued": "Saved on this phone. It will be sent when you are back online.",
   "privacyOnPhone": "On this phone",
   "privacyOnPhoneBody": "Your language, city, follows, saved deals, recent searches and cards. Your approximate location is used only for \"Near you\", and never stored.",
   "privacyInAccount": "In your account",

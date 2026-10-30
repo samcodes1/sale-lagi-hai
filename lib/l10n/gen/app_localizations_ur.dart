@@ -1219,6 +1219,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get notifSaveFailed => 'یہ محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔';
 
   @override
+  String get notifQueued =>
+      'اس فون پر محفوظ ہو گیا۔ انٹرنیٹ واپس آنے پر بھیج دیا جائے گا۔';
+
+  @override
   String get privacyOnPhone => 'اس فون پر';
 
   @override
