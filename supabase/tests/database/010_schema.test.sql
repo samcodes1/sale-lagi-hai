@@ -55,7 +55,8 @@ select set_eq($$
   select table_name::text from information_schema.role_table_grants
   where table_schema = 'public' and grantee = 'anon'
 $$, array['cities', 'areas', 'categories', 'banks', 'card_products', 'brands', 'outlets',
-          'deals', 'deal_targets', 'card_offers', 'placements', 'deal_cards'],
+          'deals', 'deal_targets', 'card_offers', 'placements', 'deal_cards',
+          'sponsor_banners'],
 'anon has grants on the public-content tables only');
 
 -- The only private functions the API roles can call are the RLS helpers.

@@ -166,6 +166,7 @@ class _Copy extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Flexible(
+            flex: 3,
             child: Text(
               banner.title(urdu: urdu),
               maxLines: 2,
@@ -175,6 +176,7 @@ class _Copy extends StatelessWidget {
           ),
           if (subtitle != null)
             Flexible(
+              flex: 2,
               child: Text(
                 subtitle,
                 maxLines: 2,
