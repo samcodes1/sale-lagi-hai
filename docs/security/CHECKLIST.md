@@ -38,7 +38,7 @@ The security baseline from sub-phase 1.7, mapped to OWASP MASVS v2.1 and the Mob
 | CODE-3 | No vulnerable components | ✅ | Dependency audit (above) |
 | CODE-4 | Input validation | 🟡 | Route parameters are validated (`route_params.dart`, UUIDs). Server-side validation comes in Phase 2 |
 | RESILIENCE-1–4 | Integrity, anti-tamper | 🟡 / ⏳ | R8 and Dart obfuscation now. Play Integrity on writes in Phase 5 |
-| PRIVACY-1–4 | Minimisation, transparency, control | 🟡 / ⏳ | AD_ID and READ_PHONE_STATE stripped. Approximate location only, asked on tap, matched to a city on the phone and never sent or stored (4.1). Data safety form, deletion and export in Phase 9 |
+| PRIVACY-1–4 | Minimisation, transparency, control | 🟡 / ⏳ | READ_PHONE_STATE stripped. AD_ID is kept for AdMob: declare advertising ID and ads in the Data safety form, and consent runs through UMP. Approximate location only, asked on tap, matched to a city on the phone and never sent or stored (4.1). Data safety form, deletion and export in Phase 9 |
 
 ## Mobile Top 10 (2024)
 | Risk | Covered by |

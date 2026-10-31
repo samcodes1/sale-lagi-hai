@@ -224,6 +224,48 @@ void main() {
     });
   });
 
+  group('AdMob ad units', () {
+    const unit = 'ca-app-pub-1234567890123456/1234567890';
+    const sample = 'ca-app-pub-3940256099942544/1033173712';
+
+    test('are optional: without them there are no ads', () {
+      expect(AppConfig.fromMap(validValues()).hasAds, isFalse);
+    });
+
+    test('either one turns ads on', () {
+      final config = AppConfig.fromMap({
+        ...validValues(),
+        'ADMOB_INTERSTITIAL_ID': ' $unit ',
+      });
+      expect(config.hasAds, isTrue);
+      expect(config.adInterstitialUnitId, unit);
+      expect(config.adBannerUnitId, isEmpty);
+    });
+
+    test('must look like ad unit IDs', () {
+      for (final key in ['ADMOB_BANNER_ID', 'ADMOB_INTERSTITIAL_ID']) {
+        expect(
+          () => AppConfig.fromMap({...validValues(), key: 'banner'}),
+          throwsConfigProblem(key),
+        );
+      }
+    });
+
+    test('Google test IDs are for test builds only', () {
+      expect(
+        () => AppConfig.fromMap({...validValues(), 'ADMOB_BANNER_ID': sample}),
+        throwsConfigProblem('test ID'),
+      );
+      expect(
+        AppConfig.fromMap({
+          ...validValues(flavor: 'dev'),
+          'ADMOB_BANNER_ID': sample,
+        }).hasAds,
+        isTrue,
+      );
+    });
+  });
+
   group('SUPPORT_EMAIL', () {
     test('optional: absent or empty hides Contact us', () {
       expect(AppConfig.fromMap(validValues()).supportEmail, isEmpty);

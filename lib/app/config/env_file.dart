@@ -10,6 +10,8 @@ const envFileKeys = {
   'SUPABASE_PUBLISHABLE_KEY',
   'GOOGLE_SERVER_CLIENT_ID',
   'SUPPORT_EMAIL',
+  'ADMOB_BANNER_ID',
+  'ADMOB_INTERSTITIAL_ID',
 };
 
 /// Template values from `env/*.example.json` that must be replaced before a

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Launch screen before Android 12: the splash mark on Haldi. Android 12+
-     uses the system splash (values-v31/styles.xml). -->
+<!-- Launch screen before Android 12: plain brand red. The logo animates in as
+     soon as Flutter draws (lib/app/splash). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/brand_haldi" />
-    <item android:drawable="@drawable/splash_icon" android:gravity="center"
-        android:width="288dp" android:height="288dp" />
+    <item android:drawable="@color/brand_mirch" />
 </layer-list>

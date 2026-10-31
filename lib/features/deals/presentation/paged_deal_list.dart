@@ -9,12 +9,17 @@ import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
+import 'package:sale_lagi_hai/features/ads/application/ad_service.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_banner.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
 
 /// How close to the end the next page starts loading.
 const _prefetchFromEnd = 5;
+
+/// A banner follows every this many deals.
+const _dealsPerAd = 6;
 
 /// A standard deal card that opens its deal page.
 /// With [onSaveToggle], the card has its own save button ([saved] says
@@ -99,7 +104,15 @@ class PagedDealSlivers extends ConsumerWidget {
                     padding: const EdgeInsetsDirectional.only(
                       bottom: BrandSpacing.s4,
                     ),
-                    child: dealCardFor(context, ref, value.deals[i]),
+                    child: (i + 1) % _dealsPerAd == 0
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              dealCardFor(context, ref, value.deals[i]),
+                              const AdBanner(size: AdBannerSize.rectangle),
+                            ],
+                          )
+                        : dealCardFor(context, ref, value.deals[i]),
                   );
                 },
               ),

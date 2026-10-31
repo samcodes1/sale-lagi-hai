@@ -27,6 +27,9 @@ import 'package:sale_lagi_hai/features/deals/application/report_providers.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
+import 'package:sale_lagi_hai/features/ads/application/ad_service.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_banner.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_break.dart';
 import 'package:sale_lagi_hai/features/saved/application/saved_providers.dart';
 
 /// The deal page (screen S05, UX flow F2): image, offer, price, validity,
@@ -43,19 +46,21 @@ class DealDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final detail = ref.watch(dealDetailProvider(dealId));
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.dealTitle)),
-      body: switch (detail) {
-        AsyncData(:final value) => _Body(value),
-        AsyncError(:final error) => ErrorView(
-          failure: error is AppFailure ? error : const UnexpectedFailure(),
-          onRetry: () => ref.invalidate(dealDetailProvider(dealId)),
-        ),
-        _ => const Padding(
-          padding: EdgeInsetsDirectional.all(BrandSpacing.s5),
-          child: DealCardSkeleton(),
-        ),
-      },
+    return AdBreak(
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.dealTitle)),
+        body: switch (detail) {
+          AsyncData(:final value) => _Body(value),
+          AsyncError(:final error) => ErrorView(
+            failure: error is AppFailure ? error : const UnexpectedFailure(),
+            onRetry: () => ref.invalidate(dealDetailProvider(dealId)),
+          ),
+          _ => const Padding(
+            padding: EdgeInsetsDirectional.all(BrandSpacing.s5),
+            child: DealCardSkeleton(),
+          ),
+        },
+      ),
     );
   }
 }
@@ -255,6 +260,8 @@ class _Body extends ConsumerWidget {
             ],
           ),
         ),
+        // Last on the page, well away from Save and Share.
+        const AdBanner(size: AdBannerSize.rectangle),
       ],
     );
   }

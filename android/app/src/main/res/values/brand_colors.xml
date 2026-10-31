@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="brand_haldi">#FFC414</color>
-    <color name="brand_surma">#1A1433</color>
+    <color name="brand_mirch">#DC2E24</color>
     <!-- notification accent: setColor(); shown behind the small icon -->
-    <color name="notification_accent">#B78100</color>
+    <color name="notification_accent">#DC2E24</color>
 </resources>

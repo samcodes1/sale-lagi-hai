@@ -410,5 +410,12 @@
   "clearPhoneTitle": "Clear this phone?",
   "clearPhoneBody": "Your choices, follows, saved deals and cards on this phone are removed, and you are signed out. What is in your account stays.",
   "actionClear": "Clear",
-  "clearedToast": "Cleared."
+  "clearedToast": "Cleared.",
+  "adLabel": "Ad",
+  "sponsoredLabel": "Sponsored",
+  "sponsorBannerLabel": "Sponsored by {sponsor}: {title}",
+  "@sponsorBannerLabel": {"placeholders": {"sponsor": {"type": "String"}, "title": {"type": "String"}}},
+  "privacyAds": "Ads",
+  "privacyAdsBody": "The app shows ads from Google, which may use your phone's advertising ID to choose them. You can reset or delete that ID in your phone's settings. Sponsor banners use only your city.",
+  "actionAdChoices": "Ad choices"
 }

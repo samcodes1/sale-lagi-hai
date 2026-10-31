@@ -18,6 +18,9 @@ const _expectedKeys = {
   'GOOGLE_SERVER_CLIENT_ID',
   // Optional (4.9, added by the developer): empty hides "Contact us".
   'SUPPORT_EMAIL',
+  // Optional: empty means no Google ads in this build.
+  'ADMOB_BANNER_ID',
+  'ADMOB_INTERSTITIAL_ID',
 };
 
 Map<String, String> _readExample(Flavor flavor) {

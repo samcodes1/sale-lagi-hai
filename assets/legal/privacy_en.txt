@@ -1,5 +1,5 @@
 # Privacy policy
-Last updated: 29 October 2026
+Last updated: 31 October 2026
 
 Sale Lagi Hai! shows deals from across Pakistan. We collect as little as we can, and never sell your data.
 
@@ -12,6 +12,12 @@ Sale Lagi Hai! shows deals from across Pakistan. We collect as little as we can,
 - You sign in with your mobile number (a one-time code by SMS) or with Google. We keep your number or email to sign you in, and nothing else from Google.
 - Your choices above are kept in your account too, so they follow you to another phone.
 - If you turn on alerts, we keep your phone's notification token to send them, and your alert settings: topics, how often, and quiet hours.
+
+# Ads
+- The app shows ads from Google AdMob, and sponsor banners that we label as Sponsored.
+- To choose and measure ads, Google may use your phone's advertising ID, your internet address and how you interact with ads. See policies.google.com/technologies/ads.
+- You can reset or delete your advertising ID in your phone's settings. Where the law requires consent, the app asks first, and you can change your answer in Settings, Privacy.
+- Sponsor banners use only the city you chose. We never share who you are with sponsors.
 
 # What we never do
 - We never sell or rent your data, and never show it to brands.

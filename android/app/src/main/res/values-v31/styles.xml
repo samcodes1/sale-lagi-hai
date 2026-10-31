@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+ system splash (Light): brand background and the splash mark
-     (design/app-icon, BRAND_GUIDELINES.md). Removed at Flutter's first frame. -->
+<!-- Android 12+ system splash: plain brand red, with no icon. The logo
+     animates in as soon as Flutter draws (lib/app/splash). -->
 <resources>
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowSplashScreenBackground">@color/brand_haldi</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <item name="android:windowSplashScreenBackground">@color/brand_mirch</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_blank</item>
     </style>
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>

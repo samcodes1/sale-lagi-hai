@@ -18,6 +18,8 @@ import 'package:sale_lagi_hai/design_system/widgets/app_refresh_indicator.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
+import 'package:sale_lagi_hai/features/ads/application/ad_service.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_banner.dart';
 import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
 import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
@@ -25,18 +27,21 @@ import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
 import 'package:sale_lagi_hai/features/home/application/home_providers.dart';
 import 'package:sale_lagi_hai/features/home/presentation/city_picker.dart';
+import 'package:sale_lagi_hai/features/sponsors/application/sponsor_providers.dart';
+import 'package:sale_lagi_hai/features/sponsors/presentation/sponsor_carousel.dart';
 
 /// How close to the end of "For you" the next page starts loading.
 const _prefetchFromEnd = 5;
 
-/// Home (screen S03): Featured, Trending today, Near you, Ending soon and
-/// the endless "For you" list. Pull to refresh reloads everything; offline,
+/// Home (screen S03): sponsor banners, Featured, Trending today, Near you,
+/// Ending soon and the endless "For you" list, with ads between the rows. Pull to refresh reloads everything; offline,
 /// the last copy shows with how old it is.
 class HomeScreen extends ConsumerWidget {
   const new({super.key});
 
   Future<void> _refresh(WidgetRef ref) async {
     ref
+      ..invalidate(sponsorBannersProvider)
       ..invalidate(featuredProvider)
       ..invalidate(trendingProvider)
       ..invalidate(endingSoonProvider)
@@ -60,6 +65,7 @@ class HomeScreen extends ConsumerWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             if (offline) const SliverToBoxAdapter(child: OfflineBanner()),
+            const SliverToBoxAdapter(child: SponsorCarousel()),
             _Carousel(
               title: l10n.homeFeaturedTitle,
               provider: featuredProvider,
@@ -69,10 +75,14 @@ class HomeScreen extends ConsumerWidget {
               title: l10n.homeTrendingTitle,
               provider: trendingProvider,
             ),
+            const SliverToBoxAdapter(child: AdBanner()),
             const _NearMe(),
             _Carousel(
               title: l10n.homeEndingTitle,
               provider: endingSoonProvider,
+            ),
+            const SliverToBoxAdapter(
+              child: AdBanner(size: AdBannerSize.rectangle),
             ),
             const _ForYou(),
           ],

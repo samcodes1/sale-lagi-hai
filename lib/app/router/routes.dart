@@ -8,6 +8,7 @@ import 'package:sale_lagi_hai/app/router/route_params.dart';
 import 'package:sale_lagi_hai/app/shell/app_shell.dart';
 import 'package:sale_lagi_hai/design_system/gallery/theme_preview_page.dart';
 import 'package:sale_lagi_hai/design_system/gallery/widget_gallery_page.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_break.dart';
 import 'package:sale_lagi_hai/features/alerts/presentation/alerts_screen.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/presentation/delete_account_screen.dart';
@@ -196,7 +197,7 @@ final class BrandRoute extends GoRouteData with $BrandRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
-      BrandScreen(slug: slug);
+      AdBreak(child: BrandScreen(slug: slug));
 }
 
 /// `/category/<slug>`.
@@ -213,7 +214,7 @@ final class CategoryRoute extends GoRouteData with $CategoryRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
-      CategoryScreen(slug: slug);
+      AdBreak(child: CategoryScreen(slug: slug));
 }
 
 /// `/search?q=`: search, optionally starting with words (cut to 100).

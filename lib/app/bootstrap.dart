@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sale_lagi_hai/app/app.dart';
 import 'package:sale_lagi_hai/app/config/app_config.dart';
 import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
+import 'package:sale_lagi_hai/app/splash/brand_splash.dart';
 import 'package:sale_lagi_hai/core/backend/backend_setup.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/errors/crash_reporter.dart';
@@ -20,6 +21,8 @@ import 'package:sale_lagi_hai/core/storage/key_value_store.dart';
 import 'package:sale_lagi_hai/core/storage/secure_store.dart';
 import 'package:sale_lagi_hai/core/theme/theme_mode_controller.dart';
 import 'package:sale_lagi_hai/design_system/fonts/font_licenses.dart';
+import 'package:sale_lagi_hai/features/ads/application/ads_providers.dart';
+import 'package:sale_lagi_hai/features/ads/data/ad_service_factory.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/data/demo_auth_repository.dart';
 import 'package:sale_lagi_hai/features/auth/data/google_id_token.dart';
@@ -93,8 +96,9 @@ Future<void> bootstrap() async {
           createAuthRepository(config, backend.supabase, logger),
         ),
         demoModeProvider.overrideWithValue(!config.hasBackend),
+        adServiceProvider.overrideWithValue(createAdService(config, logger)),
       ],
-      child: const App(),
+      child: const BrandSplash(child: App()),
     ),
   );
 }

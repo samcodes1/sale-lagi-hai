@@ -3,10 +3,12 @@
     <!-- Needed in release builds to reach the backend. The debug and
          profile manifests add it too, which is why it is easy to miss. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- AdMob: the advertising ID, for personalised ads where consent allows.
+         Declared in the Play Data safety form. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
     <!-- Strip permissions SDKs merge in that we do not use. Re-check the
          merged manifest whenever a plugin is added. -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove"/>
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
     <!-- "Detect my city" and "Near me": approximate location only, asked
          when the shopper taps the button. Never precise, never background
          (stripped in case a plugin merges them in). -->
@@ -63,6 +65,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- The AdMob app ID for this flavor (android/app/build.gradle.kts). -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

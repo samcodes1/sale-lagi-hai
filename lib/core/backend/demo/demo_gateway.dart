@@ -630,6 +630,7 @@ final class DemoGateway implements BackendGateway {
     'outlets' => _outlets,
     'deal_targets' => _dealTargets,
     'notifications' => _notifications,
+    'sponsor_banners' => demoSponsorBanners,
     final other =>
       _tables[other] ??
           (throw UnsupportedError('demo backend has no table $other')),

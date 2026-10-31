@@ -313,6 +313,34 @@ Map<String, Object?> brandBySlug(String slug) =>
     demoBrands.firstWhere((b) => b['slug'] == slug);
 
 /// Outlets: brand slug, area slug, lat, lng.
+/// Sample sponsor banners, so Home shows what a sponsor would get.
+final demoSponsorBanners = <Map<String, Object?>>[
+  {
+    'id': '00000000-0000-4000-b000-000000000001',
+    'sponsor_name': 'Sample Sponsor',
+    'title_en': 'Your brand here',
+    'title_ur': 'یہاں آپ کا برانڈ',
+    'subtitle_en': 'Reach shoppers the moment they look for a deal',
+    'subtitle_ur': 'خریداروں تک اسی وقت پہنچیں جب وہ ڈیل ڈھونڈ رہے ہوں',
+    'image_path': null,
+    'link_url': null,
+    'city_id': null,
+    'sort_order': 1,
+  },
+  {
+    'id': '00000000-0000-4000-b000-000000000002',
+    'sponsor_name': 'Sample Sponsor',
+    'title_en': 'A second sponsor slot',
+    'title_ur': 'سپانسر کی دوسری جگہ',
+    'subtitle_en': 'Target one city, or all of them',
+    'subtitle_ur': 'ایک شہر چنیں یا سب شہر',
+    'image_path': null,
+    'link_url': null,
+    'city_id': null,
+    'sort_order': 2,
+  },
+];
+
 const demoOutlets = [
   ('demo-karahi-house', 'clifton', 24.8150, 67.0310),
   ('demo-karahi-house', 'gulshan-e-iqbal', 24.9210, 67.0920),

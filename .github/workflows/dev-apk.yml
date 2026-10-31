@@ -28,6 +28,27 @@ jobs:
           cache: true
       - run: cp env/dev.example.json env/dev.json
       - run: flutter pub get
+      # This Mac can't run Flutter 3.47, so generated code, the lockfile and
+      # formatting are produced here and handed back as a patch.
+      - name: Regenerate
+        run: |
+          flutter gen-l10n
+          dart run build_runner build --delete-conflicting-outputs
+          dart format lib test
+          git diff > regenerated.patch
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: regenerated-patch
+          path: regenerated.patch
+          retention-days: 3
+      - name: Analyze
+        id: analyze
+        continue-on-error: true
+        run: flutter analyze
+      - name: Test
+        id: test
+        continue-on-error: true
+        run: flutter test
       - run: >-
           flutter build apk --debug
           --flavor dev
@@ -38,3 +59,6 @@ jobs:
           path: build/app/outputs/flutter-apk/app-dev-debug.apk
           if-no-files-found: error
           retention-days: 3
+      - name: Fail if the checks failed
+        if: steps.analyze.outcome == 'failure' || steps.test.outcome == 'failure'
+        run: exit 1

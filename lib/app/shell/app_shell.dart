@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
+import 'package:sale_lagi_hai/features/ads/application/ads_providers.dart';
 import 'package:sale_lagi_hai/features/alerts/application/alerts_providers.dart';
 
 /// One bottom-navigation destination.
@@ -75,6 +76,8 @@ class AppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Here, not at launch: any consent form waits until onboarding is over.
+    ref.watch(adsStartupProvider);
     final destinations = _destinations(context.l10n);
     final badge = ref.watch(alertsBadgeProvider).value ?? 0;
     final index = navigationShell.currentIndex;

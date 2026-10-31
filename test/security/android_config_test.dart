@@ -105,6 +105,7 @@ void main() {
         // Play Data safety form (docs/security/CHECKLIST.md).
         expect(requested, [
           'android.permission.INTERNET',
+          'com.google.android.gms.permission.AD_ID',
           'android.permission.ACCESS_COARSE_LOCATION',
           'android.permission.POST_NOTIFICATIONS',
         ]);
@@ -115,7 +116,6 @@ void main() {
           removed,
           containsAll([
             'android.permission.READ_PHONE_STATE',
-            'com.google.android.gms.permission.AD_ID',
             // Approximate location is enough for cities and "Near me".
             'android.permission.ACCESS_FINE_LOCATION',
             'android.permission.ACCESS_BACKGROUND_LOCATION',
@@ -307,15 +307,8 @@ void main() {
       }
     });
 
-    test('Android 12+ splash: brand background and mark, light and dark', () {
-      for (final (dir, color, icon) in const [
-        ('values-v31', '@color/brand_haldi', '@drawable/splash_icon'),
-        (
-          'values-night-v31',
-          '@color/brand_surma',
-          '@drawable/splash_icon_dark',
-        ),
-      ]) {
+    test('Android 12+ splash: plain brand red, light and dark', () {
+      for (final dir in const ['values-v31', 'values-night-v31']) {
         final items = {
           for (final item
               in _xml('$res/$dir/styles.xml')
@@ -326,33 +319,34 @@ void main() {
         };
         expect(
           items['android:windowSplashScreenBackground'],
-          color,
+          '@color/brand_mirch',
           reason: dir,
         );
         expect(
           items['android:windowSplashScreenAnimatedIcon'],
-          icon,
+          '@drawable/splash_blank',
           reason: dir,
         );
       }
     });
 
-    test('older Androids show the same mark on the brand colour', () {
-      for (final (dir, color) in const [
-        ('drawable', '@color/brand_haldi'),
-        ('drawable-night', '@color/brand_surma'),
-      ]) {
+    test('older Androids show the same plain red', () {
+      for (final dir in const ['drawable', 'drawable-night']) {
         final drawables = _xml('$res/$dir/launch_background.xml')
             .findAllElements('item')
-            .map((i) => _attr(i, 'drawable'))
-            .toList();
-        expect(drawables.first, color, reason: dir);
-        expect(
-          drawables.last,
-          startsWith('@drawable/splash_icon'),
-          reason: dir,
-        );
+            .map((i) => _attr(i, 'drawable'));
+        expect(drawables, ['@color/brand_mirch'], reason: dir);
       }
+    });
+
+    test('the AdMob app ID comes from the flavor', () {
+      final ids = application
+          .findElements('meta-data')
+          .where(
+            (m) =>
+                _attr(m, 'name') == 'com.google.android.gms.ads.APPLICATION_ID',
+          );
+      expect(ids.map((m) => _attr(m, 'value')), [r'${admobAppId}']);
     });
   });
 }
