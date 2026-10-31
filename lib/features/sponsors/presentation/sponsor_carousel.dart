@@ -14,8 +14,9 @@ import 'package:sale_lagi_hai/features/sponsors/domain/sponsor_banner.dart';
 /// How long each banner stays before the next.
 const _dwell = Duration(seconds: 5);
 
-/// Banner height at normal text size. It grows with large text.
-const _height = 168.0;
+/// Room for two lines of title and two of subtitle in Urdu, the tallest
+/// script. It grows with large text.
+const _copyHeight = 160.0;
 
 /// The sponsors' banners at the top of Home. Nothing shows without any.
 class SponsorCarousel extends ConsumerWidget {
@@ -86,7 +87,9 @@ class _PagerState extends State<_Pager> {
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsetsDirectional.only(top: BrandSpacing.s4),
     child: SizedBox(
-      height: MediaQuery.textScalerOf(context).scale(_height),
+      height:
+          MediaQuery.textScalerOf(context).scale(_copyHeight) +
+          2 * BrandSpacing.s5,
       child: PageView.builder(
         controller: _pages,
         itemCount: widget.banners.length,
@@ -166,7 +169,6 @@ class _Copy extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Flexible(
-            flex: 3,
             child: Text(
               banner.title(urdu: urdu),
               maxLines: 2,
@@ -175,15 +177,12 @@ class _Copy extends StatelessWidget {
             ),
           ),
           if (subtitle != null)
-            Flexible(
-              flex: 2,
-              child: Text(
-                subtitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+            Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
         ],
