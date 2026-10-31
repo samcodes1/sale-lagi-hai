@@ -13,7 +13,8 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "pk.salelagihai.app"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android needs 37 or later. targetSdk stays separate.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
