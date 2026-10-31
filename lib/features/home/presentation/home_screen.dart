@@ -34,8 +34,9 @@ import 'package:sale_lagi_hai/features/sponsors/presentation/sponsor_carousel.da
 const _prefetchFromEnd = 5;
 
 /// Home (screen S03): sponsor banners, Featured, Trending today, Near you,
-/// Ending soon and the endless "For you" list, with ads between the rows. Pull to refresh reloads everything; offline,
-/// the last copy shows with how old it is.
+/// Ending soon and the endless "For you" list, with ads between the rows.
+/// Pull to refresh reloads everything; offline, the last copy shows with
+/// how old it is.
 class HomeScreen extends ConsumerWidget {
   const new({super.key});
 

@@ -17,7 +17,7 @@ final adsStartupProvider = FutureProvider<bool>(
 /// Whether Settings, Privacy needs its "Ad choices" row.
 final adPrivacyOptionsProvider = FutureProvider<bool>((ref) async {
   await ref.watch(adsStartupProvider.future);
-  return ref.watch(adServiceProvider).privacyOptionsRequired();
+  return await ref.watch(adServiceProvider).privacyOptionsRequired();
 });
 
 /// Full-screen ads at natural breaks, paced by [InterstitialPacing].

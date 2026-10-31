@@ -1265,4 +1265,25 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get clearedToast => 'صاف ہو گیا۔';
+
+  @override
+  String get adLabel => 'اشتہار';
+
+  @override
+  String get sponsoredLabel => 'سپانسرڈ';
+
+  @override
+  String sponsorBannerLabel(String sponsor, String title) {
+    return '$sponsor کی جانب سے سپانسرڈ: $title';
+  }
+
+  @override
+  String get privacyAds => 'اشتہارات';
+
+  @override
+  String get privacyAdsBody =>
+      'ایپ میں گوگل کے اشتہارات دکھائے جاتے ہیں، جو انہیں چننے کے لیے آپ کے فون کی ایڈورٹائزنگ آئی ڈی استعمال کر سکتا ہے۔ آپ یہ آئی ڈی فون کی سیٹنگز میں ری سیٹ یا ڈیلیٹ کر سکتے ہیں۔ سپانسر بینرز صرف آپ کا شہر استعمال کرتے ہیں۔';
+
+  @override
+  String get actionAdChoices => 'اشتہارات کے انتخاب';
 }

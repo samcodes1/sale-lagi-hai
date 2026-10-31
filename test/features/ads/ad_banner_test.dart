@@ -8,7 +8,7 @@ import 'package:sale_lagi_hai/features/ads/presentation/ad_break.dart';
 import '../../helpers/test_app.dart';
 
 final class _Banner implements LoadedBanner {
-  var disposed = false;
+  bool disposed = false;
 
   @override
   double get width => 320;

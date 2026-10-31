@@ -66,11 +66,13 @@ void main() {
           if (!removed('uses-permission').contains(_attr(e, 'name')))
             _attr(e, 'name')!,
     };
-    // INTERNET, coarse location and notifications are the app's own.
+    // INTERNET, coarse location and notifications are the app's own, and
+    // AD_ID is for AdMob.
     // ACCESS_NETWORK_STATE comes from connectivity_plus (1.2): a normal,
     // install-time permission that the offline banner needs.
     expect(merged, {
       'android.permission.INTERNET',
+      'com.google.android.gms.permission.AD_ID',
       'android.permission.ACCESS_COARSE_LOCATION',
       'android.permission.POST_NOTIFICATIONS',
       'android.permission.ACCESS_NETWORK_STATE',

@@ -2101,6 +2101,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cleared.'**
   String get clearedToast;
+
+  /// No description provided for @adLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad'**
+  String get adLabel;
+
+  /// No description provided for @sponsoredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get sponsoredLabel;
+
+  /// No description provided for @sponsorBannerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored by {sponsor}: {title}'**
+  String sponsorBannerLabel(String sponsor, String title);
+
+  /// No description provided for @privacyAds.
+  ///
+  /// In en, this message translates to:
+  /// **'Ads'**
+  String get privacyAds;
+
+  /// No description provided for @privacyAdsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The app shows ads from Google, which may use your phone\'s advertising ID to choose them. You can reset or delete that ID in your phone\'s settings. Sponsor banners use only your city.'**
+  String get privacyAdsBody;
+
+  /// No description provided for @actionAdChoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad choices'**
+  String get actionAdChoices;
 }
 
 class _AppLocalizationsDelegate

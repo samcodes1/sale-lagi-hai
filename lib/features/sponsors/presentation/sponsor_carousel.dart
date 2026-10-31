@@ -15,7 +15,7 @@ import 'package:sale_lagi_hai/features/sponsors/domain/sponsor_banner.dart';
 const _dwell = Duration(seconds: 5);
 
 /// Banner height at normal text size. It grows with large text.
-const _height = 148.0;
+const _height = 168.0;
 
 /// The sponsors' banners at the top of Home. Nothing shows without any.
 class SponsorCarousel extends ConsumerWidget {
@@ -68,12 +68,10 @@ class _PagerState extends State<_Pager> {
   void _next() {
     if (!_pages.hasClients) return;
     final next = ((_pages.page ?? 0).round() + 1) % widget.banners.length;
-    unawaited(
-      _pages.animateToPage(
-        next,
-        duration: BrandMotion.slow,
-        curve: BrandMotion.standardCurve,
-      ),
+    _pages.animateToPage(
+      next,
+      duration: BrandMotion.slow,
+      curve: BrandMotion.standardCurve,
     );
   }
 
@@ -137,10 +135,10 @@ class _BannerCard extends ConsumerWidget {
                 copy
               else
                 NetworkPicture(image, fallback: copy),
-              PositionedDirectional(
+              const PositionedDirectional(
                 top: BrandSpacing.s2,
                 end: BrandSpacing.s2,
-                child: const _SponsoredTag(),
+                child: _SponsoredTag(),
               ),
             ],
           ),
@@ -176,12 +174,14 @@ class _Copy extends StatelessWidget {
             ),
           ),
           if (subtitle != null)
-            Text(
-              subtitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            Flexible(
+              child: Text(
+                subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
         ],

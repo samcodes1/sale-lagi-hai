@@ -96,7 +96,11 @@ void main() {
 
     test('a malformed row is an error', () {
       expect(
-        BackendSponsorRepository(_Gateway([{'id': 1}])).live(),
+        BackendSponsorRepository(
+          _Gateway([
+            {'id': 1},
+          ]),
+        ).live(),
         throwsFormatException,
       );
     });
@@ -143,7 +147,11 @@ void main() {
     });
 
     test('a failure means no banners, never an error', () async {
-      final c = container(_Gateway([{'id': 1}]));
+      final c = container(
+        _Gateway([
+          {'id': 1},
+        ]),
+      );
       expect(await c.read(sponsorBannersProvider.future), isEmpty);
     });
   });

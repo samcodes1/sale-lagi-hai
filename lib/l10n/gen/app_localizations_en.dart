@@ -1262,4 +1262,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearedToast => 'Cleared.';
+
+  @override
+  String get adLabel => 'Ad';
+
+  @override
+  String get sponsoredLabel => 'Sponsored';
+
+  @override
+  String sponsorBannerLabel(String sponsor, String title) {
+    return 'Sponsored by $sponsor: $title';
+  }
+
+  @override
+  String get privacyAds => 'Ads';
+
+  @override
+  String get privacyAdsBody =>
+      'The app shows ads from Google, which may use your phone\'s advertising ID to choose them. You can reset or delete that ID in your phone\'s settings. Sponsor banners use only your city.';
+
+  @override
+  String get actionAdChoices => 'Ad choices';
 }

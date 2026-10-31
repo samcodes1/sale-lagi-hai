@@ -21,15 +21,15 @@ import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
 import 'package:sale_lagi_hai/design_system/widgets/network_picture.dart';
 import 'package:sale_lagi_hai/design_system/widgets/price_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
+import 'package:sale_lagi_hai/features/ads/application/ad_service.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_banner.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_break.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_providers.dart';
 import 'package:sale_lagi_hai/features/deals/application/report_providers.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal_detail.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
-import 'package:sale_lagi_hai/features/ads/application/ad_service.dart';
-import 'package:sale_lagi_hai/features/ads/presentation/ad_banner.dart';
-import 'package:sale_lagi_hai/features/ads/presentation/ad_break.dart';
 import 'package:sale_lagi_hai/features/saved/application/saved_providers.dart';
 
 /// The deal page (screen S05, UX flow F2): image, offer, price, validity,

@@ -55,9 +55,7 @@ class _AdBannerState extends ConsumerState<AdBanner> {
     if (banner == null) return const SizedBox.shrink();
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsetsDirectional.symmetric(
-        vertical: BrandSpacing.s4,
-      ),
+      padding: const EdgeInsetsDirectional.symmetric(vertical: BrandSpacing.s4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

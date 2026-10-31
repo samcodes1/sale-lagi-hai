@@ -11,7 +11,7 @@ final class _Service extends NoAdService {
 
   final bool ready;
 
-  static var shows = 0;
+  static int shows = 0;
 
   @override
   Future<bool> showInterstitial() async {
@@ -33,7 +33,9 @@ void main() {
 
   test('never in the first minutes of a session', () {
     final subject = pacing();
-    expect([for (var i = 0; i < 5; i++) subject.onBreak()], everyElement(false));
+    expect([
+      for (var i = 0; i < 5; i++) subject.onBreak(),
+    ], everyElement(false));
   });
 
   test('on every third break once the wait is over', () {

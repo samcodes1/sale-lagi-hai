@@ -106,12 +106,7 @@ Path _path(List<double> data) {
         path.lineTo(data[i], data[i + 1]);
         i += 2;
       case 2:
-        path.quadraticBezierTo(
-          data[i],
-          data[i + 1],
-          data[i + 2],
-          data[i + 3],
-        );
+        path.quadraticBezierTo(data[i], data[i + 1], data[i + 2], data[i + 3]);
         i += 4;
       case 3:
         path.cubicTo(
@@ -130,10 +125,10 @@ Path _path(List<double> data) {
   return path;
 }
 
-final _sale = _path(logoSale);
-final _lagi = _path(logoLagi);
-final _hai = _path(logoHai);
-final _bang = _path(logoBang);
+final Path _sale = _path(logoSale);
+final Path _lagi = _path(logoLagi);
+final Path _hai = _path(logoHai);
+final Path _bang = _path(logoBang);
 
 class _LogoPainter extends CustomPainter {
   new(this.time, {required this.still}) : super(repaint: time);
@@ -145,7 +140,9 @@ class _LogoPainter extends CustomPainter {
 
   double _progress(double begin, double end, Curve curve) {
     if (still) return 1;
-    return curve.transform(clampDouble((time.value - begin) / (end - begin), 0, 1));
+    return curve.transform(
+      clampDouble((time.value - begin) / (end - begin), 0, 1),
+    );
   }
 
   /// One line, rising out of a clip the size of its own row.

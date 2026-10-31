@@ -10,8 +10,8 @@ final class GoogleAdService implements AdService {
   new({
     required this.bannerUnitId,
     required this.interstitialUnitId,
-    required AppLogger logger,
-  }) : _logger = logger;
+    required this._logger,
+  });
 
   final String bannerUnitId;
   final String interstitialUnitId;
@@ -59,7 +59,7 @@ final class GoogleAdService implements AdService {
     if (bannerUnitId.isEmpty) return null;
     final done = Completer<LoadedBanner?>();
     try {
-      final AdSize adSize = switch (size) {
+      final adSize = switch (size) {
         AdBannerSize.rectangle => AdSize.mediumRectangle,
         AdBannerSize.strip =>
           await AdSize.getLargeAnchoredAdaptiveBannerAdSizeWithOrientation(
@@ -85,7 +85,7 @@ final class GoogleAdService implements AdService {
       _logger.warning('Banner could not load', error: error);
       if (!done.isCompleted) done.complete(null);
     }
-    return done.future;
+    return await done.future;
   }
 
   Future<void> _loadInterstitial() async {

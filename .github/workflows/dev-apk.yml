@@ -35,7 +35,9 @@ jobs:
           flutter gen-l10n
           dart run build_runner build --delete-conflicting-outputs
           dart format lib test
-          git diff > regenerated.patch
+          flutter test --update-goldens --tags golden || true
+          git add -N .
+          git diff --binary > regenerated.patch
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: regenerated-patch
@@ -48,7 +50,19 @@ jobs:
       - name: Test
         id: test
         continue-on-error: true
-        run: flutter test
+        run: flutter test --coverage
+      - name: Coverage
+        id: coverage
+        continue-on-error: true
+        run: dart run tool/check_coverage.dart coverage/lcov.info --min 80
+      - name: Dependency audit
+        id: audit
+        continue-on-error: true
+        run: dart run tool/audit_deps.dart pubspec.lock --online
+      - name: Web build
+        id: web
+        continue-on-error: true
+        run: flutter build web --release --dart-define-from-file=env/dev.json
       - run: >-
           flutter build apk --debug
           --flavor dev
@@ -60,5 +74,21 @@ jobs:
           if-no-files-found: error
           retention-days: 3
       - name: Fail if the checks failed
-        if: steps.analyze.outcome == 'failure' || steps.test.outcome == 'failure'
+        if: >-
+          steps.analyze.outcome == 'failure' ||
+          steps.test.outcome == 'failure' ||
+          steps.coverage.outcome == 'failure' ||
+          steps.audit.outcome == 'failure' ||
+          steps.web.outcome == 'failure'
         run: exit 1
+
+  database:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install Postgres 16 with PostGIS, pgTAP and pg_cron
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q postgresql-16 postgresql-16-postgis-3 \
+            postgresql-16-pgtap postgresql-16-cron
+      - run: tool/db_test.sh
