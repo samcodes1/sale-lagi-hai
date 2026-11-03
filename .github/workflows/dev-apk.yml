@@ -27,7 +27,7 @@ jobs:
           channel: stable
           cache: true
       # The dev backend on Railway when the repository has one configured
-      # (public values only: the URL and the anon key); demo data otherwise.
+      # (public values only: the URL and the publishable key); demo data otherwise.
       - name: Dev env
         env:
           SUPABASE_URL: ${{ vars.DEV_SUPABASE_URL }}

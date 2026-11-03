@@ -16,7 +16,7 @@ Railway's private network is IPv6: services must listen on `::`. PostgREST has `
 ## Keys
 - **All derived from `ROOT_SECRET`.** Every key derives from `ROOT_SECRET` (a variable on every service, set once by the template): the JWT secret, the anon key, the service-role key and the `sb_` keys. The template's `supabase-secrets` tool does the derivation; see its source in `6ixfalls/supabase/secrets`.
   - Never change `ROOT_SECRET`: that would sign out every user and invalidate every key.
-- **The app:** uses the anon key. It's public, and stored as the GitHub variable `DEV_SUPABASE_PUBLISHABLE_KEY`, next to `DEV_SUPABASE_URL`.
+- **The app:** uses the publishable key (`sb_publishable_…`), which the gateway translates. It's public, and stored as the GitHub variable `DEV_SUPABASE_PUBLISHABLE_KEY`, next to `DEV_SUPABASE_URL`. Never the legacy anon JWT: the source-hygiene test rejects any JWT in shipped files.
 - **The `edge-functions` service variables:**
   - `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY`;
   - `SUPABASE_DB_URL`, which references Postgres;
