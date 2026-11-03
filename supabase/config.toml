@@ -44,6 +44,10 @@ verify_jwt = false
 [functions.ingest]
 verify_jwt = false
 
+# Called by the daily Claude run with x-ingest-secret.
+[functions.ingest-batch]
+verify_jwt = false
+
 [functions.delete-account]
 # Checked in the function, by asking the Auth server about the caller's
 # token (works with the new asymmetric signing keys).

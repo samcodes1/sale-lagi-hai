@@ -13,6 +13,8 @@ export type ScrapedDeal = {
   /** Stable id at the source (product id, offer slug); used for de-duplication. */
   externalId: string;
   title: string;
+  /** The title in Urdu, where the source or the agent has one. */
+  titleUr?: string;
   url: string;
   offer: {
     kind: OfferKind;
@@ -21,7 +23,13 @@ export type ScrapedDeal = {
     pricePkr?: number;
     originalPricePkr?: number;
     text?: string;
+    textUr?: string;
   };
+  /** Agent sources only: the merchant's brand slug, when one page lists
+   * many merchants. Absent: the source's own brand. */
+  brand?: string;
+  /** 'online' for online-only deals; local and nationwide follow from cities. */
+  scope?: 'online';
   description?: string;
   startsAt?: Date;
   endsAt?: Date;

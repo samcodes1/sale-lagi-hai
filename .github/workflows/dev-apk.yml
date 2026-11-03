@@ -26,7 +26,16 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
-      - run: cp env/dev.example.json env/dev.json
+      # The dev backend on Railway when the repository has one configured
+      # (public values only: the URL and the anon key); demo data otherwise.
+      - name: Dev env
+        env:
+          SUPABASE_URL: ${{ vars.DEV_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.DEV_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          jq --arg url "$SUPABASE_URL" --arg key "$SUPABASE_PUBLISHABLE_KEY" \
+            '.SUPABASE_URL = $url | .SUPABASE_PUBLISHABLE_KEY = $key' \
+            env/dev.example.json > env/dev.json
       - run: flutter pub get
       # This Mac can't run Flutter 3.47, so generated code, the lockfile and
       # formatting are produced here and handed back as a patch.
