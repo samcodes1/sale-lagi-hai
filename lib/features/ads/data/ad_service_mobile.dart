@@ -11,6 +11,8 @@ AdService createAdService(AppConfig config, AppLogger logger) {
   return GoogleAdService(
     bannerUnitId: config.adBannerUnitId,
     interstitialUnitId: config.adInterstitialUnitId,
+    appOpenUnitId: config.adAppOpenUnitId,
+    nativeUnitId: config.adNativeUnitId,
     logger: logger,
   );
 }

@@ -20,6 +20,8 @@ final class AppConfig {
     this.supportEmail = '',
     this.adBannerUnitId = '',
     this.adInterstitialUnitId = '',
+    this.adAppOpenUnitId = '',
+    this.adNativeUnitId = '',
   });
 
   /// Reads and validates the values compiled into this build.
@@ -36,6 +38,8 @@ final class AppConfig {
     'SUPPORT_EMAIL': String.fromEnvironment('SUPPORT_EMAIL'),
     'ADMOB_BANNER_ID': String.fromEnvironment('ADMOB_BANNER_ID'),
     'ADMOB_INTERSTITIAL_ID': String.fromEnvironment('ADMOB_INTERSTITIAL_ID'),
+    'ADMOB_APP_OPEN_ID': String.fromEnvironment('ADMOB_APP_OPEN_ID'),
+    'ADMOB_NATIVE_ID': String.fromEnvironment('ADMOB_NATIVE_ID'),
   });
 
   /// Builds a config from raw values, collecting every problem before
@@ -112,9 +116,13 @@ final class AppConfig {
     // Optional: without them this build shows no Google ads.
     final adBannerUnitId = values['ADMOB_BANNER_ID']?.trim() ?? '';
     final adInterstitialUnitId = values['ADMOB_INTERSTITIAL_ID']?.trim() ?? '';
+    final adAppOpenUnitId = values['ADMOB_APP_OPEN_ID']?.trim() ?? '';
+    final adNativeUnitId = values['ADMOB_NATIVE_ID']?.trim() ?? '';
     for (final (key, id) in [
       ('ADMOB_BANNER_ID', adBannerUnitId),
       ('ADMOB_INTERSTITIAL_ID', adInterstitialUnitId),
+      ('ADMOB_APP_OPEN_ID', adAppOpenUnitId),
+      ('ADMOB_NATIVE_ID', adNativeUnitId),
     ]) {
       if (id.isEmpty) continue;
       if (!_adUnitId.hasMatch(id)) {
@@ -137,6 +145,8 @@ final class AppConfig {
       supportEmail: supportEmail,
       adBannerUnitId: adBannerUnitId,
       adInterstitialUnitId: adInterstitialUnitId,
+      adAppOpenUnitId: adAppOpenUnitId,
+      adNativeUnitId: adNativeUnitId,
     );
   }
 
@@ -174,9 +184,20 @@ final class AppConfig {
   /// The AdMob interstitial unit. Empty: no full-screen ads.
   final String adInterstitialUnitId;
 
+  /// The AdMob app open unit, shown on coming back to the app. Empty: none.
+  final String adAppOpenUnitId;
+
+  /// The AdMob native unit, for ads in the deal lists. Empty: those slots
+  /// show a banner instead.
+  final String adNativeUnitId;
+
   /// Whether this build has any Google ads.
-  bool get hasAds =>
-      adBannerUnitId.isNotEmpty || adInterstitialUnitId.isNotEmpty;
+  bool get hasAds => [
+    adBannerUnitId,
+    adInterstitialUnitId,
+    adAppOpenUnitId,
+    adNativeUnitId,
+  ].any((id) => id.isNotEmpty);
 
   /// Whether a backend is configured for this build.
   bool get hasBackend => supabaseUrl.isNotEmpty;

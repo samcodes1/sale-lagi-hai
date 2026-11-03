@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/features/ads/application/ads_providers.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/app_open_ad_gate.dart';
 import 'package:sale_lagi_hai/features/alerts/application/alerts_providers.dart';
 
 /// One bottom-navigation destination.
@@ -132,9 +133,11 @@ class AppShell extends ConsumerWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _select(0);
       },
-      child: _AlertsSeenOnEnter(
-        index: navigationShell.currentIndex,
-        child: body,
+      child: AppOpenAdGate(
+        child: _AlertsSeenOnEnter(
+          index: navigationShell.currentIndex,
+          child: body,
+        ),
       ),
     );
   }

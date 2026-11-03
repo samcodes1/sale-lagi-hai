@@ -12,6 +12,8 @@ const envFileKeys = {
   'SUPPORT_EMAIL',
   'ADMOB_BANNER_ID',
   'ADMOB_INTERSTITIAL_ID',
+  'ADMOB_APP_OPEN_ID',
+  'ADMOB_NATIVE_ID',
 };
 
 /// Template values from `env/*.example.json` that must be replaced before a

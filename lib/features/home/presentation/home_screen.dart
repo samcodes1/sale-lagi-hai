@@ -83,7 +83,7 @@ class HomeScreen extends ConsumerWidget {
               provider: endingSoonProvider,
             ),
             const SliverToBoxAdapter(
-              child: AdBanner(size: AdBannerSize.rectangle),
+              child: AdBanner(size: AdBannerSize.native),
             ),
             const _ForYou(),
           ],

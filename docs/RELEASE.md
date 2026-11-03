@@ -34,7 +34,7 @@ flutter build appbundle --release \
 3. Add the CI secrets (keystore, passwords, prod env values) and a release workflow with `REQUIRE_RELEASE_SIGNING=true`.
 4. Check the merged manifest of the release build (`docs/security/CHECKLIST.md`, Notes).
 5. Fill in the Data safety form from the current permissions and data flows (Phase 9 keeps it up to date). Declare ads and the advertising ID, and answer "yes" to "contains ads".
-6. Create the app and its banner and interstitial units in AdMob. Put the unit IDs in `ADMOB_BANNER_ID` and `ADMOB_INTERSTITIAL_ID` in `env/prod.json`, and set the `ADMOB_APP_ID` environment variable for the release build. Prod refuses Google's test IDs, and with no unit IDs it shows no ads. Add `app-ads.txt` to the website and set up the consent message in AdMob, Privacy & messaging.
+6. Create the app and its banner, interstitial, app open and native advanced units in AdMob. Put the unit IDs in `ADMOB_BANNER_ID`, `ADMOB_INTERSTITIAL_ID`, `ADMOB_APP_OPEN_ID` and `ADMOB_NATIVE_ID` in `env/prod.json`, and set the `ADMOB_APP_ID` environment variable for the release build. Prod refuses Google's test IDs, and with no unit IDs it shows no ads. Add `app-ads.txt` to the website and set up the consent message in AdMob, Privacy & messaging. After launch, tune ad frequency in the `ad_settings` row (Studio, Table editor), and add mediation networks in AdMob to raise fill and eCPM.
 
 ## Database migrations freeze at the first deploy
 Before the first `supabase db push` to staging, record the last migration file in this section. From then on, never edit any migration up to and including it; add new ones (`docs/backend/SCHEMA.md`).

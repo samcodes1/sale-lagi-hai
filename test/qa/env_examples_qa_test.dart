@@ -21,6 +21,8 @@ const _expectedKeys = {
   // Optional: empty means no Google ads in this build.
   'ADMOB_BANNER_ID',
   'ADMOB_INTERSTITIAL_ID',
+  'ADMOB_APP_OPEN_ID',
+  'ADMOB_NATIVE_ID',
 };
 
 Map<String, String> _readExample(Flavor flavor) {

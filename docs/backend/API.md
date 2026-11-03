@@ -23,6 +23,8 @@ Every RPC returns `deal_card` rows: the deal-card fields (brand, category, offer
 
 `sponsor_banners`: Home's sponsor banners. RLS returns those running now; the app filters by city.
 
+`ad_settings`: the one row that tunes the app's ads (kill switch, native ads, ad density in lists, interstitial and app open pacing). Read once per launch; admins edit it in Studio. Its checks, and the app, hold every value within Google's ad policies.
+
 ## Rules
 - **Pages hold at most 50 rows** (`page_size` is clamped to 1–50; the default is 20). PostgREST's `max_rows` is 100 as a backstop.
 - **RLS decides visibility.** The RPCs are `security invoker`, and lists show live deals only: published, started, not ended, from an active brand.

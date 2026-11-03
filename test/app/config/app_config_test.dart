@@ -242,8 +242,24 @@ void main() {
       expect(config.adBannerUnitId, isEmpty);
     });
 
+    test('app open and native units are read too', () {
+      final config = AppConfig.fromMap({
+        ...validValues(),
+        'ADMOB_APP_OPEN_ID': unit,
+        'ADMOB_NATIVE_ID': ' $unit',
+      });
+      expect(config.hasAds, isTrue);
+      expect(config.adAppOpenUnitId, unit);
+      expect(config.adNativeUnitId, unit);
+    });
+
     test('must look like ad unit IDs', () {
-      for (final key in ['ADMOB_BANNER_ID', 'ADMOB_INTERSTITIAL_ID']) {
+      for (final key in [
+        'ADMOB_BANNER_ID',
+        'ADMOB_INTERSTITIAL_ID',
+        'ADMOB_APP_OPEN_ID',
+        'ADMOB_NATIVE_ID',
+      ]) {
         expect(
           () => AppConfig.fromMap({...validValues(), key: 'banner'}),
           throwsConfigProblem(key),
