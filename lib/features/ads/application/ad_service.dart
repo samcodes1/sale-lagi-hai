@@ -46,10 +46,7 @@ abstract interface class AdService {
 
   /// A native ad [width] logical pixels wide at most, or `null` if none
   /// filled.
-  Future<LoadedBanner?> loadNative(
-    NativeAdColors colors, {
-    required int width,
-  });
+  Future<LoadedBanner?> loadNative(NativeAdColors colors, {required int width});
 
   /// Shows a full-screen ad if one is ready; says whether it did.
   Future<bool> showInterstitial();

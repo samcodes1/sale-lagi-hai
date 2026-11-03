@@ -27,23 +27,20 @@ final adPrivacyOptionsProvider = FutureProvider<bool>((ref) async {
 
 /// Staff's ad settings, read once per launch. Any failure means the
 /// defaults: settings must never stop the app, or its ads.
-final adSettingsProvider = FutureProvider<AdSettings>(
-  (ref) async {
-    if (!ref.watch(adServiceProvider).enabled) return const AdSettings();
-    try {
-      final rows = await ref
-          .watch(backendGatewayProvider)
-          .select(const TableQuery('ad_settings', limit: 1));
-      return rows.isEmpty ? const AdSettings() : AdSettings.fromMap(rows.first);
-    } on Object catch (error) {
-      ref
-          .read(loggerProvider)
-          .warning('Ad settings could not load', error: error);
-      return const AdSettings();
-    }
-  },
-  retry: (_, _) => null,
-);
+final adSettingsProvider = FutureProvider<AdSettings>((ref) async {
+  if (!ref.watch(adServiceProvider).enabled) return const AdSettings();
+  try {
+    final rows = await ref
+        .watch(backendGatewayProvider)
+        .select(const TableQuery('ad_settings', limit: 1));
+    return rows.isEmpty ? const AdSettings() : AdSettings.fromMap(rows.first);
+  } on Object catch (error) {
+    ref
+        .read(loggerProvider)
+        .warning('Ad settings could not load', error: error);
+    return const AdSettings();
+  }
+}, retry: (_, _) => null);
 
 /// The settings now: the defaults until staff's have loaded.
 final currentAdSettingsProvider = Provider<AdSettings>(
@@ -100,8 +97,7 @@ final appLaunchCountProvider = FutureProvider<int>((ref) async {
 final appOpenAdsProvider = Provider<AppOpenAds>((ref) {
   final service = ref.watch(adServiceProvider);
   final settings = ref.watch(currentAdSettingsProvider);
-  final active =
-      service.enabled && settings.enabled && settings.appOpenEnabled;
+  final active = service.enabled && settings.enabled && settings.appOpenEnabled;
   return AppOpenAds(
     service,
     AppOpenPacing(

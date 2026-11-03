@@ -14,8 +14,8 @@ final class _Service extends NoAdService {
   final bool enabled;
 
   final bool ready;
-  var fromAd = false;
-  var shows = 0;
+  bool fromAd = false;
+  int shows = 0;
 
   @override
   Future<bool> showAppOpen() async {
@@ -38,8 +38,7 @@ final class _Store implements KeyValueStore {
   Future<String?> getString(String key) async => values[key];
 
   @override
-  Future<void> setString(String key, String value) async =>
-      values[key] = value;
+  Future<void> setString(String key, String value) async => values[key] = value;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -73,10 +72,7 @@ void main() {
   });
 
   test('never on coming back from an ad', () {
-    expect(
-      away(pacing(), const Duration(minutes: 5), fromAd: true),
-      isFalse,
-    );
+    expect(away(pacing(), const Duration(minutes: 5), fromAd: true), isFalse);
   });
 
   test('never without having left', () {
@@ -149,7 +145,7 @@ void main() {
           ],
         );
         addTearDown(c.dispose);
-        return c.read(appLaunchCountProvider.future);
+        return await c.read(appLaunchCountProvider.future);
       }
 
       expect(await run(), 1);

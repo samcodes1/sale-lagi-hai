@@ -80,8 +80,7 @@ final class GoogleAdService implements AdService {
     final done = Completer<LoadedBanner?>();
     try {
       final adSize = switch (size) {
-        AdBannerSize.rectangle || AdBannerSize.native =>
-          AdSize.mediumRectangle,
+        AdBannerSize.rectangle || AdBannerSize.native => AdSize.mediumRectangle,
         AdBannerSize.strip =>
           await AdSize.getLargeAnchoredAdaptiveBannerAdSizeWithOrientation(
                 Orientation.portrait,

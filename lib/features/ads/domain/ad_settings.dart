@@ -20,7 +20,7 @@ final class AdSettings {
   /// the wrong type, and clamping the rest.
   factory fromMap(Map<String, Object?> row) {
     const d = AdSettings();
-    bool flag(String key, bool fallback) => switch (row[key]) {
+    bool flag(String key, {required bool fallback}) => switch (row[key]) {
       final bool value => value,
       _ => fallback,
     };
@@ -30,8 +30,8 @@ final class AdSettings {
           _ => fallback,
         };
     return AdSettings(
-      enabled: flag('enabled', d.enabled),
-      nativeEnabled: flag('native_enabled', d.nativeEnabled),
+      enabled: flag('enabled', fallback: d.enabled),
+      nativeEnabled: flag('native_enabled', fallback: d.nativeEnabled),
       feedAdEvery: number('feed_ad_every', d.feedAdEvery, 4, 30),
       interstitialBreaks: number(
         'interstitial_breaks',
@@ -53,7 +53,7 @@ final class AdSettings {
         0,
         12,
       ),
-      appOpenEnabled: flag('app_open_enabled', d.appOpenEnabled),
+      appOpenEnabled: flag('app_open_enabled', fallback: d.appOpenEnabled),
       appOpenMinLaunches: number(
         'app_open_min_launches',
         d.appOpenMinLaunches,

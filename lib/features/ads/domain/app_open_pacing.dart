@@ -7,12 +7,12 @@
 /// - more often than [minGap].
 final class AppOpenPacing {
   new({
-    required DateTime Function() clock,
+    required this._clock,
     required this.launches,
     this.minLaunches = 2,
     this.minAway = const Duration(minutes: 1),
     this.minGap = const Duration(hours: 1),
-  }) : _clock = clock;
+  });
 
   final DateTime Function() _clock;
 
