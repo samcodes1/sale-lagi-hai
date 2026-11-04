@@ -197,6 +197,7 @@ List<Widget> _cards(
   final format = AppFormatters.of(context);
   final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
   final imageUrl = ref.watch(dealImageUrlProvider);
+  final logoUrl = ref.watch(brandLogoUrlProvider);
   final city = _cityName(ref, urdu: urdu);
   return [
     for (final deal in deals)
@@ -209,6 +210,7 @@ List<Widget> _cards(
           l10n: l10n,
           format: format,
           imageUrl: imageUrl,
+          logoUrl: logoUrl,
           cityName: city,
         ),
         onTap: () => DealRoute(dealId: deal.id).push<void>(context),

@@ -38,6 +38,7 @@ Widget dealCardFor(
       l10n: context.l10n,
       format: AppFormatters.of(context),
       imageUrl: ref.watch(dealImageUrlProvider),
+      logoUrl: ref.watch(brandLogoUrlProvider),
       saved: saved,
     ),
     onTap: () => DealRoute(dealId: deal.id).push<void>(context),

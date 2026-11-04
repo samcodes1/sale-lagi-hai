@@ -8,6 +8,7 @@ import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/design_system/models/deal_card_data.dart';
 import 'package:sale_lagi_hai/design_system/theme/accent_primary.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/design_system/widgets/brand_logo.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
 import 'package:sale_lagi_hai/design_system/widgets/network_picture.dart';
@@ -312,9 +313,9 @@ class _CardChips extends StatelessWidget {
   );
 }
 
-/// The deal photo, or a brand plate with the brand's initial when there is
-/// no image or it fails to load. Decorative: the card label carries the
-/// meaning.
+/// The deal photo; else the brand's logo; else a brand plate with the
+/// brand's initial (also when a picture fails to load). Decorative: the card
+/// label carries the meaning.
 class _DealImage extends StatelessWidget {
   const new({required this.deal});
 
@@ -323,9 +324,11 @@ class _DealImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final plate = _BrandPlate(name: deal.brandName);
+    final logoUrl = deal.logoUrl;
+    final logo = logoUrl == null ? plate : BrandLogo(logoUrl, fallback: plate);
     final url = deal.imageUrl;
-    if (url == null) return plate;
-    return NetworkPicture(url, fallback: plate);
+    if (url == null) return logo;
+    return NetworkPicture(url, fallback: logo);
   }
 }
 

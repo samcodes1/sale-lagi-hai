@@ -14,6 +14,15 @@ final dealImageUrlProvider = Provider<String? Function(String? path)>((ref) {
       : '$base/storage/v1/object/public/deal-images/${Uri.encodeFull(path)}';
 });
 
+/// The public URL of a brand logo in the `brand-logos` bucket, or `null`
+/// without a backend.
+final brandLogoUrlProvider = Provider<String? Function(String? path)>((ref) {
+  final base = ref.watch(appConfigProvider).supabaseUrl;
+  return (path) => path == null || base.isEmpty
+      ? null
+      : '$base/storage/v1/object/public/brand-logos/${Uri.encodeFull(path)}';
+});
+
 /// What a card shows for [deal], in the UI language. [cityName] labels
 /// local deals; a distance (from "Near me") wins over every place label.
 DealCardData dealCardData(
@@ -22,6 +31,7 @@ DealCardData dealCardData(
   required AppLocalizations l10n,
   required AppFormatters format,
   required String? Function(String? path) imageUrl,
+  required String? Function(String? path) logoUrl,
   String? cityName,
   bool saved = false,
 }) {
@@ -45,6 +55,7 @@ DealCardData dealCardData(
       Deal(scope: DealScope.local) => cityName,
     },
     imageUrl: imageUrl(deal.imagePath),
+    logoUrl: logoUrl(deal.brandLogoPath),
     featured: deal.isFeatured,
     cardNames: deal.cardBanks,
     saved: saved,

@@ -16,6 +16,7 @@ import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_bottom_sheet.dart';
+import 'package:sale_lagi_hai/design_system/widgets/brand_logo.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
 import 'package:sale_lagi_hai/design_system/widgets/network_picture.dart';
@@ -83,6 +84,21 @@ class _Body extends ConsumerWidget {
         (deal.endsAt != null && !deal.endsAt!.isAfter(now));
     final offer = deal.offer(urdu: urdu);
     final image = ref.watch(dealImageUrlProvider)(deal.imagePath);
+    final logo = ref.watch(brandLogoUrlProvider)(deal.brandLogoPath);
+    final initial = ColoredBox(
+      color: scheme.surfaceContainerHigh,
+      child: Center(
+        child: ExcludeSemantics(
+          child: Text(
+            deal.brand(urdu: urdu).characters.first,
+            style: theme.textTheme.displayMedium,
+          ),
+        ),
+      ),
+    );
+    final brandPicture = logo == null
+        ? initial
+        : BrandLogo(logo, fallback: initial);
     final description = detail.description(urdu: urdu);
     final terms = detail.terms(urdu: urdu);
     final offerUrl = deal.url ?? detail.sourceUrl;
@@ -137,21 +153,8 @@ class _Body extends ConsumerWidget {
         AspectRatio(
           aspectRatio: 16 / 9,
           child: image == null
-              ? ColoredBox(
-                  color: scheme.surfaceContainerHigh,
-                  child: Center(
-                    child: ExcludeSemantics(
-                      child: Text(
-                        deal.brand(urdu: urdu).characters.first,
-                        style: theme.textTheme.displayMedium,
-                      ),
-                    ),
-                  ),
-                )
-              : NetworkPicture(
-                  image,
-                  fallback: ColoredBox(color: scheme.surfaceContainerHigh),
-                ),
+              ? brandPicture
+              : NetworkPicture(image, fallback: brandPicture),
         ),
         Padding(
           padding: const EdgeInsetsDirectional.symmetric(

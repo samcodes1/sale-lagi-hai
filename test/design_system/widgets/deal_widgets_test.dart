@@ -12,6 +12,7 @@ import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_bottom_sheet.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_stepper.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_tab_bar.dart';
+import 'package:sale_lagi_hai/design_system/widgets/brand_logo.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
@@ -375,6 +376,51 @@ void main() {
       await tester.pump();
 
       expect(find.text('O'), findsOneWidget);
+    });
+
+    testWidgets('without a photo, the brand logo shows whole; a failing logo '
+        'falls back to the brand plate', (tester) async {
+      await _pump(
+        tester,
+        DealCard(
+          deal: const DealCardData(
+            id: 'x',
+            brandName: 'ufone',
+            title: 'Sale',
+            logoUrl: 'https://example.invalid/logo.png',
+          ),
+          onTap: () {},
+        ),
+      );
+
+      expect(find.byType(BrandLogo), findsOneWidget);
+      expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
+      await tester.pump();
+      expect(find.text('U'), findsOneWidget);
+    });
+
+    testWidgets('a failing photo falls back to the brand logo', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        DealCard(
+          deal: const DealCardData(
+            id: 'x',
+            brandName: 'zong',
+            title: 'Sale',
+            imageUrl: 'https://example.invalid/deal.jpg',
+            logoUrl: 'https://example.invalid/logo.png',
+          ),
+          onTap: () {},
+        ),
+      );
+
+      expect(find.byType(BrandLogo), findsNothing);
+      await tester.pump();
+      expect(find.byType(BrandLogo), findsOneWidget);
+      await tester.pump();
+      expect(find.text('Z'), findsOneWidget);
     });
 
     testWidgets('grows with 200% Urdu text instead of overflowing', (
