@@ -34,9 +34,7 @@ class NetworkPicture extends StatelessWidget {
         url,
         fit: fit,
         cacheWidth: width,
-        frameBuilder: frame == null
-            ? null
-            : (_, child, _, _) => frame!(child),
+        frameBuilder: frame == null ? null : (_, child, _, _) => frame!(child),
         excludeFromSemantics: true,
         errorBuilder: (_, _, _) => fallback,
       );

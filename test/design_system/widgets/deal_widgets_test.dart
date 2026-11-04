@@ -399,9 +399,7 @@ void main() {
       expect(find.text('U'), findsOneWidget);
     });
 
-    testWidgets('a failing photo falls back to the brand logo', (
-      tester,
-    ) async {
+    testWidgets('a failing photo falls back to the brand logo', (tester) async {
       await _pump(
         tester,
         DealCard(
