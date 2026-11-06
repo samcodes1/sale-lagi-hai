@@ -17,7 +17,7 @@ Ratios are not rounded before comparison.
 | light | onSecondary on secondary | `#FFFFFF` | `#1A1433` | 17.62:1 | 4.5:1 (text) | PASS | label on ink button |
 | light | secondary on surface | `#1A1433` | `#FFFFFF` | 17.62:1 | 4.5:1 (text) | PASS | links |
 | light | secondary on background | `#1A1433` | `#FFFFFF` | 17.62:1 | 4.5:1 (text) | PASS | links on background |
-| light | onSecondaryContainer on secondaryContainer | `#FFFFFF` | `#1A1433` | 17.62:1 | 4.5:1 (text) | PASS | selected chip |
+| light | onSecondaryContainer on secondaryContainer | `#1A1433` | `#F2EFEA` | 15.36:1 | 4.5:1 (text) | PASS | tonal fill |
 | light | onDeal on deal | `#FFFFFF` | `#DC2E24` | 4.71:1 | 4.5:1 (text) | PASS | discount badge "-40%" |
 | light | onDealContainer on dealContainer | `#921A14` | `#FFF0EE` | 7.96:1 | 4.5:1 (text) | PASS | soft deal label |
 | light | deal on surface | `#DC2E24` | `#FFFFFF` | 4.71:1 | 3.0:1 (ui) | PASS | badge shape vs card |
@@ -47,7 +47,7 @@ Ratios are not rounded before comparison.
 | dark | onSecondary on secondary | `#1A1433` | `#FAF8F4` | 16.61:1 | 4.5:1 (text) | PASS | label on ink button |
 | dark | secondary on surface | `#FAF8F4` | `#1A1433` | 16.61:1 | 4.5:1 (text) | PASS | links |
 | dark | secondary on background | `#FAF8F4` | `#0F0B1F` | 18.20:1 | 4.5:1 (text) | PASS | links on background |
-| dark | onSecondaryContainer on secondaryContainer | `#1A1433` | `#FAF8F4` | 16.61:1 | 4.5:1 (text) | PASS | selected chip |
+| dark | onSecondaryContainer on secondaryContainer | `#FAF8F4` | `#433D50` | 9.79:1 | 4.5:1 (text) | PASS | tonal fill |
 | dark | onDeal on deal | `#0F0B1F` | `#FF6B5E` | 6.91:1 | 4.5:1 (text) | PASS | discount badge "-40%" |
 | dark | onDealContainer on dealContainer | `#FFB4AB` | `#4A0C09` | 9.18:1 | 4.5:1 (text) | PASS | soft deal label |
 | dark | deal on surface | `#FF6B5E` | `#1A1433` | 6.31:1 | 3.0:1 (ui) | PASS | badge shape vs card |

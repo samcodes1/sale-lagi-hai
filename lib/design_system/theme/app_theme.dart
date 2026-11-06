@@ -169,12 +169,19 @@ abstract final class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: scheme.surfaceContainerLowest,
-        selectedColor: scheme.secondaryContainer,
-        labelStyle: textTheme.labelMedium?.copyWith(color: scheme.onSurface),
-        secondaryLabelStyle: textTheme.labelMedium?.copyWith(
-          color: scheme.onSecondaryContainer,
+        // Selected chips are solid ink (Clean): the label flips with them.
+        selectedColor: scheme.secondary,
+        labelStyle: textTheme.labelMedium?.copyWith(
+          color: WidgetStateColor.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? scheme.onSecondary
+                : scheme.onSurface,
+          ),
         ),
-        checkmarkColor: scheme.onSecondaryContainer,
+        secondaryLabelStyle: textTheme.labelMedium?.copyWith(
+          color: scheme.onSecondary,
+        ),
+        checkmarkColor: scheme.onSecondary,
         iconTheme: IconThemeData(color: scheme.onSurface, size: 18),
         // The label identifies the chip; the hairline only groups it.
         side: BorderSide(color: scheme.outlineVariant),
@@ -445,8 +452,9 @@ abstract final class AppTheme {
             onSurfaceVariant: scheme.onSurface,
             outline: BrandColors.surma800,
             outlineVariant: BrandColors.surma500,
-            secondary: BrandColors.neel700,
-            onSecondary: BrandColors.surma0,
+            // White on Mirch 700 is 8.8:1. Ink secondary already passes.
+            primary: BrandColors.mirch700,
+            onPrimary: BrandColors.surma0,
             tertiary: BrandColors.mirch700,
             onTertiary: BrandColors.surma0,
             error: BrandColors.error800,
@@ -456,10 +464,8 @@ abstract final class AppTheme {
             onSurfaceVariant: scheme.onSurface,
             outline: BrandColors.surma200,
             outlineVariant: BrandColors.surma400,
-            // Lifted further than the light theme: dark containers go up to
-            // Surma 700, and text must still reach 7:1 on them.
-            secondary: BrandColors.neel100,
-            onSecondary: BrandColors.neel900,
+            primary: BrandColors.mirch300,
+            onPrimary: BrandColors.surma950,
             tertiary: BrandColors.mirch200,
             onTertiary: BrandColors.surma950,
             error: BrandColors.error50,

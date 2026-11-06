@@ -281,10 +281,18 @@ void main() {
       var saved = 0;
       await _pump(
         tester,
-        DealCard(
-          deal: deal,
-          onTap: () => opened++,
-          onSaveToggle: () => saved++,
+        // Carousel width: a full-width 4:3 photo would push the title
+        // below the 800x600 test screen.
+        Align(
+          alignment: AlignmentDirectional.topStart,
+          child: SizedBox(
+            width: 300,
+            child: DealCard(
+              deal: deal,
+              onTap: () => opened++,
+              onSaveToggle: () => saved++,
+            ),
+          ),
         ),
       );
 
@@ -407,7 +415,7 @@ void main() {
             id: 'x',
             brandName: 'zong',
             title: 'Sale',
-            imageUrl: 'https://example.invalid/deal.jpg',
+            imageUrl: 'https://example.invalid/deal-2.jpg',
             logoUrl: 'https://example.invalid/logo.png',
           ),
           onTap: () {},

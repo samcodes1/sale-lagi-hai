@@ -135,6 +135,15 @@ void main() {
       await h.pump(tester, device: AppLocales.urdu, size: const Size(360, 800));
       expect(tester.takeException(), isNull);
 
+      // At 200% the search, sponsor slot and categories fill the first
+      // screen; bring the first carousel up.
+      await tester.scrollUntilVisible(
+        find.byType(DealCard).first,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
       // The first carousel card sits at the right edge (RTL).
       final first = tester.getRect(find.byType(DealCard).first);
       expect(first.right, greaterThan(300), reason: '$first');
@@ -210,7 +219,7 @@ void main() {
       saved: const ShopperPreferences(onboarded: true, cityId: karachiId),
     );
     await h.pump(tester, device: AppLocales.urdu, size: const Size(360, 800));
-    await tester.tap(find.byIcon(Icons.arrow_drop_down));
+    await tester.tap(find.byIcon(Icons.expand_more));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(_clipped(tester, <String>{}), isEmpty);

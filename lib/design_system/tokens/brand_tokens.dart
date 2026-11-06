@@ -239,11 +239,11 @@ abstract final class BrandLight {
   /// Text on [secondary]. #FFFFFF.
   static const Color onSecondary = BrandColors.surma0;
 
-  /// Selected chip fill. #1A1433.
-  static const Color secondaryContainer = BrandColors.surma900;
+  /// Quiet tonal fill. #F2EFEA.
+  static const Color secondaryContainer = BrandColors.surma100;
 
-  /// Text on [secondaryContainer]. #FFFFFF.
-  static const Color onSecondaryContainer = BrandColors.surma0;
+  /// Text on [secondaryContainer]. #1A1433.
+  static const Color onSecondaryContainer = BrandColors.surma900;
 
   /// Mirch: discount badges only. #DC2E24.
   static const Color deal = BrandColors.mirch500;
@@ -350,11 +350,11 @@ abstract final class BrandDark {
   /// Text on [secondary]. #1A1433.
   static const Color onSecondary = BrandColors.surma900;
 
-  /// Selected chip fill. #FAF8F4.
-  static const Color secondaryContainer = BrandColors.surma50;
+  /// Quiet tonal fill. #433D50.
+  static const Color secondaryContainer = BrandColors.surma700;
 
-  /// Text on [secondaryContainer]. #1A1433.
-  static const Color onSecondaryContainer = BrandColors.surma900;
+  /// Text on [secondaryContainer]. #FAF8F4.
+  static const Color onSecondaryContainer = BrandColors.surma50;
 
   /// Mirch: discount badges only. #FF6B5E.
   static const Color deal = BrandColors.mirch400;
@@ -419,8 +419,8 @@ abstract final class BrandColorSchemes {
     onPrimaryContainer: BrandColors.mirch700,
     secondary: BrandColors.surma900,
     onSecondary: BrandColors.surma0,
-    secondaryContainer: BrandColors.surma900,
-    onSecondaryContainer: BrandColors.surma0,
+    secondaryContainer: BrandColors.surma100,
+    onSecondaryContainer: BrandColors.surma900,
     tertiary: BrandColors.mirch500,
     onTertiary: BrandColors.surma0,
     tertiaryContainer: BrandColors.mirch50,
@@ -451,8 +451,8 @@ abstract final class BrandColorSchemes {
     onPrimaryContainer: BrandColors.mirch200,
     secondary: BrandColors.surma50,
     onSecondary: BrandColors.surma900,
-    secondaryContainer: BrandColors.surma50,
-    onSecondaryContainer: BrandColors.surma900,
+    secondaryContainer: BrandColors.surma700,
+    onSecondaryContainer: BrandColors.surma50,
     tertiary: BrandColors.mirch400,
     onTertiary: BrandColors.surma950,
     tertiaryContainer: BrandColors.mirch900,

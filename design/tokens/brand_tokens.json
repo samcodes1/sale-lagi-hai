@@ -156,12 +156,12 @@
           "value": "#FFFFFF"
         },
         "secondaryContainer": {
-          "ref": "surma.900",
-          "value": "#1A1433"
+          "ref": "surma.100",
+          "value": "#F2EFEA"
         },
         "onSecondaryContainer": {
-          "ref": "surma.0",
-          "value": "#FFFFFF"
+          "ref": "surma.900",
+          "value": "#1A1433"
         },
         "deal": {
           "ref": "mirch.500",
@@ -302,12 +302,12 @@
           "value": "#1A1433"
         },
         "secondaryContainer": {
-          "ref": "surma.50",
-          "value": "#FAF8F4"
+          "ref": "surma.700",
+          "value": "#433D50"
         },
         "onSecondaryContainer": {
-          "ref": "surma.900",
-          "value": "#1A1433"
+          "ref": "surma.50",
+          "value": "#FAF8F4"
         },
         "deal": {
           "ref": "mirch.400",

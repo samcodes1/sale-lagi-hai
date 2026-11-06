@@ -140,8 +140,11 @@ class _CityButton extends ConsumerWidget {
               horizontal: BrandSpacing.s2,
               vertical: BrandSpacing.s1,
             ),
-            child: Column(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Column(
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -165,6 +168,7 @@ class _CityButton extends ConsumerWidget {
                   ],
                 ),
               ],
+            ),
             ),
           ),
         ),

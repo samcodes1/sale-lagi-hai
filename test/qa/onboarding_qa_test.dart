@@ -445,10 +445,11 @@ void main() {
       tester,
     ) async {
       final store = InMemoryKeyValueStore();
-      var container = await _boot(tester, store: store);
+      final lahore = FakeLocation(const Located(31.5204, 74.3587));
+      var container = await _boot(tester, store: store, location: lahore);
       await tapText(tester, 'اردو');
       await tapText(tester, 'آگے چلیں');
-      await tapText(tester, 'لاہور');
+      await tapText(tester, 'میرا مقام استعمال کریں');
       // "Kill": drop the app, boot again from the same storage.
       await tester.pumpWidget(const SizedBox());
       container = await _boot(tester, store: store);
@@ -677,10 +678,11 @@ void main() {
       await _boot(
         tester,
         store: store,
+        location: FakeLocation(const Located(31.5204, 74.3587)), // Lahore
         logger: AppLogger(sinks: [sink]),
       );
       await tapText(tester, 'Continue');
-      await tapText(tester, 'Lahore');
+      await tapText(tester, 'Use my location');
       await tapText(tester, 'Continue');
       await tapText(tester, 'Skip');
       await tapText(tester, 'Skip');
