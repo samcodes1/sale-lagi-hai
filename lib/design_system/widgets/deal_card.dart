@@ -136,9 +136,14 @@ class _FullBody extends StatelessWidget {
       children: [
         Stack(
           children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: _DealImage(deal: deal),
+            // Clean: the photo is the card, rounded on every corner, with
+            // the text under it.
+            ClipRRect(
+              borderRadius: BrandRadii.card,
+              child: AspectRatio(
+                aspectRatio: large ? 16 / 10 : 4 / 3,
+                child: _DealImage(deal: deal),
+              ),
             ),
             PositionedDirectional(
               start: BrandSpacing.s3,
@@ -156,7 +161,12 @@ class _FullBody extends StatelessWidget {
           ],
         ),
         Padding(
-          padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            BrandSpacing.s1,
+            BrandSpacing.s3,
+            BrandSpacing.s1,
+            BrandSpacing.s3,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

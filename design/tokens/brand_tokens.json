@@ -88,8 +88,8 @@
     "themes": {
       "light": {
         "background": {
-          "ref": "surma.50",
-          "value": "#FAF8F4"
+          "ref": "surma.0",
+          "value": "#FFFFFF"
         },
         "surface": {
           "ref": "surma.0",
@@ -128,40 +128,40 @@
           "value": "#7B7585"
         },
         "primary": {
-          "ref": "haldi.500",
-          "value": "#FFC414"
+          "ref": "mirch.500",
+          "value": "#DC2E24"
         },
         "onPrimary": {
-          "ref": "surma.900",
-          "value": "#1A1433"
+          "ref": "surma.0",
+          "value": "#FFFFFF"
         },
         "primaryContainer": {
-          "ref": "haldi.100",
-          "value": "#FFEDB3"
+          "ref": "mirch.50",
+          "value": "#FFF0EE"
         },
         "onPrimaryContainer": {
-          "ref": "haldi.900",
-          "value": "#5C3F00"
+          "ref": "mirch.700",
+          "value": "#921A14"
         },
         "primaryText": {
-          "ref": "haldi.800",
-          "value": "#8A5F00"
+          "ref": "mirch.600",
+          "value": "#B8221A"
         },
         "secondary": {
-          "ref": "neel.500",
-          "value": "#3B3FD9"
+          "ref": "surma.900",
+          "value": "#1A1433"
         },
         "onSecondary": {
           "ref": "surma.0",
           "value": "#FFFFFF"
         },
         "secondaryContainer": {
-          "ref": "neel.50",
-          "value": "#EEEFFF"
+          "ref": "surma.900",
+          "value": "#1A1433"
         },
         "onSecondaryContainer": {
-          "ref": "neel.800",
-          "value": "#1D1F70"
+          "ref": "surma.0",
+          "value": "#FFFFFF"
         },
         "deal": {
           "ref": "mirch.500",
@@ -274,40 +274,40 @@
           "value": "#7B7585"
         },
         "primary": {
-          "ref": "haldi.500",
-          "value": "#FFC414"
+          "ref": "mirch.400",
+          "value": "#FF6B5E"
         },
         "onPrimary": {
+          "ref": "surma.950",
+          "value": "#0F0B1F"
+        },
+        "primaryContainer": {
+          "ref": "mirch.900",
+          "value": "#4A0C09"
+        },
+        "onPrimaryContainer": {
+          "ref": "mirch.200",
+          "value": "#FFB4AB"
+        },
+        "primaryText": {
+          "ref": "mirch.300",
+          "value": "#FF8A7E"
+        },
+        "secondary": {
+          "ref": "surma.50",
+          "value": "#FAF8F4"
+        },
+        "onSecondary": {
           "ref": "surma.900",
           "value": "#1A1433"
         },
-        "primaryContainer": {
-          "ref": "haldi.900",
-          "value": "#5C3F00"
-        },
-        "onPrimaryContainer": {
-          "ref": "haldi.100",
-          "value": "#FFEDB3"
-        },
-        "primaryText": {
-          "ref": "haldi.500",
-          "value": "#FFC414"
-        },
-        "secondary": {
-          "ref": "neel.300",
-          "value": "#9EA2FF"
-        },
-        "onSecondary": {
-          "ref": "neel.900",
-          "value": "#15164D"
-        },
         "secondaryContainer": {
-          "ref": "neel.800",
-          "value": "#1D1F70"
+          "ref": "surma.50",
+          "value": "#FAF8F4"
         },
         "onSecondaryContainer": {
-          "ref": "neel.100",
-          "value": "#DCDDFF"
+          "ref": "surma.900",
+          "value": "#1A1433"
         },
         "deal": {
           "ref": "mirch.400",
@@ -374,8 +374,8 @@
           "value": "#9EA2FF"
         },
         "indicator": {
-          "ref": "haldi.500",
-          "value": "#FFC414"
+          "ref": "mirch.400",
+          "value": "#FF6B5E"
         }
       }
     }

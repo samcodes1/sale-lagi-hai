@@ -201,6 +201,9 @@
   "deletedToast": "Your account was deleted.",
 
   "homeFeaturedTitle": "Featured",
+  "homeDealsIn": "Deals in",
+  "homeSearchHint": "Search brands, deals, banks",
+  "@homeDealsIn": { "description": "Above the city name in the Home app bar." },
   "homeTrendingTitle": "Trending today",
   "homeNearTitle": "Near you",
   "homeEndingTitle": "Ending soon",

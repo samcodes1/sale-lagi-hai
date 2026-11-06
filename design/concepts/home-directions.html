@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sale Lagi Hai Home Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Three directions for the new Home, drawn in the brand's own colours and type.
+   Layout: a short intro, then three phones side by side that stack on a phone. */
+:root {
+  --page: #F2F1F4;
+  --ink: #1A1433;
+  --muted: #5D5769;
+  --line: #DDD9E2;
+  --card: #FFFFFF;
+  --mirch: #DC2E24;
+  --haldi: #FFC414;
+  --neel: #3B3FD9;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0F0B1F; --ink: #F4F2F8; --muted: #A29DA6; --line: #2C263A; --card: #1A1433;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0F0B1F; --ink: #F4F2F8; --muted: #A29DA6; --line: #2C263A; --card: #1A1433;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--page); color: var(--ink); font-family: var(--body); line-height: 1.45; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 40px 20px 64px; }
+header.intro { max-width: 760px; margin-bottom: 36px; }
+header.intro h1 { font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: clamp(32px, 5vw, 48px); line-height: 1; margin: 0 0 12px; letter-spacing: -0.01em; text-wrap: balance; }
+header.intro p { margin: 0; color: var(--muted); font-size: 17px; max-width: 65ch; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; align-items: start; }
+@media (max-width: 1080px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+.concept { display: flex; flex-direction: column; gap: 16px; }
+.label { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.label h2 { font-family: var(--display); font-weight: 800; font-stretch: 85%; font-size: 26px; margin: 0; }
+.label .tag { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--ink); color: var(--page); }
+.notes { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; color: var(--muted); font-size: 15px; }
+.notes li::before { content: "– "; }
+.notes b { color: var(--ink); font-weight: 600; }
+
+/* ---------- the phone frame (same for all three) ---------- */
+.phone { width: 100%; max-width: 360px; margin: 0 auto; aspect-ratio: 9 / 19.5; border-radius: 40px; padding: 10px; background: #0B0817; box-shadow: 0 24px 60px rgba(15, 11, 31, .25); }
+.screen { position: relative; height: 100%; border-radius: 31px; overflow: hidden; display: flex; flex-direction: column; font-family: var(--body); }
+.status { height: 30px; flex: none; display: flex; justify-content: space-between; align-items: center; padding: 0 22px; font-size: 12px; font-weight: 600; }
+.scroll { flex: 1; overflow: hidden; }
+.nav { flex: none; }
+.ico { width: 20px; height: 20px; display: inline-block; vertical-align: middle; }
+.row { display: flex; gap: 10px; overflow: hidden; }
+.disp { font-family: var(--display); }
+
+/* ---------- A: Clean ---------- */
+.a { background: #FFFFFF; color: #1A1433; }
+.a .top { padding: 6px 18px 0; display: flex; justify-content: space-between; align-items: center; }
+.a .loc { font-size: 12px; color: #5D5769; }
+.a .loc b { display: block; font-size: 16px; color: #1A1433; font-weight: 700; }
+.a .bell { width: 38px; height: 38px; border-radius: 50%; border: 1px solid #ECE9EF; display: grid; place-items: center; }
+.a .search { margin: 14px 18px 0; height: 46px; border-radius: 14px; background: #F4F3F6; display: flex; align-items: center; gap: 10px; padding: 0 14px; color: #7B7585; font-size: 14px; }
+.a .hero { margin: 16px 18px 0; height: 150px; border-radius: 20px; background: #DC2E24; color: #fff; padding: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+.a .hero .sp { position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 700; background: rgba(255,255,255,.9); color: #1A1433; padding: 2px 7px; border-radius: 6px; }
+.a .hero .big { font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: 44px; line-height: .9; }
+.a .hero small { font-size: 13px; opacity: .9; }
+.a .hero .dots { position: absolute; bottom: 12px; right: 16px; display: flex; gap: 4px; }
+.a .hero .dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.5); }
+.a .hero .dots i:first-child { width: 16px; background: #fff; }
+.a .chips { padding: 16px 18px 0; }
+.a .chip { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 58px; font-size: 11px; font-weight: 500; color: #433D50; }
+.a .chip span { width: 52px; height: 52px; border-radius: 16px; background: #F4F3F6; display: grid; place-items: center; font-size: 20px; }
+.a h3 { margin: 18px 18px 10px; font-family: var(--body); font-weight: 700; font-size: 17px; display: flex; justify-content: space-between; align-items: baseline; }
+.a h3 a { font-size: 13px; font-weight: 600; color: #DC2E24; text-decoration: none; }
+.a .cards { padding: 0 18px; }
+.a .card { flex: none; width: 150px; }
+.a .img { height: 112px; border-radius: 16px; position: relative; display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 22px; }
+.a .badge { position: absolute; top: 8px; left: 8px; background: #DC2E24; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 8px; }
+.a .card p { margin: 8px 0 0; font-size: 13px; font-weight: 600; line-height: 1.25; }
+.a .card small { font-size: 11px; color: #7B7585; }
+.a .nav { margin: 0 14px 12px; height: 58px; border-radius: 20px; background: #1A1433; display: flex; justify-content: space-around; align-items: center; color: rgba(255,255,255,.55); font-size: 10px; }
+.a .nav div { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.a .nav .on { color: #fff; }
+.a .nav .on::after { content: ""; width: 4px; height: 4px; border-radius: 2px; background: #FFC414; }
+
+/* ---------- B: Bold ---------- */
+.b { background: #0F0B1F; color: #fff; }
+.b .top { padding: 6px 18px 0; display: flex; justify-content: space-between; align-items: center; }
+.b .wm { font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: 22px; letter-spacing: -.01em; }
+.b .wm em { font-style: normal; color: #FFC414; }
+.b .pill { font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); }
+.b .hero { margin: 14px 0 0; height: 230px; background: #FFC414; color: #0F0B1F; padding: 18px; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+.b .hero .k { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.b .hero .big { font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: 76px; line-height: .82; letter-spacing: -.02em; }
+.b .hero .foot { display: flex; justify-content: space-between; align-items: flex-end; font-size: 13px; font-weight: 600; }
+.b .hero .cta { background: #0F0B1F; color: #fff; padding: 9px 14px; border-radius: 999px; font-size: 12px; }
+.b .tabs { display: flex; gap: 18px; padding: 16px 18px 0; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .06em; }
+.b .tabs .on { color: #fff; border-bottom: 2px solid #FFC414; padding-bottom: 6px; }
+.b .list { padding: 6px 18px 0; display: grid; gap: 0; }
+.b .item { display: grid; grid-template-columns: 58px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+.b .logo { width: 58px; height: 58px; border-radius: 12px; display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 15px; }
+.b .item p { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.2; }
+.b .item small { color: rgba(255,255,255,.55); font-size: 12px; }
+.b .pct { font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: 26px; color: #FFC414; }
+.b .nav { height: 62px; border-top: 1px solid rgba(255,255,255,.1); display: flex; justify-content: space-around; align-items: center; font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+.b .nav .on { color: #FFC414; }
+
+/* ---------- C: Soft ---------- */
+.c { background: #F3F2F7; color: #1A1433; }
+.c .top { padding: 6px 18px 0; display: flex; justify-content: space-between; align-items: center; }
+.c .hi { font-family: var(--display); font-weight: 700; font-size: 24px; line-height: 1.05; }
+.c .hi small { display: block; font-family: var(--body); font-weight: 500; font-size: 12px; color: #5D5769; margin-bottom: 2px; }
+.c .av { width: 40px; height: 40px; border-radius: 14px; background: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.c .seg { margin: 14px 18px 0; background: #E6E4EE; border-radius: 14px; padding: 4px; display: grid; grid-template-columns: repeat(3, 1fr); font-size: 12px; font-weight: 600; text-align: center; color: #5D5769; }
+.c .seg span { padding: 8px 0; border-radius: 10px; }
+.c .seg .on { background: #fff; color: #1A1433; box-shadow: 0 1px 3px rgba(26,20,51,.1); }
+.c .hero { margin: 14px 18px 0; border-radius: 24px; background: #3B3FD9; color: #fff; padding: 16px; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; height: 132px; }
+.c .hero p { margin: 0; font-size: 12px; opacity: .85; }
+.c .hero .big { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1; }
+.c .hero .sp { font-size: 10px; font-weight: 700; background: rgba(255,255,255,.18); padding: 3px 8px; border-radius: 999px; align-self: start; }
+.c h3 { margin: 18px 18px 10px; font-size: 15px; font-weight: 700; }
+.c .tiles { padding: 0 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.c .tile { background: #fff; border-radius: 20px; padding: 10px; }
+.c .tile .img { height: 84px; border-radius: 14px; display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 18px; }
+.c .tile p { margin: 8px 2px 0; font-size: 12.5px; font-weight: 600; line-height: 1.25; }
+.c .tile .meta { display: flex; justify-content: space-between; align-items: center; margin: 6px 2px 0; font-size: 11px; color: #5D5769; }
+.c .tile .meta b { color: #DC2E24; font-size: 12px; }
+.c .clock { background: #FFF1DC; color: #A34D00; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
+.c .nav { height: 64px; background: #fff; display: flex; justify-content: space-around; align-items: center; font-size: 10px; color: #7B7585; font-weight: 500; }
+.c .nav div { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.c .nav .on { color: #3B3FD9; font-weight: 700; }
+
+/* brand tiles used by all three */
+.k1 { background: #F7E9DD; color: #8A3B12; }
+.k2 { background: #E9F7E4; color: #3F8A1F; }
+.k3 { background: #FFF0D6; color: #B36B00; }
+.k4 { background: #E6EEFF; color: #1E3FA8; }
+.k5 { background: #FDE3E6; color: #B8221A; }
+.k6 { background: #EDE7FF; color: #4B2FA8; }
+
+footer.next { margin-top: 44px; border-top: 1px solid var(--line); padding-top: 22px; color: var(--muted); font-size: 15px; max-width: 760px; }
+footer.next b { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="intro">
+    <h1>Three directions for the new Home</h1>
+    <p>Each one keeps the same content: your city from location, the sponsor banner on top, categories, trending deals and ending soon. Only the look changes. Pick one, or mix parts of them, and the whole app gets restyled to match.</p>
+  </header>
+
+  <div class="grid">
+    <!-- A -->
+    <section class="concept">
+      <div class="label"><h2>A. Clean</h2><span class="tag">Recommended</span></div>
+      <div class="phone"><div class="screen a">
+        <div class="status"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="scroll">
+          <div class="top">
+            <div class="loc">Deals in<b>Karachi ▾</b></div>
+            <div class="bell"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1A1433" stroke-width="1.8"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></div>
+          </div>
+          <div class="search"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#7B7585" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>Search brands, deals, banks</div>
+          <div class="hero">
+            <span class="sp">Sponsored</span>
+            <div class="big">UP TO 50% OFF</div>
+            <small>Khaadi winter sale · all Pakistan</small>
+            <div class="dots"><i></i><i></i><i></i></div>
+          </div>
+          <div class="chips row">
+            <div class="chip"><span>👗</span>Fashion</div>
+            <div class="chip"><span>🍔</span>Food</div>
+            <div class="chip"><span>📱</span>Mobile</div>
+            <div class="chip"><span>💳</span>Banks</div>
+            <div class="chip"><span>✈️</span>Travel</div>
+          </div>
+          <h3>Trending today <a href="#a">See all</a></h3>
+          <div class="cards row">
+            <div class="card"><div class="img k2">ufone<span class="badge">Rs 1,000</span></div><p>Super Card Plus: 30 days</p><small>Ends in 3 days</small></div>
+            <div class="card"><div class="img k1">Gul Ahmed<span class="badge">30%</span></div><p>Flat 30% off lawn</p><small>Online · all Pakistan</small></div>
+          </div>
+        </div>
+        <div class="nav">
+          <div class="on"><svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg></div>
+          <div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div>
+          <div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 4h10v16l-5-3-5 3z"/></svg></div>
+          <div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></div>
+        </div>
+      </div></div>
+      <ul class="notes">
+        <li><b>Feels like:</b> Airbnb, Uber Eats, Shein.</li>
+        <li>White canvas, one red accent for offers and buttons.</li>
+        <li>Big rounded photo cards, a floating dark tab bar.</li>
+        <li>Calm and premium; easiest for every age group.</li>
+      </ul>
+    </section>
+
+    <!-- B -->
+    <section class="concept">
+      <div class="label"><h2>B. Bold</h2></div>
+      <div class="phone"><div class="screen b">
+        <div class="status"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="scroll">
+          <div class="top">
+            <div class="wm">SALE LAGI HAI<em>!</em></div>
+            <div class="pill">📍 Karachi</div>
+          </div>
+          <div class="hero">
+            <div class="k">Sponsored · Sapphire</div>
+            <div class="big">70%<br>OFF</div>
+            <div class="foot"><span>Winter clearance<br>ends Sunday</span><span class="cta">Shop now</span></div>
+          </div>
+          <div class="tabs"><span class="on">Trending</span><span>Ending</span><span>Banks</span><span>Near</span></div>
+          <div class="list">
+            <div class="item"><div class="logo k5">ZONG</div><div><p>Super Weekly Max</p><small>Nationwide · 7 days</small></div><div class="pct">-25%</div></div>
+            <div class="item"><div class="logo k1">KHAADI</div><div><p>Winter collection</p><small>Online and stores</small></div><div class="pct">-50%</div></div>
+            <div class="item"><div class="logo k4">HBL</div><div><p>Foodpanda Fridays</p><small>Credit cards</small></div><div class="pct">-20%</div></div>
+          </div>
+        </div>
+        <div class="nav"><span class="on">Home</span><span>Explore</span><span>Saved</span><span>Me</span></div>
+      </div></div>
+      <ul class="notes">
+        <li><b>Feels like:</b> Nike, SSENSE, Spotify.</li>
+        <li>Dark by default, the yellow from the brand for discounts.</li>
+        <li>Huge percentage numbers sell the sale at a glance.</li>
+        <li>Most "catchy"; loud, young, streetwear energy.</li>
+      </ul>
+    </section>
+
+    <!-- C -->
+    <section class="concept">
+      <div class="label"><h2>C. Soft</h2></div>
+      <div class="phone"><div class="screen c">
+        <div class="status"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="scroll">
+          <div class="top">
+            <div class="hi"><small>Karachi · Saturday</small>Today's best deals</div>
+            <div class="av">SA</div>
+          </div>
+          <div class="seg"><span class="on">For you</span><span>Near me</span><span>Banks</span></div>
+          <div class="hero">
+            <div><p>Sponsored · Bank Alfalah</p><div class="big">20% off at 300+ restaurants</div></div>
+            <span class="sp">Ad</span>
+          </div>
+          <h3>Ending soon</h3>
+          <div class="tiles">
+            <div class="tile"><div class="img k3">foodpanda</div><p>Rs 300 off your first order</p><div class="meta"><b>Rs 300</b><span class="clock">6h left</span></div></div>
+            <div class="tile"><div class="img k6">Sapphire</div><p>Buy 2 get 1 on basics</p><div class="meta"><b>B2G1</b><span class="clock">1d left</span></div></div>
+          </div>
+        </div>
+        <div class="nav">
+          <div class="on"><svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg>Home</div>
+          <div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="m15 9-2 4-4 2 2-4z"/></svg>Explore</div>
+          <div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 4h10v16l-5-3-5 3z"/></svg>Saved</div>
+          <div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Profile</div>
+        </div>
+      </div></div>
+      <ul class="notes">
+        <li><b>Feels like:</b> Revolut, Klarna, Apple Wallet.</li>
+        <li>Soft grey background, white floating tiles, blue accent.</li>
+        <li>Two-column grid shows more deals per screen.</li>
+        <li>Friendly and modern; strong for bank and card offers.</li>
+      </ul>
+    </section>
+  </div>
+
+  <footer class="next">
+    <b>Whichever you pick</b>, the restyle covers the whole app: Home, deal cards and the deal page, search, the tab bar, onboarding and pop-ups. Light and dark mode, Urdu right to left and large text all keep working.
+  </footer>
+</div>
+</body>
+</html>
