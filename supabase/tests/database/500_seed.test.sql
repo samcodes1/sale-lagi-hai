@@ -2,9 +2,9 @@
 begin;
 select plan(14);
 
-select is((select count(*)::int from public.cities), 16, '16 cities');
-select is((select array_agg(slug::text) from public.cities where is_live), array['karachi'],
-  'only Karachi is live at launch');
+select is((select count(*)::int from public.cities), 76, '76 cities');
+select is_empty($$ select slug from public.cities where not is_live $$,
+  'every city is live: the app covers all of Pakistan');
 select is_empty($$ select slug from public.cities
   where not (extensions.st_y(center::extensions.geometry) between 23.5 and 37.2
              and extensions.st_x(center::extensions.geometry) between 60.8 and 77.9) $$,
@@ -31,15 +31,15 @@ create temp table before as
   select (select count(*) from public.cities) c, (select count(*) from public.areas) a,
          (select count(*) from public.categories) k, (select count(*) from public.banks) b,
          (select count(*) from public.card_products) p, (select count(*) from public.brands) br;
-update public.cities set is_live = true where slug = 'lahore';
+update public.cities set is_live = false where slug = 'lahore';
 \ir ../../migrations/20261029170000_reference_seed.sql
 \ir ../../migrations/20261029170000_reference_seed.sql
 select results_eq($$ select (select count(*) from public.cities), (select count(*) from public.areas),
   (select count(*) from public.categories), (select count(*) from public.banks),
   (select count(*) from public.card_products), (select count(*) from public.brands) $$,
   $$ select * from before $$, 'running the reference data twice more adds nothing');
-select ok((select is_live from public.cities where slug = 'lahore'),
-  're-running keeps cities staff have switched on');
+select ok(not (select is_live from public.cities where slug = 'lahore'),
+  're-running keeps cities as staff have switched them');
 
 -- The development seed loads cleanly, twice.
 \ir ../../seed.sql

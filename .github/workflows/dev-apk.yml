@@ -72,6 +72,13 @@ jobs:
         id: web
         continue-on-error: true
         run: flutter build web --release --dart-define-from-file=env/dev.json
+      # For looking at the screens in a browser (public config only).
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: steps.web.outcome == 'success'
+        with:
+          name: web-dev
+          path: build/web
+          retention-days: 3
       - run: >-
           flutter build apk --debug
           --flavor dev

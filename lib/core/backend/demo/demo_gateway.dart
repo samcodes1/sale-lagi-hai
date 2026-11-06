@@ -633,6 +633,8 @@ final class DemoGateway implements BackendGateway {
     'sponsor_banners' => demoSponsorBanners,
     // No row: the app's defaults.
     'ad_settings' => const <Map<String, Object?>>[],
+    // Staff push these; the demo has none.
+    'popup_banners' => const <Map<String, Object?>>[],
     final other =>
       _tables[other] ??
           (throw UnsupportedError('demo backend has no table $other')),

@@ -27,13 +27,15 @@ import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
 import 'package:sale_lagi_hai/features/home/application/home_providers.dart';
 import 'package:sale_lagi_hai/features/home/presentation/city_picker.dart';
+import 'package:sale_lagi_hai/features/popups/application/popup_providers.dart';
+import 'package:sale_lagi_hai/features/popups/presentation/popup_gate.dart';
 import 'package:sale_lagi_hai/features/sponsors/application/sponsor_providers.dart';
 import 'package:sale_lagi_hai/features/sponsors/presentation/sponsor_carousel.dart';
 
 /// How close to the end of "For you" the next page starts loading.
 const _prefetchFromEnd = 5;
 
-/// Home (screen S03): sponsor banners, Featured, Trending today, Near you,
+/// Home (screen S03): sponsor banners (and staff pop-ups), Featured, Trending today, Near you,
 /// Ending soon and the endless "For you" list, with ads between the rows.
 /// Pull to refresh reloads everything; offline, the last copy shows with
 /// how old it is.
@@ -43,6 +45,7 @@ class HomeScreen extends ConsumerWidget {
   Future<void> _refresh(WidgetRef ref) async {
     ref
       ..invalidate(sponsorBannersProvider)
+      ..invalidate(popupToShowProvider)
       ..invalidate(featuredProvider)
       ..invalidate(trendingProvider)
       ..invalidate(endingSoonProvider)
@@ -59,7 +62,8 @@ class HomeScreen extends ConsumerWidget {
       // The city is the title: it's what this screen is about, and it has
       // the room to grow with large text.
       appBar: AppBar(title: const _CityButton()),
-      body: AppRefreshIndicator(
+      body: PopupGate(
+        child: AppRefreshIndicator(
         onRefresh: () => _refresh(ref),
         child: CustomScrollView(
           // Pull to refresh works even when everything fits.
@@ -88,6 +92,7 @@ class HomeScreen extends ConsumerWidget {
             const _ForYou(),
           ],
         ),
+      ),
       ),
     );
   }

@@ -60,7 +60,7 @@ const _guest = [
 
 const _welcome = [
   '/welcome',
-  '/welcome/city',
+  '/welcome/location',
   '/welcome/interests',
   '/welcome/brands',
   '/welcome/alerts',

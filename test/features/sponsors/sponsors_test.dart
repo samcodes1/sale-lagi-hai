@@ -65,6 +65,13 @@ final class _Gateway implements BackendGateway {
 
 final class _Links implements LinkService {
   final opened = <String>[];
+  final emailed = <String>[];
+
+  @override
+  Future<bool> email(String address) async {
+    emailed.add(address);
+    return true;
+  }
 
   @override
   Future<bool> openWeb(String url) async {
@@ -172,10 +179,44 @@ void main() {
       ],
     );
 
-    testWidgets('nothing shows without banners', (tester) async {
+    testWidgets('without banners, the slot offers itself to advertisers', (
+      tester,
+    ) async {
       await tester.pumpWidget(host(const []));
       await tester.pumpAndSettle();
       expect(find.byType(PageView), findsNothing);
+      expect(find.text('Your brand here'), findsOneWidget);
+      // No support address in this build: nothing to tap.
+      expect(find.text('Advertise with us →'), findsNothing);
+    });
+
+    testWidgets('the advertise slot writes to us when there is an address', (
+      tester,
+    ) async {
+      final links = _Links();
+      await tester.pumpWidget(
+        testApp(
+          const Scaffold(body: SponsorCarousel()),
+          overrides: [
+            appConfigProvider.overrideWithValue(
+              const AppConfig(
+                flavor: Flavor.dev,
+                appName: 'Test',
+                supabaseUrl: '',
+                supabasePublishableKey: '',
+                supportEmail: 'ads@example.pk',
+              ),
+            ),
+            backendGatewayProvider.overrideWithValue(_Gateway(const [])),
+            homeCityProvider.overrideWithValue(null),
+            linkServiceProvider.overrideWithValue(links),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Advertise with us →'));
+      await tester.pump();
+      expect(links.emailed, ['ads@example.pk']);
     });
 
     testWidgets('is labelled Sponsored and heard with its sponsor', (

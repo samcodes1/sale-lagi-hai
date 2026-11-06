@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
 import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
@@ -18,15 +19,109 @@ const _dwell = Duration(seconds: 5);
 /// script. It grows with large text.
 const _copyHeight = 160.0;
 
-/// The sponsors' banners at the top of Home. Nothing shows without any.
+/// The sponsors' banners at the top of Home. With none booked, the slot
+/// offers itself to advertisers instead (nothing while they load).
 class SponsorCarousel extends ConsumerWidget {
   const new({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final banners = ref.watch(sponsorBannersProvider).value ?? const [];
-    if (banners.isEmpty) return const SizedBox.shrink();
-    return _Pager(banners);
+    final banners = ref.watch(sponsorBannersProvider);
+    return switch (banners.value) {
+      null => const SizedBox.shrink(),
+      [] => const _Slot(child: _AdvertiseHere()),
+      final list => _Pager(list),
+    };
+  }
+}
+
+/// The banner frame: room for the copy at any text size.
+class _Slot extends StatelessWidget {
+  const new({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsetsDirectional.fromSTEB(
+      BrandSpacing.s5,
+      BrandSpacing.s4,
+      BrandSpacing.s5,
+      0,
+    ),
+    child: SizedBox(
+      height:
+          MediaQuery.textScalerOf(context).scale(_copyHeight) +
+          2 * BrandSpacing.s5,
+      child: child,
+    ),
+  );
+}
+
+/// Our own banner while no sponsor has the slot: "Your brand here". A tap
+/// writes to us when the build has a support address.
+class _AdvertiseHere extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final email = ref.watch(appConfigProvider).supportEmail;
+    final open = email.isEmpty
+        ? null
+        : () => unawaited(ref.read(linkServiceProvider).email(email));
+    return Semantics(
+      label: '${l10n.advertiseTitle}. ${l10n.advertiseBody}',
+      button: open != null,
+      excludeSemantics: true,
+      onTap: open,
+      child: Material(
+        color: scheme.inverseSurface,
+        borderRadius: BrandRadii.card,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: open,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: Text(
+                    l10n.advertiseTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: scheme.onInverseSurface,
+                    ),
+                  ),
+                ),
+                Text(
+                  l10n.advertiseBody,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: scheme.onInverseSurface,
+                  ),
+                ),
+                if (open != null) ...[
+                  const SizedBox(height: BrandSpacing.s3),
+                  Text(
+                    l10n.advertiseAction,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: scheme.inversePrimary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

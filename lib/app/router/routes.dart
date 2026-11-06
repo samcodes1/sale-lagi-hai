@@ -22,9 +22,9 @@ import 'package:sale_lagi_hai/features/follows/presentation/following_screen.dar
 import 'package:sale_lagi_hai/features/home/presentation/home_screen.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/alerts_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/brands_step.dart';
-import 'package:sale_lagi_hai/features/onboarding/presentation/city_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/interests_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/language_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/location_step.dart';
 import 'package:sale_lagi_hai/features/profile/presentation/profile_screen.dart';
 import 'package:sale_lagi_hai/features/saved/presentation/saved_screen.dart';
 import 'package:sale_lagi_hai/features/search/presentation/search_screen.dart';
@@ -367,7 +367,7 @@ final class DeleteAccountRoute extends GoRouteData with $DeleteAccountRoute {
 @TypedGoRoute<WelcomeRoute>(
   path: '/welcome',
   routes: [
-    TypedGoRoute<WelcomeCityRoute>(path: 'city'),
+    TypedGoRoute<WelcomeLocationRoute>(path: 'location'),
     TypedGoRoute<WelcomeInterestsRoute>(path: 'interests'),
     TypedGoRoute<WelcomeBrandsRoute>(path: 'brands'),
     TypedGoRoute<WelcomeAlertsRoute>(path: 'alerts'),
@@ -381,12 +381,14 @@ final class WelcomeRoute extends GoRouteData with $WelcomeRoute {
       const LanguageStep();
 }
 
-/// `/welcome/city`.
-final class WelcomeCityRoute extends GoRouteData with $WelcomeCityRoute {
+/// `/welcome/location`.
+final class WelcomeLocationRoute extends GoRouteData
+    with $WelcomeLocationRoute {
   const new();
 
   @override
-  Widget build(BuildContext context, GoRouterState state) => const CityStep();
+  Widget build(BuildContext context, GoRouterState state) =>
+      const LocationStep();
 }
 
 /// `/welcome/interests`.
