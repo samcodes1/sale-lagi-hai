@@ -23,15 +23,15 @@ class PopupGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(popupToShowProvider, (_, next) {
-      final popup = next.value;
-      if (popup == null) return;
+    final popup = ref.watch(popupToShowProvider).value;
+    if (popup != null && !ref.watch(popupShownThisRunProvider)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!context.mounted) return;
+        // Claimed once: rebuilds before the dialog opens add nothing.
         if (!ref.read(popupShownThisRunProvider.notifier).claim()) return;
         unawaited(_show(context, ref, popup));
       });
-    }, fireImmediately: true);
+    }
     return child;
   }
 
@@ -89,7 +89,7 @@ class PopupBannerDialog extends ConsumerWidget {
     return Dialog(
       clipBehavior: Clip.antiAlias,
       shape: const RoundedRectangleBorder(borderRadius: BrandRadii.card),
-      insetPadding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
+      insetPadding: const EdgeInsets.all(BrandSpacing.s5),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
         child: Stack(

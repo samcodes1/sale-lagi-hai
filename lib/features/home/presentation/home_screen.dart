@@ -36,8 +36,9 @@ import 'package:sale_lagi_hai/features/sponsors/presentation/sponsor_carousel.da
 /// How close to the end of "For you" the next page starts loading.
 const _prefetchFromEnd = 5;
 
-/// Home (screen S03): sponsor banners (and staff pop-ups), Featured, Trending today, Near you,
-/// Ending soon and the endless "For you" list, with ads between the rows.
+/// Home (screen S03): search, sponsor banners (staff pop-ups on top),
+/// categories, Featured, Trending today, Near you, Ending soon and the
+/// endless "For you" list, with ads between the rows.
 /// Pull to refresh reloads everything; offline, the last copy shows with
 /// how old it is.
 class HomeScreen extends ConsumerWidget {

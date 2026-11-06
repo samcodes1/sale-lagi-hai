@@ -29,8 +29,7 @@ final class PopupSeenStore {
       if (json is! Map<String, Object?>) return {};
       return {
         for (final MapEntry(:key, :value) in json.entries)
-          if (value is String)
-            if (DateTime.tryParse(value) case final at?) key: at,
+          if (value is String) key: ?DateTime.tryParse(value),
       };
     } on FormatException {
       return {};

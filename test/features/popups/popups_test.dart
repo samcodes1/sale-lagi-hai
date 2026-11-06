@@ -197,7 +197,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      return container.read(popupToShowProvider.future);
+      return await container.read(popupToShowProvider.future);
     }
 
     test('the first due one for the city', () async {
