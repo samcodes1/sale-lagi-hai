@@ -354,14 +354,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeLanguagePromptOther => 'اپنی زبان منتخب کریں';
 
   @override
-  String get cityTitle => 'Where do you shop?';
+  String get locationStepTitle => 'Deals near you';
 
   @override
-  String get cityBody =>
-      'We\'ll show deals from your city. Nationwide and online deals show everywhere.';
+  String get locationStepBody =>
+      'Sale Lagi Hai! uses your phone\'s approximate location to show the deals in your city first. Deals from all over Pakistan and online show either way.';
 
   @override
-  String get actionDetectCity => 'Detect my city';
+  String get locationStepApproximate =>
+      'Approximate only: your area, never your exact spot.';
+
+  @override
+  String get locationStepInUse =>
+      'Only while you use the app, never in the background.';
+
+  @override
+  String get locationStepChange =>
+      'Change your city on Home, or turn location off in Settings, any time.';
+
+  @override
+  String get actionUseLocation => 'Use my location';
+
+  @override
+  String get cityPickerLocationHint =>
+      'Your approximate location, only to find your city.';
+
+  @override
+  String get locationStepNotCovered =>
+      'You\'re not near a city we know yet, so you\'ll see deals from all over Pakistan. Pick a city on Home any time.';
+
+  @override
+  String get locationStepDenied =>
+      'No problem. You\'ll see deals from all over Pakistan. Pick a city on Home any time.';
+
+  @override
+  String get locationStepBlocked =>
+      'Location is off for this app, so you\'ll see deals from all over Pakistan. Turn it on in settings, or pick a city on Home.';
+
+  @override
+  String get locationStepOff =>
+      'Your phone\'s location is off, so you\'ll see deals from all over Pakistan. Pick a city on Home any time.';
+
+  @override
+  String get locationStepUnavailable =>
+      'We couldn\'t find your location, so you\'ll see deals from all over Pakistan. Pick a city on Home any time.';
 
   @override
   String get cityDetecting => 'Finding your city…';
@@ -370,25 +406,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String cityDetected(String city) {
     return 'You\'re in $city.';
   }
-
-  @override
-  String get cityNotCovered =>
-      'Your location isn\'t near a city we cover yet. Pick one below.';
-
-  @override
-  String get cityLocationDenied => 'No problem. Pick your city below.';
-
-  @override
-  String get cityLocationBlocked =>
-      'Location is off for this app. Turn it on in settings, or pick your city below.';
-
-  @override
-  String get cityLocationOff =>
-      'Your phone\'s location is off. Pick your city below.';
-
-  @override
-  String get cityLocationUnavailable =>
-      'We couldn\'t find your location. Pick your city below.';
 
   @override
   String get cityLocalSoon => 'Local deals coming soon';
@@ -609,6 +626,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeFeaturedTitle => 'Featured';
+
+  @override
+  String get homeDealsIn => 'Deals in';
+
+  @override
+  String get homeSearchHint => 'Search brands, deals, banks';
 
   @override
   String get homeTrendingTitle => 'Trending today';
@@ -1228,7 +1251,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyOnPhoneBody =>
-      'Your language, city, follows, saved deals, recent searches and cards. Your approximate location is used only for \"Near you\", and never stored.';
+      'Your language, city, follows, saved deals, recent searches and cards. Your approximate location is used only to find your city and for \"Near you\", and is never stored.';
 
   @override
   String get privacyInAccount => 'In your account';
@@ -1270,8 +1293,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sponsoredLabel => 'Sponsored';
 
   @override
+  String get advertiseTitle => 'Your brand here';
+
+  @override
+  String get advertiseBody =>
+      'Reach shoppers all over Pakistan with a banner on Sale Lagi Hai!';
+
+  @override
+  String get advertiseAction => 'Advertise with us →';
+
+  @override
   String sponsorBannerLabel(String sponsor, String title) {
     return 'Sponsored by $sponsor: $title';
+  }
+
+  @override
+  String popupSponsoredBy(String sponsor) {
+    return 'Sponsored by $sponsor';
   }
 
   @override

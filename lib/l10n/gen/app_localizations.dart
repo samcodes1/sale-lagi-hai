@@ -596,23 +596,77 @@ abstract class AppLocalizations {
   /// **'اپنی زبان منتخب کریں'**
   String get welcomeLanguagePromptOther;
 
-  /// No description provided for @cityTitle.
+  /// No description provided for @locationStepTitle.
   ///
   /// In en, this message translates to:
-  /// **'Where do you shop?'**
-  String get cityTitle;
+  /// **'Deals near you'**
+  String get locationStepTitle;
 
-  /// No description provided for @cityBody.
+  /// Play's prominent disclosure for location: shown before Android's permission dialog.
   ///
   /// In en, this message translates to:
-  /// **'We\'ll show deals from your city. Nationwide and online deals show everywhere.'**
-  String get cityBody;
+  /// **'Sale Lagi Hai! uses your phone\'s approximate location to show the deals in your city first. Deals from all over Pakistan and online show either way.'**
+  String get locationStepBody;
 
-  /// No description provided for @actionDetectCity.
+  /// No description provided for @locationStepApproximate.
   ///
   /// In en, this message translates to:
-  /// **'Detect my city'**
-  String get actionDetectCity;
+  /// **'Approximate only: your area, never your exact spot.'**
+  String get locationStepApproximate;
+
+  /// No description provided for @locationStepInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Only while you use the app, never in the background.'**
+  String get locationStepInUse;
+
+  /// No description provided for @locationStepChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change your city on Home, or turn location off in Settings, any time.'**
+  String get locationStepChange;
+
+  /// No description provided for @actionUseLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get actionUseLocation;
+
+  /// No description provided for @cityPickerLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your approximate location, only to find your city.'**
+  String get cityPickerLocationHint;
+
+  /// No description provided for @locationStepNotCovered.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not near a city we know yet, so you\'ll see deals from all over Pakistan. Pick a city on Home any time.'**
+  String get locationStepNotCovered;
+
+  /// No description provided for @locationStepDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'No problem. You\'ll see deals from all over Pakistan. Pick a city on Home any time.'**
+  String get locationStepDenied;
+
+  /// No description provided for @locationStepBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is off for this app, so you\'ll see deals from all over Pakistan. Turn it on in settings, or pick a city on Home.'**
+  String get locationStepBlocked;
+
+  /// No description provided for @locationStepOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone\'s location is off, so you\'ll see deals from all over Pakistan. Pick a city on Home any time.'**
+  String get locationStepOff;
+
+  /// No description provided for @locationStepUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find your location, so you\'ll see deals from all over Pakistan. Pick a city on Home any time.'**
+  String get locationStepUnavailable;
 
   /// No description provided for @cityDetecting.
   ///
@@ -625,36 +679,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'re in {city}.'**
   String cityDetected(String city);
-
-  /// No description provided for @cityNotCovered.
-  ///
-  /// In en, this message translates to:
-  /// **'Your location isn\'t near a city we cover yet. Pick one below.'**
-  String get cityNotCovered;
-
-  /// No description provided for @cityLocationDenied.
-  ///
-  /// In en, this message translates to:
-  /// **'No problem. Pick your city below.'**
-  String get cityLocationDenied;
-
-  /// No description provided for @cityLocationBlocked.
-  ///
-  /// In en, this message translates to:
-  /// **'Location is off for this app. Turn it on in settings, or pick your city below.'**
-  String get cityLocationBlocked;
-
-  /// No description provided for @cityLocationOff.
-  ///
-  /// In en, this message translates to:
-  /// **'Your phone\'s location is off. Pick your city below.'**
-  String get cityLocationOff;
-
-  /// No description provided for @cityLocationUnavailable.
-  ///
-  /// In en, this message translates to:
-  /// **'We couldn\'t find your location. Pick your city below.'**
-  String get cityLocationUnavailable;
 
   /// Under a city whose local deals are not live yet.
   ///
@@ -1009,6 +1033,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Featured'**
   String get homeFeaturedTitle;
+
+  /// Above the city name in the Home app bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Deals in'**
+  String get homeDealsIn;
+
+  /// No description provided for @homeSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search brands, deals, banks'**
+  String get homeSearchHint;
 
   /// No description provided for @homeTrendingTitle.
   ///
@@ -2039,7 +2075,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyOnPhoneBody.
   ///
   /// In en, this message translates to:
-  /// **'Your language, city, follows, saved deals, recent searches and cards. Your approximate location is used only for \"Near you\", and never stored.'**
+  /// **'Your language, city, follows, saved deals, recent searches and cards. Your approximate location is used only to find your city and for \"Near you\", and is never stored.'**
   String get privacyOnPhoneBody;
 
   /// No description provided for @privacyInAccount.
@@ -2114,11 +2150,35 @@ abstract class AppLocalizations {
   /// **'Sponsored'**
   String get sponsoredLabel;
 
+  /// Home's banner slot while no sponsor has booked it.
+  ///
+  /// In en, this message translates to:
+  /// **'Your brand here'**
+  String get advertiseTitle;
+
+  /// No description provided for @advertiseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach shoppers all over Pakistan with a banner on Sale Lagi Hai!'**
+  String get advertiseBody;
+
+  /// No description provided for @advertiseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Advertise with us →'**
+  String get advertiseAction;
+
   /// No description provided for @sponsorBannerLabel.
   ///
   /// In en, this message translates to:
   /// **'Sponsored by {sponsor}: {title}'**
   String sponsorBannerLabel(String sponsor, String title);
+
+  /// No description provided for @popupSponsoredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored by {sponsor}'**
+  String popupSponsoredBy(String sponsor);
 
   /// No description provided for @privacyAds.
   ///

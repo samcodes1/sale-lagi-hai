@@ -58,30 +58,27 @@ final popupSeenStoreProvider = Provider<PopupSeenStore>(
 
 /// The pop-up to show over Home now: the most important running one for
 /// the shopper's city that is due. A failure only means no pop-up.
-final popupToShowProvider = FutureProvider<PopupBanner?>(
-  (ref) async {
-    final city = ref.watch(homeCityProvider);
-    try {
-      final popups = await BackendPopupRepository(
-        ref.watch(backendGatewayProvider),
-      ).live();
-      if (popups.isEmpty) return null;
-      final seen = await ref.read(popupSeenStoreProvider).read();
-      final now = ref.read(clockProvider)();
-      for (final popup in popups) {
-        if (popup.cityId != null && popup.cityId != city) continue;
-        if (popup.isDue(lastSeen: seen[popup.id], now: now)) return popup;
-      }
-      return null;
-    } on Object catch (error) {
-      ref
-          .read(loggerProvider)
-          .warning('Pop-up banners could not load', error: error);
-      return null;
+final popupToShowProvider = FutureProvider<PopupBanner?>((ref) async {
+  final city = ref.watch(homeCityProvider);
+  try {
+    final popups = await BackendPopupRepository(
+      ref.watch(backendGatewayProvider),
+    ).live();
+    if (popups.isEmpty) return null;
+    final seen = await ref.read(popupSeenStoreProvider).read();
+    final now = ref.read(clockProvider)();
+    for (final popup in popups) {
+      if (popup.cityId != null && popup.cityId != city) continue;
+      if (popup.isDue(lastSeen: seen[popup.id], now: now)) return popup;
     }
-  },
-  retry: (_, _) => null,
-);
+    return null;
+  } on Object catch (error) {
+    ref
+        .read(loggerProvider)
+        .warning('Pop-up banners could not load', error: error);
+    return null;
+  }
+}, retry: (_, _) => null);
 
 /// At most one pop-up per app start, whatever else happens.
 final popupShownThisRunProvider = NotifierProvider<PopupShownThisRun, bool>(

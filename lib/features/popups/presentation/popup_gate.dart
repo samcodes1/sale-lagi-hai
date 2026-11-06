@@ -45,11 +45,14 @@ class PopupGate extends ConsumerWidget {
       ref
           .read(popupSeenStoreProvider)
           .markSeen(popup.id, now)
-          .then((_) {}, onError: (Object error) {
-            ref
-                .read(loggerProvider)
-                .warning('Pop-up seen time not saved', error: error);
-          }),
+          .then(
+            (_) {},
+            onError: (Object error) {
+              ref
+                  .read(loggerProvider)
+                  .warning('Pop-up seen time not saved', error: error);
+            },
+          ),
     );
     final target = await showDialog<PopupTarget>(
       context: context,

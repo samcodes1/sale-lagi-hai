@@ -230,7 +230,10 @@ void main() {
     await h.pump(tester);
     await tapText(tester, 'Continue');
     await tapText(tester, 'Use my location');
-    expect(find.textContaining("We couldn't find your location"), findsOneWidget);
+    expect(
+      find.textContaining("We couldn't find your location"),
+      findsOneWidget,
+    );
     expect(h.preferences.cityId, isNull);
     backend.fail = false;
     await tapText(tester, 'Continue');

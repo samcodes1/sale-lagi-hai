@@ -47,8 +47,7 @@ class _LocationStepState extends ConsumerState<LocationStep> {
     setState(() {
       _cityName = city?.name(urdu: urdu);
       _detection = switch (outcome) {
-        Located() =>
-          city == null ? _Detection.notCovered : _Detection.found,
+        Located() => city == null ? _Detection.notCovered : _Detection.found,
         LocationDenied(:final permanently) =>
           permanently ? _Detection.blocked : _Detection.denied,
         LocationServiceOff() => _Detection.off,
@@ -126,7 +125,9 @@ class _LocationStepState extends ConsumerState<LocationStep> {
                 Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: TextButton(
-                    onPressed: ref.read(locationServiceProvider).openAppSettings,
+                    onPressed: ref
+                        .read(locationServiceProvider)
+                        .openAppSettings,
                     child: Text(l10n.actionOpenSettings),
                   ),
                 ),

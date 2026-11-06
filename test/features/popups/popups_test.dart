@@ -128,17 +128,19 @@ void main() {
 
     test('once: never again', () {
       expect(
-        popup(PopupFrequency.once).isDue(
-          lastSeen: _now.subtract(const Duration(days: 30)),
-          now: _now,
-        ),
+        popup(
+          PopupFrequency.once,
+        ).isDue(lastSeen: _now.subtract(const Duration(days: 30)), now: _now),
         isFalse,
       );
     });
 
     test('daily: again on the next calendar day, not the same day', () {
       final daily = popup(PopupFrequency.daily);
-      expect(daily.isDue(lastSeen: DateTime(2026, 11, 7, 8), now: _now), isFalse);
+      expect(
+        daily.isDue(lastSeen: DateTime(2026, 11, 7, 8), now: _now),
+        isFalse,
+      );
       expect(
         daily.isDue(lastSeen: DateTime(2026, 11, 6, 23), now: _now),
         isTrue,
@@ -154,18 +156,21 @@ void main() {
   });
 
   group('PopupSeenStore', () {
-    test('remembers when each was seen, and keeps only the latest 50', () async {
-      final kv = InMemoryKeyValueStore();
-      final store = PopupSeenStore(kv);
-      for (var i = 0; i < 60; i++) {
-        await store.markSeen('p$i', _now.add(Duration(minutes: i)));
-      }
-      final seen = await store.read();
-      expect(seen, hasLength(50));
-      expect(seen.containsKey('p59'), isTrue);
-      expect(seen.containsKey('p0'), isFalse);
-      expect(seen['p59'], _now.add(const Duration(minutes: 59)));
-    });
+    test(
+      'remembers when each was seen, and keeps only the latest 50',
+      () async {
+        final kv = InMemoryKeyValueStore();
+        final store = PopupSeenStore(kv);
+        for (var i = 0; i < 60; i++) {
+          await store.markSeen('p$i', _now.add(Duration(minutes: i)));
+        }
+        final seen = await store.read();
+        expect(seen, hasLength(50));
+        expect(seen.containsKey('p59'), isTrue);
+        expect(seen.containsKey('p0'), isFalse);
+        expect(seen['p59'], _now.add(const Duration(minutes: 59)));
+      },
+    );
 
     test('a corrupt entry reads as nothing seen', () async {
       final kv = InMemoryKeyValueStore();
@@ -257,7 +262,9 @@ void main() {
     });
 
     testWidgets('no pop-up running: nothing over Home', (tester) async {
-      await tester.pumpWidget(host(rows: const [], kv: InMemoryKeyValueStore()));
+      await tester.pumpWidget(
+        host(rows: const [], kv: InMemoryKeyValueStore()),
+      );
       await tester.pumpAndSettle();
       expect(find.byType(PopupBannerDialog), findsNothing);
     });
@@ -266,9 +273,7 @@ void main() {
       final links = _Links();
       await tester.pumpWidget(
         host(
-          rows: [
-            _row(link: 'https://shop.example.pk', action: 'Shop now'),
-          ],
+          rows: [_row(link: 'https://shop.example.pk', action: 'Shop now')],
           kv: InMemoryKeyValueStore(),
           links: links,
         ),
@@ -282,7 +287,10 @@ void main() {
 
     testWidgets('a sponsored pop-up says who it is from', (tester) async {
       await tester.pumpWidget(
-        host(rows: [_row(sponsor: 'Acme')], kv: InMemoryKeyValueStore()),
+        host(
+          rows: [_row(sponsor: 'Acme')],
+          kv: InMemoryKeyValueStore(),
+        ),
       );
       await tester.pumpAndSettle();
       expect(find.text('Sponsored by Acme'), findsOneWidget);

@@ -77,37 +77,37 @@ class HomeScreen extends ConsumerWidget {
       ),
       body: PopupGate(
         child: AppRefreshIndicator(
-        onRefresh: () => _refresh(ref),
-        child: CustomScrollView(
-          // Pull to refresh works even when everything fits.
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            if (offline) const SliverToBoxAdapter(child: OfflineBanner()),
-            const SliverToBoxAdapter(child: _SearchBar()),
-            const SliverToBoxAdapter(child: SponsorCarousel()),
-            const SliverToBoxAdapter(child: _Categories()),
-            _Carousel(
-              title: l10n.homeFeaturedTitle,
-              provider: featuredProvider,
-              size: DealCardSize.large,
-            ),
-            _Carousel(
-              title: l10n.homeTrendingTitle,
-              provider: trendingProvider,
-            ),
-            const SliverToBoxAdapter(child: AdBanner()),
-            const _NearMe(),
-            _Carousel(
-              title: l10n.homeEndingTitle,
-              provider: endingSoonProvider,
-            ),
-            const SliverToBoxAdapter(
-              child: AdBanner(size: AdBannerSize.native),
-            ),
-            const _ForYou(),
-          ],
+          onRefresh: () => _refresh(ref),
+          child: CustomScrollView(
+            // Pull to refresh works even when everything fits.
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              if (offline) const SliverToBoxAdapter(child: OfflineBanner()),
+              const SliverToBoxAdapter(child: _SearchBar()),
+              const SliverToBoxAdapter(child: SponsorCarousel()),
+              const SliverToBoxAdapter(child: _Categories()),
+              _Carousel(
+                title: l10n.homeFeaturedTitle,
+                provider: featuredProvider,
+                size: DealCardSize.large,
+              ),
+              _Carousel(
+                title: l10n.homeTrendingTitle,
+                provider: trendingProvider,
+              ),
+              const SliverToBoxAdapter(child: AdBanner()),
+              const _NearMe(),
+              _Carousel(
+                title: l10n.homeEndingTitle,
+                provider: endingSoonProvider,
+              ),
+              const SliverToBoxAdapter(
+                child: AdBanner(size: AdBannerSize.native),
+              ),
+              const _ForYou(),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -143,32 +143,32 @@ class _CityButton extends ConsumerWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 48),
               child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.homeDealsIn,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleLarge,
-                      ),
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.homeDealsIn,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    const Icon(Icons.expand_more),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleLarge,
+                        ),
+                      ),
+                      const Icon(Icons.expand_more),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -626,9 +626,9 @@ RouteBase get $welcomeRoute => GoRouteData.$route(
   factory: $WelcomeRoute._fromState,
   routes: [
     GoRouteData.$route(
-      path: 'city',
+      path: 'location',
       hasOverriddenOnExit: false,
-      factory: $WelcomeCityRoute._fromState,
+      factory: $WelcomeLocationRoute._fromState,
     ),
     GoRouteData.$route(
       path: 'interests',
@@ -668,12 +668,12 @@ mixin $WelcomeRoute on GoRouteData {
   void replace(BuildContext context) => context.replace(location);
 }
 
-mixin $WelcomeCityRoute on GoRouteData {
-  static WelcomeCityRoute _fromState(GoRouterState state) =>
-      const WelcomeCityRoute();
+mixin $WelcomeLocationRoute on GoRouteData {
+  static WelcomeLocationRoute _fromState(GoRouterState state) =>
+      const WelcomeLocationRoute();
 
   @override
-  String get location => GoRouteData.$location('/welcome/city');
+  String get location => GoRouteData.$location('/welcome/location');
 
   @override
   void go(BuildContext context) => context.go(location);
