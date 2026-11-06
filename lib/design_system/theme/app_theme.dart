@@ -183,6 +183,9 @@ abstract final class AppTheme {
         ),
         checkmarkColor: scheme.onSecondary,
         iconTheme: IconThemeData(color: scheme.onSurface, size: 18),
+        // Chips don't resolve this per state, and a selected chip is ink:
+        // Surma 500 clears 3:1 on both fills in both themes.
+        deleteIconColor: BrandColors.surma500,
         // The label identifies the chip; the hairline only groups it.
         side: BorderSide(color: scheme.outlineVariant),
         shape: const StadiumBorder(),

@@ -137,11 +137,14 @@ void main() {
 
       // At 200% the search, sponsor slot and categories fill the first
       // screen; bring the first carousel up.
-      await tester.scrollUntilVisible(
-        find.byType(DealCard).first,
-        300,
-        scrollable: find.byType(Scrollable).first,
-      );
+      for (var i = 0; i < 6 && find.byType(DealCard).evaluate().isEmpty; i++) {
+        await tester.drag(
+          find.byType(CustomScrollView).first,
+          const Offset(0, -300),
+        );
+        await tester.pumpAndSettle();
+      }
+      await tester.ensureVisible(find.byType(DealCard).first);
       await tester.pumpAndSettle();
 
       // The first carousel card sits at the right edge (RTL).

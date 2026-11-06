@@ -16,6 +16,7 @@ import 'package:sale_lagi_hai/design_system/widgets/brand_logo.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
+import 'package:sale_lagi_hai/design_system/widgets/network_picture.dart';
 import 'package:sale_lagi_hai/design_system/widgets/price_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
 
@@ -422,7 +423,8 @@ void main() {
         ),
       );
 
-      expect(find.byType(BrandLogo), findsNothing);
+      // The photo is tried first; its failure arrives within a frame.
+      expect(find.byType(NetworkPicture), findsWidgets);
       await tester.pump();
       expect(find.byType(BrandLogo), findsOneWidget);
       await tester.pump();
