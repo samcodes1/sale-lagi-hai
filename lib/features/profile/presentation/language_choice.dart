@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
+import 'package:sale_lagi_hai/design_system/widgets/grouped_section.dart';
 
 /// "Language" with English and اردو as radio choices (Profile, Settings).
 class LanguageChoice extends ConsumerWidget {
@@ -13,18 +14,9 @@ class LanguageChoice extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final locale = ref.watch(localeControllerProvider);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return GroupedSection(
+      title: l10n.settingsLanguage,
       children: [
-        ListTile(
-          title: Semantics(
-            header: true,
-            child: Text(
-              l10n.settingsLanguage,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-        ),
         RadioGroup<Locale>(
           groupValue: locale,
           onChanged: (value) {

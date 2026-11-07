@@ -18,11 +18,15 @@ class BrandLogo extends StatelessWidget {
     url,
     fit: BoxFit.contain,
     fallback: fallback,
+    // About 60% of the tile, so a wide logo never runs edge to edge.
     frame: (child) => ColoredBox(
       color: BrandColors.surma0,
-      child: Padding(
-        padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
-        child: child,
+      child: Center(
+        child: FractionallySizedBox(
+          widthFactor: 0.62,
+          heightFactor: 0.56,
+          child: child,
+        ),
       ),
     ),
   );

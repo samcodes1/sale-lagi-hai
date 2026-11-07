@@ -66,6 +66,8 @@ class DealDetailScreen extends ConsumerWidget {
   }
 }
 
+const _heroRadius = BorderRadius.all(Radius.circular(BrandRadii.xl));
+
 class _Body extends ConsumerWidget {
   const new(this.detail);
 
@@ -110,7 +112,7 @@ class _Body extends ConsumerWidget {
         children: [
           Semantics(
             header: true,
-            child: Text(title, style: theme.textTheme.titleMedium),
+            child: Text(title, style: theme.textTheme.titleLarge),
           ),
           const SizedBox(height: BrandSpacing.s3),
           ...children,
@@ -150,11 +152,30 @@ class _Body extends ConsumerWidget {
               ),
             ),
           ),
-        AspectRatio(
-          aspectRatio: 16 / 9,
-          child: image == null
-              ? brandPicture
-              : NetworkPicture(image, fallback: brandPicture),
+        // Clean: the picture is an inset, rounded tile with a hairline.
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            BrandSpacing.s5,
+            BrandSpacing.s3,
+            BrandSpacing.s5,
+            0,
+          ),
+          child: DecoratedBox(
+            position: DecorationPosition.foreground,
+            decoration: BoxDecoration(
+              borderRadius: _heroRadius,
+              border: Border.all(color: scheme.outlineVariant),
+            ),
+            child: ClipRRect(
+              borderRadius: _heroRadius,
+              child: AspectRatio(
+                aspectRatio: 4 / 3,
+                child: image == null
+                    ? brandPicture
+                    : NetworkPicture(image, fallback: brandPicture),
+              ),
+            ),
+          ),
         ),
         Padding(
           padding: const EdgeInsetsDirectional.symmetric(
@@ -284,19 +305,10 @@ class _Actions extends ConsumerWidget {
     );
     final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
     final offerUrl = this.offerUrl;
-    return Wrap(
+    final secondary = Wrap(
       spacing: BrandSpacing.s3,
       runSpacing: BrandSpacing.s3,
       children: [
-        if (offerUrl != null)
-          FilledButton.icon(
-            onPressed: () => openLink(
-              context,
-              ref.read(linkServiceProvider).openWeb(offerUrl),
-            ),
-            icon: const Icon(Icons.shopping_bag_outlined),
-            label: Text(l10n.actionOpenOffer),
-          ),
         Builder(
           builder: (context) {
             Future<void> toggle() async {
@@ -348,6 +360,22 @@ class _Actions extends ConsumerWidget {
           icon: const Icon(Icons.share_outlined),
           label: Text(l10n.actionShareWhatsApp),
         ),
+      ],
+    );
+    if (offerUrl == null) return secondary;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FilledButton.icon(
+          onPressed: () => openLink(
+            context,
+            ref.read(linkServiceProvider).openWeb(offerUrl),
+          ),
+          icon: const Icon(Icons.shopping_bag_outlined),
+          label: Text(l10n.actionOpenOffer),
+        ),
+        const SizedBox(height: BrandSpacing.s3),
+        secondary,
       ],
     );
   }

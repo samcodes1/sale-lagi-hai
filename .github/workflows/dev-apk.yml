@@ -1,10 +1,10 @@
 name: Dev APK
 
 # Builds a debug dev APK for manual testing and keeps it for 3 days. Runs only
-# on this branch, so it never affects main.
+# on work branches, so it never affects main.
 on:
   push:
-    branches: [fix/android-gradle-build]
+    branches: [fix/android-gradle-build, 'feat/**']
 
 permissions:
   contents: read

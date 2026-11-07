@@ -15,6 +15,7 @@ import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/design_system/icons/category_icons.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/design_system/widgets/category_tile.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_refresh_indicator.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
@@ -245,8 +246,6 @@ class _Categories extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categories = ref.watch(interestsProvider).value ?? const [];
     if (categories.isEmpty) return const SizedBox.shrink();
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
     final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -262,43 +261,11 @@ class _Categories extends ConsumerWidget {
           for (final category in categories)
             SizedBox(
               width: MediaQuery.textScalerOf(context).scale(76),
-              child: Semantics(
-                button: true,
-                child: InkWell(
-                  onTap: () =>
-                      CategoryRoute(slug: category.slug).push<void>(context),
-                  borderRadius: BrandRadii.card,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.all(BrandSpacing.s1),
-                    child: Column(
-                      children: [
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: scheme.surfaceContainerHigh,
-                            borderRadius: BrandRadii.card,
-                          ),
-                          child: SizedBox.square(
-                            dimension: 56,
-                            child: ExcludeSemantics(
-                              child: Icon(
-                                categoryIcon(category.icon),
-                                color: scheme.onSurface,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: BrandSpacing.s2),
-                        Text(
-                          category.name(urdu: urdu),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              child: CategoryTile(
+                icon: categoryIcon(category.icon),
+                label: category.name(urdu: urdu),
+                onTap: () =>
+                    CategoryRoute(slug: category.slug).push<void>(context),
               ),
             ),
         ],
