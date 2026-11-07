@@ -89,10 +89,11 @@ class ExploreScreen extends ConsumerWidget {
                 // text grows, so names wrap instead of being cut.
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final per = (constraints.maxWidth /
-                            MediaQuery.textScalerOf(context).scale(84))
-                        .floor()
-                        .clamp(2, 6);
+                    final per =
+                        (constraints.maxWidth /
+                                MediaQuery.textScalerOf(context).scale(84))
+                            .floor()
+                            .clamp(2, 6);
                     final width = constraints.maxWidth / per;
                     return Wrap(
                       runSpacing: BrandSpacing.s3,
@@ -103,9 +104,9 @@ class ExploreScreen extends ConsumerWidget {
                             child: CategoryTile(
                               icon: categoryIcon(category.icon),
                               label: category.name(urdu: urdu),
-                              onTap: () => CategoryRoute(
-                                slug: category.slug,
-                              ).push<void>(context),
+                              onTap: () =>
+                                  CategoryRoute(slug: category.slug)
+                                      .push<void>(context),
                             ),
                           ),
                       ],

@@ -48,9 +48,7 @@ class GroupedSection extends StatelessWidget {
             ),
           Material(
             color: scheme.surfaceContainerLow,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BrandRadii.card,
-            ),
+            shape: const RoundedRectangleBorder(borderRadius: BrandRadii.card),
             clipBehavior: Clip.antiAlias,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -107,40 +107,40 @@ class _AdvertiseHere extends ConsumerWidget {
                 // the title can shrink to fit at large text.
                 Flexible(
                   child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        l10n.advertiseTitle,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          l10n.advertiseTitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            color: scheme.onPrimary,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        l10n.advertiseBody,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineSmall?.copyWith(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: scheme.onPrimary,
                         ),
                       ),
-                    ),
-                    Text(
-                      l10n.advertiseBody,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: scheme.onPrimary,
-                      ),
-                    ),
-                    if (open != null) ...[
-                      const SizedBox(height: BrandSpacing.s3),
-                      Text(
-                        l10n.advertiseAction,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: scheme.onPrimary,
-                          decoration: TextDecoration.underline,
-                          decorationColor: scheme.onPrimary,
+                      if (open != null) ...[
+                        const SizedBox(height: BrandSpacing.s3),
+                        Text(
+                          l10n.advertiseAction,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: scheme.onPrimary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: scheme.onPrimary,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
-                ),
+                  ),
                 ),
               ],
             ),

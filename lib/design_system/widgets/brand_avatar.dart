@@ -26,10 +26,11 @@ class BrandAvatar extends StatelessWidget {
       child: Center(
         child: Text(
           name.isEmpty ? '' : name.characters.first.toUpperCase(),
-          style: (size >= 56
-                  ? theme.textTheme.titleLarge
-                  : theme.textTheme.titleMedium)
-              ?.copyWith(color: scheme.onSurface),
+          style:
+              (size >= 56
+                      ? theme.textTheme.titleLarge
+                      : theme.textTheme.titleMedium)
+                  ?.copyWith(color: scheme.onSurface),
         ),
       ),
     );
@@ -45,9 +46,7 @@ class BrandAvatar extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: radius,
-            child: url == null
-                ? initial
-                : BrandLogo(url, fallback: initial),
+            child: url == null ? initial : BrandLogo(url, fallback: initial),
           ),
         ),
       ),
