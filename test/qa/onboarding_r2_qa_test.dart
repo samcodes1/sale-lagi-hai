@@ -36,9 +36,9 @@ import 'package:sale_lagi_hai/features/onboarding/data/preferences_store.dart';
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/alerts_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/brands_step.dart';
-import 'package:sale_lagi_hai/features/onboarding/presentation/city_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/interests_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/language_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/location_step.dart';
 
 import '../features/onboarding/onboarding_harness.dart';
 import '../helpers/fakes.dart';
@@ -118,7 +118,7 @@ Future<ProviderContainer> _boot(
       savedLocaleProvider.overrideWithValue(settings.locale),
       savedPreferencesProvider.overrideWithValue(settings.preferences),
       locationServiceProvider.overrideWithValue(
-        FakeLocation(const LocationUnavailable()),
+        FakeLocation(const Located(24.8138, 67.03)), // Clifton, Karachi
       ),
       notificationPermissionProvider.overrideWithValue(
         FakeAlerts(AlertPermission.denied),
@@ -172,7 +172,7 @@ void main() {
       );
       expect(find.byType(LanguageStep), findsOneWidget);
       await tapText(tester, 'Continue');
-      await tapText(tester, 'Karachi');
+      await tapText(tester, 'Use my location');
       await tapText(tester, 'Continue');
       await tapText(tester, 'Skip');
       await tapText(tester, 'Skip');
@@ -195,7 +195,7 @@ void main() {
       final container = await _boot(tester, store);
       // The re-read is held: the shopper starts onboarding meanwhile.
       await tapText(tester, 'Continue');
-      await tapText(tester, 'Karachi');
+      await tapText(tester, 'Use my location');
       expect(store.prefsWrites, 0, reason: 'nothing is written while unknown');
       store.gate!.complete();
       await tester.pumpAndSettle();
@@ -219,13 +219,13 @@ void main() {
       final container = await _boot(tester, store);
       expect(find.byType(LanguageStep), findsOneWidget);
       await tapText(tester, 'Continue');
-      await tapText(tester, 'Karachi');
+      await tapText(tester, 'Use my location');
       store.gate!.complete();
       await tester.pumpAndSettle();
       expect(container.read(preferencesProvider), _returning);
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(await PreferencesStore(inner).read(), _returning);
-      expect(find.byType(CityStep, skipOffstage: false), findsNothing);
+      expect(find.byType(LocationStep, skipOffstage: false), findsNothing);
     });
 
     testWidgets('disposing during the re-read: no error, no write', (
@@ -274,7 +274,7 @@ void main() {
 
   group('BUG-5 redirect', () {
     for (final step in [
-      '/welcome/city',
+      '/welcome/location',
       '/welcome/interests',
       '/welcome/brands',
       '/welcome/alerts',
@@ -297,7 +297,7 @@ void main() {
       final h = Harness();
       await h.pump(tester, languageChosen: false);
       await tapText(tester, 'Continue');
-      expect(find.byType(CityStep), findsOneWidget);
+      expect(find.byType(LocationStep), findsOneWidget);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       h.router.go('/welcome/alerts');
@@ -352,7 +352,7 @@ void main() {
       await tester.tap(find.byType(BackButton), warnIfMissed: false);
       await tester.pumpAndSettle();
       expect(find.byType(InterestsStep), findsOneWidget);
-      expect(find.byType(CityStep), findsNothing);
+      expect(find.byType(LocationStep), findsNothing);
     });
   });
 

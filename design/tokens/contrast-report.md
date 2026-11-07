@@ -6,18 +6,18 @@ Ratios are not rounded before comparison.
 
 | Theme | Pair | FG | BG | Ratio | Needs | Result | Used for |
 |---|---|---|---|---|---|---|---|
-| light | textPrimary on background | `#1A1433` | `#FAF8F4` | 16.61:1 | 4.5:1 (text) | PASS | body text |
+| light | textPrimary on background | `#1A1433` | `#FFFFFF` | 17.62:1 | 4.5:1 (text) | PASS | body text |
 | light | textPrimary on surface | `#1A1433` | `#FFFFFF` | 17.62:1 | 4.5:1 (text) | PASS | body text on cards |
 | light | textPrimary on surfaceVariant | `#1A1433` | `#F2EFEA` | 15.36:1 | 4.5:1 (text) | PASS | text on chips/inputs |
-| light | textSecondary on background | `#5D5769` | `#FAF8F4` | 6.53:1 | 4.5:1 (text) | PASS | secondary text |
+| light | textSecondary on background | `#5D5769` | `#FFFFFF` | 6.92:1 | 4.5:1 (text) | PASS | secondary text |
 | light | textSecondary on surface | `#5D5769` | `#FFFFFF` | 6.92:1 | 4.5:1 (text) | PASS | secondary text on cards |
-| light | onPrimary on primary | `#1A1433` | `#FFC414` | 11.04:1 | 4.5:1 (text) | PASS | label on Haldi button |
-| light | onPrimaryContainer on primaryContainer | `#5C3F00` | `#FFEDB3` | 8.32:1 | 4.5:1 (text) | PASS | tonal button |
-| light | primaryText on surface | `#8A5F00` | `#FFFFFF` | 5.65:1 | 4.5:1 (text) | PASS | brand-coloured text |
-| light | onSecondary on secondary | `#FFFFFF` | `#3B3FD9` | 7.24:1 | 4.5:1 (text) | PASS | label on Neel button |
-| light | secondary on surface | `#3B3FD9` | `#FFFFFF` | 7.24:1 | 4.5:1 (text) | PASS | links |
-| light | secondary on background | `#3B3FD9` | `#FAF8F4` | 6.83:1 | 4.5:1 (text) | PASS | links on background |
-| light | onSecondaryContainer on secondaryContainer | `#1D1F70` | `#EEEFFF` | 12.43:1 | 4.5:1 (text) | PASS | selected chip |
+| light | onPrimary on primary | `#FFFFFF` | `#DC2E24` | 4.71:1 | 4.5:1 (text) | PASS | label on Mirch button |
+| light | onPrimaryContainer on primaryContainer | `#921A14` | `#FFF0EE` | 7.96:1 | 4.5:1 (text) | PASS | tonal button |
+| light | primaryText on surface | `#B8221A` | `#FFFFFF` | 6.40:1 | 4.5:1 (text) | PASS | brand-coloured text |
+| light | onSecondary on secondary | `#FFFFFF` | `#1A1433` | 17.62:1 | 4.5:1 (text) | PASS | label on ink button |
+| light | secondary on surface | `#1A1433` | `#FFFFFF` | 17.62:1 | 4.5:1 (text) | PASS | links |
+| light | secondary on background | `#1A1433` | `#FFFFFF` | 17.62:1 | 4.5:1 (text) | PASS | links on background |
+| light | onSecondaryContainer on secondaryContainer | `#1A1433` | `#F2EFEA` | 15.36:1 | 4.5:1 (text) | PASS | tonal fill |
 | light | onDeal on deal | `#FFFFFF` | `#DC2E24` | 4.71:1 | 4.5:1 (text) | PASS | discount badge "-40%" |
 | light | onDealContainer on dealContainer | `#921A14` | `#FFF0EE` | 7.96:1 | 4.5:1 (text) | PASS | soft deal label |
 | light | deal on surface | `#DC2E24` | `#FFFFFF` | 4.71:1 | 3.0:1 (ui) | PASS | badge shape vs card |
@@ -32,22 +32,22 @@ Ratios are not rounded before comparison.
 | light | info on surface | `#3B3FD9` | `#FFFFFF` | 7.24:1 | 4.5:1 (text) | PASS | info text |
 | light | info on infoContainer | `#3B3FD9` | `#EEEFFF` | 6.36:1 | 4.5:1 (text) | PASS | info banner |
 | light | outlineStrong on surface | `#7B7585` | `#FFFFFF` | 4.44:1 | 3.0:1 (ui) | PASS | input border / checkbox |
-| light | focus on background | `#3B3FD9` | `#FAF8F4` | 6.83:1 | 3.0:1 (ui) | PASS | focus ring |
+| light | focus on background | `#3B3FD9` | `#FFFFFF` | 7.24:1 | 3.0:1 (ui) | PASS | focus ring |
 | light | onSurfaceInverse on surfaceInverse | `#FFF8E7` | `#1A1433` | 16.64:1 | 4.5:1 (text) | PASS | snackbar |
-| light | indicator on background | `#1A1433` | `#FAF8F4` | 16.61:1 | 3.0:1 (ui) | PASS | selected tab / switch / progress indicator |
+| light | indicator on background | `#1A1433` | `#FFFFFF` | 17.62:1 | 3.0:1 (ui) | PASS | selected tab / switch / progress indicator |
 | light | indicator on surface | `#1A1433` | `#FFFFFF` | 17.62:1 | 3.0:1 (ui) | PASS | indicator on cards |
 | dark | textPrimary on background | `#FAF8F4` | `#0F0B1F` | 18.20:1 | 4.5:1 (text) | PASS | body text |
 | dark | textPrimary on surface | `#FAF8F4` | `#1A1433` | 16.61:1 | 4.5:1 (text) | PASS | body text on cards |
 | dark | textPrimary on surfaceVariant | `#FAF8F4` | `#2C263A` | 13.70:1 | 4.5:1 (text) | PASS | text on chips/inputs |
 | dark | textSecondary on background | `#A29DA6` | `#0F0B1F` | 7.27:1 | 4.5:1 (text) | PASS | secondary text |
 | dark | textSecondary on surface | `#A29DA6` | `#1A1433` | 6.64:1 | 4.5:1 (text) | PASS | secondary text on cards |
-| dark | onPrimary on primary | `#1A1433` | `#FFC414` | 11.04:1 | 4.5:1 (text) | PASS | label on Haldi button |
-| dark | onPrimaryContainer on primaryContainer | `#FFEDB3` | `#5C3F00` | 8.32:1 | 4.5:1 (text) | PASS | tonal button |
-| dark | primaryText on surface | `#FFC414` | `#1A1433` | 11.04:1 | 4.5:1 (text) | PASS | brand-coloured text |
-| dark | onSecondary on secondary | `#15164D` | `#9EA2FF` | 7.23:1 | 4.5:1 (text) | PASS | label on Neel button |
-| dark | secondary on surface | `#9EA2FF` | `#1A1433` | 7.61:1 | 4.5:1 (text) | PASS | links |
-| dark | secondary on background | `#9EA2FF` | `#0F0B1F` | 8.33:1 | 4.5:1 (text) | PASS | links on background |
-| dark | onSecondaryContainer on secondaryContainer | `#DCDDFF` | `#1D1F70` | 10.68:1 | 4.5:1 (text) | PASS | selected chip |
+| dark | onPrimary on primary | `#0F0B1F` | `#FF6B5E` | 6.91:1 | 4.5:1 (text) | PASS | label on Mirch button |
+| dark | onPrimaryContainer on primaryContainer | `#FFB4AB` | `#4A0C09` | 9.18:1 | 4.5:1 (text) | PASS | tonal button |
+| dark | primaryText on surface | `#FF8A7E` | `#1A1433` | 7.71:1 | 4.5:1 (text) | PASS | brand-coloured text |
+| dark | onSecondary on secondary | `#1A1433` | `#FAF8F4` | 16.61:1 | 4.5:1 (text) | PASS | label on ink button |
+| dark | secondary on surface | `#FAF8F4` | `#1A1433` | 16.61:1 | 4.5:1 (text) | PASS | links |
+| dark | secondary on background | `#FAF8F4` | `#0F0B1F` | 18.20:1 | 4.5:1 (text) | PASS | links on background |
+| dark | onSecondaryContainer on secondaryContainer | `#FAF8F4` | `#433D50` | 9.79:1 | 4.5:1 (text) | PASS | tonal fill |
 | dark | onDeal on deal | `#0F0B1F` | `#FF6B5E` | 6.91:1 | 4.5:1 (text) | PASS | discount badge "-40%" |
 | dark | onDealContainer on dealContainer | `#FFB4AB` | `#4A0C09` | 9.18:1 | 4.5:1 (text) | PASS | soft deal label |
 | dark | deal on surface | `#FF6B5E` | `#1A1433` | 6.31:1 | 3.0:1 (ui) | PASS | badge shape vs card |
@@ -64,8 +64,8 @@ Ratios are not rounded before comparison.
 | dark | outlineStrong on surface | `#7B7585` | `#1A1433` | 3.96:1 | 3.0:1 (ui) | PASS | input border / checkbox |
 | dark | focus on background | `#9EA2FF` | `#0F0B1F` | 8.33:1 | 3.0:1 (ui) | PASS | focus ring |
 | dark | onSurfaceInverse on surfaceInverse | `#1A1433` | `#FAF8F4` | 16.61:1 | 4.5:1 (text) | PASS | snackbar |
-| dark | indicator on background | `#FFC414` | `#0F0B1F` | 12.09:1 | 3.0:1 (ui) | PASS | selected tab / switch / progress indicator |
-| dark | indicator on surface | `#FFC414` | `#1A1433` | 11.04:1 | 3.0:1 (ui) | PASS | indicator on cards |
+| dark | indicator on background | `#FF6B5E` | `#0F0B1F` | 6.91:1 | 3.0:1 (ui) | PASS | selected tab / switch / progress indicator |
+| dark | indicator on surface | `#FF6B5E` | `#1A1433` | 6.31:1 | 3.0:1 (ui) | PASS | indicator on cards |
 | brand | surma.900 on haldi.500 | `#1A1433` | `#FFC414` | 11.04:1 | 3.0:1 (ui) | PASS | logo: ink bang on Haldi (app icon) |
 | brand | haldi.500 on surma.900 | `#FFC414` | `#1A1433` | 11.04:1 | 3.0:1 (ui) | PASS | logo: Haldi bang on ink |
 | brand | surma.900 on kaghaz.500 | `#1A1433` | `#FFF8E7` | 16.64:1 | 4.5:1 (text) | PASS | wordmark on paper |

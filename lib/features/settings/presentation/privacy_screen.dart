@@ -7,6 +7,7 @@ import 'package:sale_lagi_hai/core/core_providers.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/theme/theme_mode_controller.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/features/ads/application/ads_providers.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 import 'package:sale_lagi_hai/features/search/application/search_providers.dart';
@@ -96,6 +97,7 @@ class PrivacyScreen extends ConsumerWidget {
         children: [
           block(l10n.privacyOnPhone, l10n.privacyOnPhoneBody),
           block(l10n.privacyInAccount, l10n.privacyInAccountBody),
+          block(l10n.privacyAds, l10n.privacyAdsBody),
           Padding(
             padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
             child: Text(
@@ -106,6 +108,12 @@ class PrivacyScreen extends ConsumerWidget {
             ),
           ),
           const Divider(),
+          if (ref.watch(adPrivacyOptionsProvider).value ?? false)
+            ListTile(
+              leading: const Icon(Icons.ads_click),
+              title: Text(l10n.actionAdChoices),
+              onTap: () => ref.read(adServiceProvider).showPrivacyOptions(),
+            ),
           ListTile(
             leading: const Icon(Icons.history),
             title: Text(l10n.actionClearSearches),

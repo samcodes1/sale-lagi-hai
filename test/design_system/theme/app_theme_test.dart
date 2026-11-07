@@ -159,10 +159,13 @@ void main() {
       expect(theme.textSelectionTheme.cursorColor, BrandLight.focus);
     });
 
-    test('filled buttons put dark text on yellow', () {
+    test('filled buttons are Mirch with white text, never Haldi', () {
       final style = theme.filledButtonTheme.style!;
-      expect(style.backgroundColor!.resolve({}), BrandColors.haldi500);
-      expect(style.foregroundColor!.resolve({}), BrandColors.surma900);
+      final fill = style.backgroundColor!.resolve({})!;
+      final label = style.foregroundColor!.resolve({})!;
+      expect(fill, BrandColors.mirch500);
+      expect(label, BrandColors.surma0);
+      expect(contrast(label, fill), greaterThanOrEqualTo(4.5));
     });
   });
 
@@ -316,15 +319,18 @@ void main() {
         final selectedIcon = nav.iconTheme!.resolve(selected)!.color!;
         final idleIcon = nav.iconTheme!.resolve(idle)!.color!;
 
+        // The tab bar is a floating ink pill: everything on it is
+        // measured against the bar, not the page.
+        final bar = nav.backgroundColor!;
         expect(contrast(selectedIcon, indicator), greaterThan(3));
-        expect(idleIcon, theme.colorScheme.onSurfaceVariant);
+        expect(contrast(idleIcon, bar), greaterThan(3));
         expect(
-          nav.labelTextStyle!.resolve(selected)!.color,
-          theme.colorScheme.onSurface,
+          contrast(nav.labelTextStyle!.resolve(selected)!.color!, bar),
+          greaterThanOrEqualTo(4.5),
         );
         expect(
-          nav.labelTextStyle!.resolve(idle)!.color,
-          theme.colorScheme.onSurfaceVariant,
+          contrast(nav.labelTextStyle!.resolve(idle)!.color!, bar),
+          greaterThanOrEqualTo(4.5),
         );
 
         final rail = theme.navigationRailTheme;

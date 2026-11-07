@@ -38,7 +38,7 @@ void main() {
       await j.pump(tester);
       expect(find.byType(LanguageStep), findsOneWidget);
       await tapText(tester, 'Continue');
-      await tapText(tester, 'Detect my city');
+      await tapText(tester, 'Use my location');
       expect(find.text("You're in Karachi."), findsOneWidget);
       await tapText(tester, 'Continue');
       await tapText(tester, 'Food & Restaurants');

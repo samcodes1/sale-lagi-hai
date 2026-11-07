@@ -33,13 +33,15 @@ P = lambda s: PALETTE[s.split('.')[0]][s.split('.')[1]]
 
 THEMES = {
     'light': {
-        'background': 'surma.50', 'surface': 'surma.0', 'surfaceVariant': 'surma.100',
+        # v2 "Clean" (November 2026): a white canvas, Mirch as the one accent
+        # (buttons, offers), ink for selection. Matches the Naam Block logo.
+        'background': 'surma.0', 'surface': 'surma.0', 'surfaceVariant': 'surma.100',
         'surfaceInverse': 'surma.900', 'onSurfaceInverse': 'kaghaz.500',
         'textPrimary': 'surma.900', 'textSecondary': 'surma.600', 'textDisabled': 'surma.400',
         'outline': 'surma.200', 'outlineStrong': 'surma.500',
-        'primary': 'haldi.500', 'onPrimary': 'surma.900', 'primaryContainer': 'haldi.100', 'onPrimaryContainer': 'haldi.900',
-        'primaryText': 'haldi.800',
-        'secondary': 'neel.500', 'onSecondary': 'surma.0', 'secondaryContainer': 'neel.50', 'onSecondaryContainer': 'neel.800',
+        'primary': 'mirch.500', 'onPrimary': 'surma.0', 'primaryContainer': 'mirch.50', 'onPrimaryContainer': 'mirch.700',
+        'primaryText': 'mirch.600',
+        'secondary': 'surma.900', 'onSecondary': 'surma.0', 'secondaryContainer': 'surma.100', 'onSecondaryContainer': 'surma.900',
         'deal': 'mirch.500', 'onDeal': 'surma.0', 'dealContainer': 'mirch.50', 'onDealContainer': 'mirch.700',
         'featured': 'haldi.500', 'onFeatured': 'surma.900',
         'success': 'success.500', 'successContainer': 'success.50',
@@ -54,9 +56,9 @@ THEMES = {
         'surfaceInverse': 'surma.50', 'onSurfaceInverse': 'surma.900',
         'textPrimary': 'surma.50', 'textSecondary': 'surma.400', 'textDisabled': 'surma.600',
         'outline': 'surma.700', 'outlineStrong': 'surma.500',
-        'primary': 'haldi.500', 'onPrimary': 'surma.900', 'primaryContainer': 'haldi.900', 'onPrimaryContainer': 'haldi.100',
-        'primaryText': 'haldi.500',
-        'secondary': 'neel.300', 'onSecondary': 'neel.900', 'secondaryContainer': 'neel.800', 'onSecondaryContainer': 'neel.100',
+        'primary': 'mirch.400', 'onPrimary': 'surma.950', 'primaryContainer': 'mirch.900', 'onPrimaryContainer': 'mirch.200',
+        'primaryText': 'mirch.300',
+        'secondary': 'surma.50', 'onSecondary': 'surma.900', 'secondaryContainer': 'surma.700', 'onSecondaryContainer': 'surma.50',
         'deal': 'mirch.400', 'onDeal': 'surma.950', 'dealContainer': 'mirch.900', 'onDealContainer': 'mirch.200',
         'featured': 'haldi.500', 'onFeatured': 'surma.900',
         'success': 'success.300', 'successContainer': 'success.800',
@@ -64,7 +66,7 @@ THEMES = {
         'error': 'error.300', 'onError': 'surma.950', 'errorContainer': 'error.800',
         'info': 'info.300', 'infoContainer': 'info.800',
         'focus': 'neel.300',
-        'indicator': 'haldi.500',
+        'indicator': 'mirch.400',
     },
 }
 
@@ -75,13 +77,13 @@ CHECKS = [
     ('textPrimary', 'surfaceVariant', 'text', 'text on chips/inputs'),
     ('textSecondary', 'background', 'text', 'secondary text'),
     ('textSecondary', 'surface', 'text', 'secondary text on cards'),
-    ('onPrimary', 'primary', 'text', 'label on Haldi button'),
+    ('onPrimary', 'primary', 'text', 'label on Mirch button'),
     ('onPrimaryContainer', 'primaryContainer', 'text', 'tonal button'),
     ('primaryText', 'surface', 'text', 'brand-coloured text'),
-    ('onSecondary', 'secondary', 'text', 'label on Neel button'),
+    ('onSecondary', 'secondary', 'text', 'label on ink button'),
     ('secondary', 'surface', 'text', 'links'),
     ('secondary', 'background', 'text', 'links on background'),
-    ('onSecondaryContainer', 'secondaryContainer', 'text', 'selected chip'),
+    ('onSecondaryContainer', 'secondaryContainer', 'text', 'tonal fill'),
     ('onDeal', 'deal', 'text', 'discount badge "-40%"'),
     ('onDealContainer', 'dealContainer', 'text', 'soft deal label'),
     ('deal', 'surface', 'ui', 'badge shape vs card'),
@@ -214,10 +216,10 @@ ROLE_DOCS = {
     'onSurfaceInverse': 'Text on [surfaceInverse].', 'textPrimary': 'Primary text and icons.',
     'textSecondary': 'Secondary text, captions.', 'textDisabled': 'Disabled text (exempt from contrast).',
     'outline': 'Dividers and decorative borders.', 'outlineStrong': 'Input borders, checkboxes (3:1).',
-    'primary': 'Haldi brand fill: primary buttons, the logo tile.', 'onPrimary': 'Text/icons on [primary].',
+    'primary': 'Mirch: primary buttons, links, offers.', 'onPrimary': 'Text/icons on [primary].',
     'primaryContainer': 'Tonal brand fill.', 'onPrimaryContainer': 'Text on [primaryContainer].',
-    'primaryText': 'Brand-family colour when it must be text.', 'secondary': 'Neel: links, secondary buttons.',
-    'onSecondary': 'Text on [secondary].', 'secondaryContainer': 'Selected chip fill.',
+    'primaryText': 'Brand-family colour when it must be text.', 'secondary': 'Ink: selected chips, secondary buttons.',
+    'onSecondary': 'Text on [secondary].', 'secondaryContainer': 'Quiet tonal fill.',
     'onSecondaryContainer': 'Text on [secondaryContainer].', 'deal': 'Mirch: discount badges only.',
     'onDeal': 'Text on [deal].', 'dealContainer': 'Soft deal label fill.', 'onDealContainer': 'Text on [dealContainer].',
     'featured': 'Featured/sponsored badge fill.', 'onFeatured': 'Text on [featured].',
@@ -370,13 +372,13 @@ def build_dart():
         w(f'  static const double {k} = {dnum(v)};')
         w('')
     w('  /// Cards and tiles.')
-    w('  static const BorderRadius card = BorderRadius.all(Radius.circular(md));')
+    w('  static const BorderRadius card = BorderRadius.all(Radius.circular(lg));')
     w('')
     w('  /// Buttons and inputs.')
-    w('  static const BorderRadius button = BorderRadius.all(Radius.circular(sm));')
+    w('  static const BorderRadius button = BorderRadius.all(Radius.circular(md));')
     w('')
-    w('  /// Deal badges (nearly square: they are stamps, not pills).')
-    w('  static const BorderRadius badge = BorderRadius.all(Radius.circular(xs));')
+    w('  /// Deal badges: small rounded tags.')
+    w('  static const BorderRadius badge = BorderRadius.all(Radius.circular(sm));')
     w('')
     w('  /// Bottom sheets.')
     w('  static const BorderRadius sheet = BorderRadius.vertical(')

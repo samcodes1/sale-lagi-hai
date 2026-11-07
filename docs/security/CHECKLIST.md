@@ -38,7 +38,7 @@ The security baseline from sub-phase 1.7, mapped to OWASP MASVS v2.1 and the Mob
 | CODE-3 | No vulnerable components | ✅ | Dependency audit (above) |
 | CODE-4 | Input validation | 🟡 | Route parameters are validated (`route_params.dart`, UUIDs). Server-side validation comes in Phase 2 |
 | RESILIENCE-1–4 | Integrity, anti-tamper | 🟡 / ⏳ | R8 and Dart obfuscation now. Play Integrity on writes in Phase 5 |
-| PRIVACY-1–4 | Minimisation, transparency, control | 🟡 / ⏳ | AD_ID and READ_PHONE_STATE stripped. Approximate location only, asked on tap, matched to a city on the phone and never sent or stored (4.1). Data safety form, deletion and export in Phase 9 |
+| PRIVACY-1–4 | Minimisation, transparency, control | 🟡 / ⏳ | READ_PHONE_STATE stripped. AD_ID is kept for AdMob: declare advertising ID and ads in the Data safety form, and consent runs through UMP. Approximate location only, asked on tap, matched to a city on the phone and never sent or stored (4.1). Data safety form, deletion and export in Phase 9 |
 
 ## Mobile Top 10 (2024)
 | Risk | Covered by |
@@ -56,6 +56,6 @@ The security baseline from sub-phase 1.7, mapped to OWASP MASVS v2.1 and the Mob
 
 ## Notes
 - **Dart networking ignores Android's network security config.** `dart:io`'s `HttpClient` (and packages built on it, such as `http` and Supabase's client) uses Dart's own TLS stack. So the cleartext ban in `network_security_config.xml` covers only platform networking in our process, such as plugins and image loaders that use the platform stack. Custom Tabs run in the browser, under the browser's own rules. On the Dart side it is enforced by `AppConfig` (the Supabase URL must be `https://`) and by the hygiene test (no `http://` URLs). If we ever need the platform rules to apply to Dart traffic, use `cronet_http` (skill §5).
-- **Plugins add permissions.** connectivity_plus adds `ACCESS_NETWORK_STATE` (normal, install-time). Declare every merged permission in the Data safety form. Phase 4.1 adds ACCESS_COARSE_LOCATION (approximate location: "used on device only, not collected") and POST_NOTIFICATIONS.
+- **Plugins add permissions.** connectivity_plus adds `ACCESS_NETWORK_STATE` (normal, install-time). Declare every merged permission in the Data safety form. AdMob adds AD_ID, and play-services-ads merges the Android ad-services permissions. Phase 4.1 adds ACCESS_COARSE_LOCATION (approximate location: "used on device only, not collected") and POST_NOTIFICATIONS.
 - **Re-check the merged manifest whenever a plugin is added:** `android/app/build/intermediates/merged_manifests/<variant>/AndroidManifest.xml`. Plugins can add permissions, exported components and backup settings. The lint test reads only our source manifest.
 - **Owner to-dos before the first release** are in `docs/RELEASE.md`: upload key, Play App Signing, and the CI secrets.

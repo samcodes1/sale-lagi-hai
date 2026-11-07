@@ -10,7 +10,7 @@ import 'onboarding_harness.dart';
 /// Every step, with some choices made, so selected states are checked too.
 const _steps = [
   '/welcome',
-  '/welcome/city',
+  '/welcome/location',
   '/welcome/interests',
   '/welcome/brands',
   '/welcome/alerts',
@@ -80,7 +80,7 @@ void main() {
   });
 
   testWidgets('Urdu mirrors the steps: Skip sits on the left', (tester) async {
-    await _open(tester, '/welcome/city', locale: AppLocales.urdu);
+    await _open(tester, '/welcome/location', locale: AppLocales.urdu);
     expect(
       Directionality.of(tester.element(find.byType(OnboardingScaffold))),
       TextDirection.rtl,

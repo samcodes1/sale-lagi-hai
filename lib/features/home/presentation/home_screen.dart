@@ -13,11 +13,14 @@ import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/network/connectivity_service.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
+import 'package:sale_lagi_hai/design_system/icons/category_icons.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_refresh_indicator.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
+import 'package:sale_lagi_hai/features/ads/application/ad_service.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_banner.dart';
 import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
 import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
@@ -25,18 +28,26 @@ import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
 import 'package:sale_lagi_hai/features/home/application/home_providers.dart';
 import 'package:sale_lagi_hai/features/home/presentation/city_picker.dart';
+import 'package:sale_lagi_hai/features/popups/application/popup_providers.dart';
+import 'package:sale_lagi_hai/features/popups/presentation/popup_gate.dart';
+import 'package:sale_lagi_hai/features/sponsors/application/sponsor_providers.dart';
+import 'package:sale_lagi_hai/features/sponsors/presentation/sponsor_carousel.dart';
 
 /// How close to the end of "For you" the next page starts loading.
 const _prefetchFromEnd = 5;
 
-/// Home (screen S03): Featured, Trending today, Near you, Ending soon and
-/// the endless "For you" list. Pull to refresh reloads everything; offline,
-/// the last copy shows with how old it is.
+/// Home (screen S03): search, sponsor banners (staff pop-ups on top),
+/// categories, Featured, Trending today, Near you, Ending soon and the
+/// endless "For you" list, with ads between the rows.
+/// Pull to refresh reloads everything; offline, the last copy shows with
+/// how old it is.
 class HomeScreen extends ConsumerWidget {
   const new({super.key});
 
   Future<void> _refresh(WidgetRef ref) async {
     ref
+      ..invalidate(sponsorBannersProvider)
+      ..invalidate(popupToShowProvider)
       ..invalidate(featuredProvider)
       ..invalidate(trendingProvider)
       ..invalidate(endingSoonProvider)
@@ -52,30 +63,50 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       // The city is the title: it's what this screen is about, and it has
       // the room to grow with large text.
-      appBar: AppBar(title: const _CityButton()),
-      body: AppRefreshIndicator(
-        onRefresh: () => _refresh(ref),
-        child: CustomScrollView(
-          // Pull to refresh works even when everything fits.
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            if (offline) const SliverToBoxAdapter(child: OfflineBanner()),
-            _Carousel(
-              title: l10n.homeFeaturedTitle,
-              provider: featuredProvider,
-              size: DealCardSize.large,
-            ),
-            _Carousel(
-              title: l10n.homeTrendingTitle,
-              provider: trendingProvider,
-            ),
-            const _NearMe(),
-            _Carousel(
-              title: l10n.homeEndingTitle,
-              provider: endingSoonProvider,
-            ),
-            const _ForYou(),
-          ],
+      appBar: AppBar(
+        toolbarHeight: 72,
+        title: const _CityButton(),
+        actions: [
+          IconButton(
+            tooltip: l10n.searchTitle,
+            onPressed: () => const SearchRoute().push<void>(context),
+            icon: const Icon(Icons.search),
+          ),
+          const SizedBox(width: BrandSpacing.s3),
+        ],
+      ),
+      body: PopupGate(
+        child: AppRefreshIndicator(
+          onRefresh: () => _refresh(ref),
+          child: CustomScrollView(
+            // Pull to refresh works even when everything fits.
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              if (offline) const SliverToBoxAdapter(child: OfflineBanner()),
+              const SliverToBoxAdapter(child: _SearchBar()),
+              const SliverToBoxAdapter(child: SponsorCarousel()),
+              const SliverToBoxAdapter(child: _Categories()),
+              _Carousel(
+                title: l10n.homeFeaturedTitle,
+                provider: featuredProvider,
+                size: DealCardSize.large,
+              ),
+              _Carousel(
+                title: l10n.homeTrendingTitle,
+                provider: trendingProvider,
+              ),
+              const SliverToBoxAdapter(child: AdBanner()),
+              const _NearMe(),
+              _Carousel(
+                title: l10n.homeEndingTitle,
+                provider: endingSoonProvider,
+              ),
+              const SliverToBoxAdapter(
+                child: AdBanner(size: AdBannerSize.native),
+              ),
+              const _ForYou(),
+            ],
+          ),
         ),
       ),
     );
@@ -89,6 +120,7 @@ class _CityButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
     final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
     final name = _cityName(ref, urdu: urdu) ?? l10n.allPakistan;
     return Semantics(
@@ -100,24 +132,176 @@ class _CityButton extends ConsumerWidget {
       onTap: () => pickCity(context, ref),
       child: Align(
         alignment: AlignmentDirectional.centerStart,
-        child: TextButton.icon(
-          onPressed: () => pickCity(context, ref),
-          icon: const Icon(Icons.location_on_outlined),
-          label: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+        child: InkWell(
+          onTap: () => pickCity(context, ref),
+          borderRadius: BrandRadii.button,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: BrandSpacing.s2,
+              vertical: BrandSpacing.s1,
+            ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.homeDealsIn,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleLarge,
+                        ),
+                      ),
+                      const Icon(Icons.expand_more),
+                    ],
+                  ),
+                ],
               ),
-              const Icon(Icons.arrow_drop_down),
-            ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A search field look-alike that opens Search.
+class _SearchBar extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    void open() => unawaited(const SearchRoute().push<void>(context));
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        BrandSpacing.s5,
+        BrandSpacing.s2,
+        BrandSpacing.s5,
+        0,
+      ),
+      child: Semantics(
+        button: true,
+        label: l10n.homeSearchHint,
+        excludeSemantics: true,
+        onTap: open,
+        child: Material(
+          color: scheme.surfaceContainerHigh,
+          borderRadius: BrandRadii.button,
+          child: InkWell(
+            onTap: open,
+            borderRadius: BrandRadii.button,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 52),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: BrandSpacing.s4,
+                  vertical: BrandSpacing.s3,
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, color: scheme.onSurfaceVariant),
+                    const SizedBox(width: BrandSpacing.s3),
+                    Expanded(
+                      child: Text(
+                        l10n.homeSearchHint,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The top-level categories as a row of icon tiles; a tap opens the
+/// category. Nothing while they load or if they can't (Explore has them
+/// too).
+class _Categories extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final categories = ref.watch(interestsProvider).value ?? const [];
+    if (categories.isEmpty) return const SizedBox.shrink();
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        BrandSpacing.s4,
+        BrandSpacing.s5,
+        BrandSpacing.s4,
+        0,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final category in categories)
+            SizedBox(
+              width: MediaQuery.textScalerOf(context).scale(76),
+              child: Semantics(
+                button: true,
+                child: InkWell(
+                  onTap: () =>
+                      CategoryRoute(slug: category.slug).push<void>(context),
+                  borderRadius: BrandRadii.card,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.all(BrandSpacing.s1),
+                    child: Column(
+                      children: [
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: scheme.surfaceContainerHigh,
+                            borderRadius: BrandRadii.card,
+                          ),
+                          child: SizedBox.square(
+                            dimension: 56,
+                            child: ExcludeSemantics(
+                              child: Icon(
+                                categoryIcon(category.icon),
+                                color: scheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: BrandSpacing.s2),
+                        Text(
+                          category.name(urdu: urdu),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -186,6 +370,7 @@ List<Widget> _cards(
   final format = AppFormatters.of(context);
   final urdu = AppLocales.isRtl(ref.watch(localeControllerProvider));
   final imageUrl = ref.watch(dealImageUrlProvider);
+  final logoUrl = ref.watch(brandLogoUrlProvider);
   final city = _cityName(ref, urdu: urdu);
   return [
     for (final deal in deals)
@@ -198,6 +383,7 @@ List<Widget> _cards(
           l10n: l10n,
           format: format,
           imageUrl: imageUrl,
+          logoUrl: logoUrl,
           cityName: city,
         ),
         onTap: () => DealRoute(dealId: deal.id).push<void>(context),

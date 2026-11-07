@@ -19,6 +19,23 @@ Every RPC returns `deal_card` rows: the deal-card fields (brand, category, offer
 | `brand_suggestions(query, page_size)` | Brands while typing (4.6): name starts with the words, then fuzzy matches, then Urdu-name prefixes. 1–60 characters, at most 10. LIKE wildcards in the words are plain characters | One list |
 | `brand_deals(brand_slug, city_id, after_published_at, after_id, page_size)` | Brand pages | Keyset |
 
+## Tables read directly
+
+`sponsor_banners`: Home's sponsor banners. RLS returns those running now; the app filters by city.
+
+`popup_banners`: the pop-ups staff push over Home (announcements, big sales, sponsors' campaigns). RLS returns those running now (`is_active`, `starts_at` ≤ now < `ends_at`); the app reads the first 10 by `priority` (lower first), skips those for another city, and shows the first one that is due under its `frequency` (`once` per install, `daily` per calendar day, `every_launch`), at most one per app start. The button opens exactly one of `link_url` (https), `deal_id` or `brand_id`, labelled by `action_label_en`/`_ur`; the checks reject a button without a target and a target without a button. `sponsor_name` labels a paid campaign "Sponsored by …". Artwork (`image_path`) is a square image in the `deal-images` bucket. Admins insert and edit rows (Studio now, the admin console later); moderators read all of them.
+
+Push one from Studio's SQL editor:
+```sql
+insert into public.popup_banners
+  (title_en, title_ur, body_en, action_label_en, link_url, frequency, ends_at)
+values
+  ('11.11 sale is live', '11.11 سیل شروع', 'Up to 70% off across Pakistan, today only.',
+   'Shop the sale', 'https://salelagihai.pk/11-11', 'daily', now() + interval '2 days');
+```
+
+`ad_settings`: the one row that tunes the app's ads (kill switch, native ads, ad density in lists, interstitial and app open pacing). Read once per launch; admins edit it in Studio. Its checks, and the app, hold every value within Google's ad policies.
+
 ## Rules
 - **Pages hold at most 50 rows** (`page_size` is clamped to 1–50; the default is 20). PostgREST's `max_rows` is 100 as a backstop.
 - **RLS decides visibility.** The RPCs are `security invoker`, and lists show live deals only: published, started, not ended, from an active brand.

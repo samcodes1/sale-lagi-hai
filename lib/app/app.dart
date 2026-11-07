@@ -20,8 +20,7 @@ class App extends ConsumerWidget {
     final script = AppLocales.isRtl(locale) ? AppScript.urdu : AppScript.latin;
     return MaterialApp.router(
       routerConfig: ref.watch(routerProvider),
-      // The flavor's name (e.g. "SLH Dev") in the task switcher, so test
-      // builds are never mistaken for production.
+      // The flavor's name in the task switcher.
       title: config.appName,
       debugShowCheckedModeBanner: false,
       locale: locale,

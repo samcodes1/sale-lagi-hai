@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Android 12+ splash needs an icon; this one draws nothing. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#00000000"/>
+    <size android:width="1dp" android:height="1dp"/>
+</shape>

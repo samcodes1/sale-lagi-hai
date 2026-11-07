@@ -69,7 +69,7 @@ void main() {
   for (final scale in [1.0, 2.0]) {
     for (final step in const [
       '/welcome',
-      '/welcome/city',
+      '/welcome/location',
       '/welcome/interests',
       '/welcome/brands',
       '/welcome/alerts',

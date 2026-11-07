@@ -8,6 +8,7 @@ import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/design_system/models/deal_card_data.dart';
 import 'package:sale_lagi_hai/design_system/theme/accent_primary.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/design_system/widgets/brand_logo.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
 import 'package:sale_lagi_hai/design_system/widgets/network_picture.dart';
@@ -135,9 +136,14 @@ class _FullBody extends StatelessWidget {
       children: [
         Stack(
           children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: _DealImage(deal: deal),
+            // Clean: the photo is the card, rounded on every corner, with
+            // the text under it.
+            ClipRRect(
+              borderRadius: BrandRadii.card,
+              child: AspectRatio(
+                aspectRatio: large ? 16 / 10 : 4 / 3,
+                child: _DealImage(deal: deal),
+              ),
             ),
             PositionedDirectional(
               start: BrandSpacing.s3,
@@ -155,7 +161,12 @@ class _FullBody extends StatelessWidget {
           ],
         ),
         Padding(
-          padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            BrandSpacing.s1,
+            BrandSpacing.s3,
+            BrandSpacing.s1,
+            BrandSpacing.s3,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -312,9 +323,9 @@ class _CardChips extends StatelessWidget {
   );
 }
 
-/// The deal photo, or a brand plate with the brand's initial when there is
-/// no image or it fails to load. Decorative: the card label carries the
-/// meaning.
+/// The deal photo; else the brand's logo; else a brand plate with the
+/// brand's initial (also when a picture fails to load). Decorative: the card
+/// label carries the meaning.
 class _DealImage extends StatelessWidget {
   const new({required this.deal});
 
@@ -323,9 +334,11 @@ class _DealImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final plate = _BrandPlate(name: deal.brandName);
+    final logoUrl = deal.logoUrl;
+    final logo = logoUrl == null ? plate : BrandLogo(logoUrl, fallback: plate);
     final url = deal.imageUrl;
-    if (url == null) return plate;
-    return NetworkPicture(url, fallback: plate);
+    if (url == null) return logo;
+    return NetworkPicture(url, fallback: logo);
   }
 }
 

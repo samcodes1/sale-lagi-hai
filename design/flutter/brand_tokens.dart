@@ -187,8 +187,8 @@ abstract final class BrandColors {
 
 /// Light theme colour roles.
 abstract final class BrandLight {
-  /// Screen background. #FAF8F4.
-  static const Color background = BrandColors.surma50;
+  /// Screen background. #FFFFFF.
+  static const Color background = BrandColors.surma0;
 
   /// Cards, sheets, app bars. #FFFFFF.
   static const Color surface = BrandColors.surma0;
@@ -217,32 +217,32 @@ abstract final class BrandLight {
   /// Input borders, checkboxes (3:1). #7B7585.
   static const Color outlineStrong = BrandColors.surma500;
 
-  /// Haldi brand fill: primary buttons, the logo tile. #FFC414.
-  static const Color primary = BrandColors.haldi500;
+  /// Mirch: primary buttons, links, offers. #DC2E24.
+  static const Color primary = BrandColors.mirch500;
 
-  /// Text/icons on [primary]. #1A1433.
-  static const Color onPrimary = BrandColors.surma900;
+  /// Text/icons on [primary]. #FFFFFF.
+  static const Color onPrimary = BrandColors.surma0;
 
-  /// Tonal brand fill. #FFEDB3.
-  static const Color primaryContainer = BrandColors.haldi100;
+  /// Tonal brand fill. #FFF0EE.
+  static const Color primaryContainer = BrandColors.mirch50;
 
-  /// Text on [primaryContainer]. #5C3F00.
-  static const Color onPrimaryContainer = BrandColors.haldi900;
+  /// Text on [primaryContainer]. #921A14.
+  static const Color onPrimaryContainer = BrandColors.mirch700;
 
-  /// Brand-family colour when it must be text. #8A5F00.
-  static const Color primaryText = BrandColors.haldi800;
+  /// Brand-family colour when it must be text. #B8221A.
+  static const Color primaryText = BrandColors.mirch600;
 
-  /// Neel: links, secondary buttons. #3B3FD9.
-  static const Color secondary = BrandColors.neel500;
+  /// Ink: selected chips, secondary buttons. #1A1433.
+  static const Color secondary = BrandColors.surma900;
 
   /// Text on [secondary]. #FFFFFF.
   static const Color onSecondary = BrandColors.surma0;
 
-  /// Selected chip fill. #EEEFFF.
-  static const Color secondaryContainer = BrandColors.neel50;
+  /// Quiet tonal fill. #F2EFEA.
+  static const Color secondaryContainer = BrandColors.surma100;
 
-  /// Text on [secondaryContainer]. #1D1F70.
-  static const Color onSecondaryContainer = BrandColors.neel800;
+  /// Text on [secondaryContainer]. #1A1433.
+  static const Color onSecondaryContainer = BrandColors.surma900;
 
   /// Mirch: discount badges only. #DC2E24.
   static const Color deal = BrandColors.mirch500;
@@ -328,32 +328,32 @@ abstract final class BrandDark {
   /// Input borders, checkboxes (3:1). #7B7585.
   static const Color outlineStrong = BrandColors.surma500;
 
-  /// Haldi brand fill: primary buttons, the logo tile. #FFC414.
-  static const Color primary = BrandColors.haldi500;
+  /// Mirch: primary buttons, links, offers. #FF6B5E.
+  static const Color primary = BrandColors.mirch400;
 
-  /// Text/icons on [primary]. #1A1433.
-  static const Color onPrimary = BrandColors.surma900;
+  /// Text/icons on [primary]. #0F0B1F.
+  static const Color onPrimary = BrandColors.surma950;
 
-  /// Tonal brand fill. #5C3F00.
-  static const Color primaryContainer = BrandColors.haldi900;
+  /// Tonal brand fill. #4A0C09.
+  static const Color primaryContainer = BrandColors.mirch900;
 
-  /// Text on [primaryContainer]. #FFEDB3.
-  static const Color onPrimaryContainer = BrandColors.haldi100;
+  /// Text on [primaryContainer]. #FFB4AB.
+  static const Color onPrimaryContainer = BrandColors.mirch200;
 
-  /// Brand-family colour when it must be text. #FFC414.
-  static const Color primaryText = BrandColors.haldi500;
+  /// Brand-family colour when it must be text. #FF8A7E.
+  static const Color primaryText = BrandColors.mirch300;
 
-  /// Neel: links, secondary buttons. #9EA2FF.
-  static const Color secondary = BrandColors.neel300;
+  /// Ink: selected chips, secondary buttons. #FAF8F4.
+  static const Color secondary = BrandColors.surma50;
 
-  /// Text on [secondary]. #15164D.
-  static const Color onSecondary = BrandColors.neel900;
+  /// Text on [secondary]. #1A1433.
+  static const Color onSecondary = BrandColors.surma900;
 
-  /// Selected chip fill. #1D1F70.
-  static const Color secondaryContainer = BrandColors.neel800;
+  /// Quiet tonal fill. #433D50.
+  static const Color secondaryContainer = BrandColors.surma700;
 
-  /// Text on [secondaryContainer]. #DCDDFF.
-  static const Color onSecondaryContainer = BrandColors.neel100;
+  /// Text on [secondaryContainer]. #FAF8F4.
+  static const Color onSecondaryContainer = BrandColors.surma50;
 
   /// Mirch: discount badges only. #FF6B5E.
   static const Color deal = BrandColors.mirch400;
@@ -403,8 +403,8 @@ abstract final class BrandDark {
   /// Focus ring. #9EA2FF.
   static const Color focus = BrandColors.neel300;
 
-  /// Selected tab, switch, progress indicator. #FFC414.
-  static const Color indicator = BrandColors.haldi500;
+  /// Selected tab, switch, progress indicator. #FF6B5E.
+  static const Color indicator = BrandColors.mirch400;
 }
 
 /// Material 3 colour schemes. tertiary = the Mirch deal accent.
@@ -412,14 +412,14 @@ abstract final class BrandColorSchemes {
   /// Light scheme.
   static const ColorScheme light = ColorScheme(
     brightness: Brightness.light,
-    primary: BrandColors.haldi500,
-    onPrimary: BrandColors.surma900,
-    primaryContainer: BrandColors.haldi100,
-    onPrimaryContainer: BrandColors.haldi900,
-    secondary: BrandColors.neel500,
+    primary: BrandColors.mirch500,
+    onPrimary: BrandColors.surma0,
+    primaryContainer: BrandColors.mirch50,
+    onPrimaryContainer: BrandColors.mirch700,
+    secondary: BrandColors.surma900,
     onSecondary: BrandColors.surma0,
-    secondaryContainer: BrandColors.neel50,
-    onSecondaryContainer: BrandColors.neel800,
+    secondaryContainer: BrandColors.surma100,
+    onSecondaryContainer: BrandColors.surma900,
     tertiary: BrandColors.mirch500,
     onTertiary: BrandColors.surma0,
     tertiaryContainer: BrandColors.mirch50,
@@ -444,14 +444,14 @@ abstract final class BrandColorSchemes {
   /// Dark scheme.
   static const ColorScheme dark = ColorScheme(
     brightness: Brightness.dark,
-    primary: BrandColors.haldi500,
-    onPrimary: BrandColors.surma900,
-    primaryContainer: BrandColors.haldi900,
-    onPrimaryContainer: BrandColors.haldi100,
-    secondary: BrandColors.neel300,
-    onSecondary: BrandColors.neel900,
-    secondaryContainer: BrandColors.neel800,
-    onSecondaryContainer: BrandColors.neel100,
+    primary: BrandColors.mirch400,
+    onPrimary: BrandColors.surma950,
+    primaryContainer: BrandColors.mirch900,
+    onPrimaryContainer: BrandColors.mirch200,
+    secondary: BrandColors.surma50,
+    onSecondary: BrandColors.surma900,
+    secondaryContainer: BrandColors.surma700,
+    onSecondaryContainer: BrandColors.surma50,
     tertiary: BrandColors.mirch400,
     onTertiary: BrandColors.surma950,
     tertiaryContainer: BrandColors.mirch900,
@@ -757,13 +757,13 @@ abstract final class BrandRadii {
   static const double full = 999;
 
   /// Cards and tiles.
-  static const BorderRadius card = BorderRadius.all(Radius.circular(md));
+  static const BorderRadius card = BorderRadius.all(Radius.circular(lg));
 
   /// Buttons and inputs.
-  static const BorderRadius button = BorderRadius.all(Radius.circular(sm));
+  static const BorderRadius button = BorderRadius.all(Radius.circular(md));
 
-  /// Deal badges (nearly square: they are stamps, not pills).
-  static const BorderRadius badge = BorderRadius.all(Radius.circular(xs));
+  /// Deal badges: small rounded tags.
+  static const BorderRadius badge = BorderRadius.all(Radius.circular(sm));
 
   /// Bottom sheets.
   static const BorderRadius sheet = BorderRadius.vertical(

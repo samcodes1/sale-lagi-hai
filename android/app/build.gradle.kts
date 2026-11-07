@@ -1,17 +1,24 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val keystoreProperties = java.util.Properties().apply {
+// Google's sample AdMob app: it only ever serves test ads. Prod takes the real
+// app ID from ADMOB_APP_ID, and the plugin crashes at startup without one.
+val sampleAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
+
+val keystoreProperties = Properties().apply {
     val file = rootProject.file("key.properties")
     if (file.exists()) file.inputStream().use { load(it) }
 }
 
 android {
     namespace = "pk.salelagihai.app"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android needs 37 or later. targetSdk stays separate.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -43,17 +50,21 @@ android {
             dimension = "env"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            manifestPlaceholders["appLabel"] = "SLH Dev"
+            manifestPlaceholders["appLabel"] = "Sale Lagi Hai!"
+            manifestPlaceholders["admobAppId"] = sampleAdmobAppId
         }
         create("staging") {
             dimension = "env"
             applicationIdSuffix = ".stg"
             versionNameSuffix = "-stg"
             manifestPlaceholders["appLabel"] = "SLH Staging"
+            manifestPlaceholders["admobAppId"] = sampleAdmobAppId
         }
         create("prod") {
             dimension = "env"
             manifestPlaceholders["appLabel"] = "Sale Lagi Hai!"
+            manifestPlaceholders["admobAppId"] =
+                System.getenv("ADMOB_APP_ID") ?: sampleAdmobAppId
         }
     }
 

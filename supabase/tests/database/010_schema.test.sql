@@ -8,7 +8,7 @@ select tables_are('public', array[
   'deals', 'deal_targets', 'card_offers',
   'follows', 'saves', 'user_cards', 'alert_prefs', 'notifications',
   'reports', 'submissions', 'placements', 'payments', 'audit_log', 'push_tokens',
-  'ingest_sources', 'ingest_runs'
+  'ingest_sources', 'ingest_runs', 'sponsor_banners', 'ad_settings', 'popup_banners'
 ], 'public has exactly the planned tables');
 
 select is_empty($$
@@ -55,7 +55,8 @@ select set_eq($$
   select table_name::text from information_schema.role_table_grants
   where table_schema = 'public' and grantee = 'anon'
 $$, array['cities', 'areas', 'categories', 'banks', 'card_products', 'brands', 'outlets',
-          'deals', 'deal_targets', 'card_offers', 'placements', 'deal_cards'],
+          'deals', 'deal_targets', 'card_offers', 'placements', 'deal_cards',
+          'sponsor_banners', 'ad_settings', 'popup_banners'],
 'anon has grants on the public-content tables only');
 
 -- The only private functions the API roles can call are the RLS helpers.

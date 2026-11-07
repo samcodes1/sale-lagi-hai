@@ -354,14 +354,50 @@ class AppLocalizationsUr extends AppLocalizations {
   String get welcomeLanguagePromptOther => 'Choose your language';
 
   @override
-  String get cityTitle => 'آپ کہاں شاپنگ کرتے ہیں؟';
+  String get locationStepTitle => 'آپ کے قریب ڈیلز';
 
   @override
-  String get cityBody =>
-      'ہم آپ کے شہر کی ڈیلز دکھائیں گے۔ ملک بھر اور آن لائن ڈیلز ہر جگہ نظر آتی ہیں۔';
+  String get locationStepBody =>
+      'سیل لگی ہے! آپ کے فون کا اندازاً مقام استعمال کرتی ہے تاکہ آپ کے شہر کی ڈیلز پہلے دکھائے۔ پورے پاکستان اور آن لائن کی ڈیلز ہر حال میں نظر آتی ہیں۔';
 
   @override
-  String get actionDetectCity => 'میرا شہر معلوم کریں';
+  String get locationStepApproximate =>
+      'صرف اندازاً: آپ کا علاقہ، کبھی آپ کی بالکل درست جگہ نہیں۔';
+
+  @override
+  String get locationStepInUse =>
+      'صرف جب آپ ایپ استعمال کر رہے ہوں، کبھی پس منظر میں نہیں۔';
+
+  @override
+  String get locationStepChange =>
+      'اپنا شہر ہوم پر بدلیں، یا سیٹنگز میں لوکیشن کسی بھی وقت بند کریں۔';
+
+  @override
+  String get actionUseLocation => 'میرا مقام استعمال کریں';
+
+  @override
+  String get cityPickerLocationHint =>
+      'آپ کا اندازاً مقام، صرف آپ کا شہر معلوم کرنے کے لیے۔';
+
+  @override
+  String get locationStepNotCovered =>
+      'آپ ابھی ہمارے کسی شہر کے قریب نہیں، اس لیے آپ کو پورے پاکستان کی ڈیلز نظر آئیں گی۔ ہوم پر کسی بھی وقت شہر چنیں۔';
+
+  @override
+  String get locationStepDenied =>
+      'کوئی بات نہیں۔ آپ کو پورے پاکستان کی ڈیلز نظر آئیں گی۔ ہوم پر کسی بھی وقت شہر چنیں۔';
+
+  @override
+  String get locationStepBlocked =>
+      'اس ایپ کے لیے لوکیشن بند ہے، اس لیے آپ کو پورے پاکستان کی ڈیلز نظر آئیں گی۔ سیٹنگز میں آن کریں یا ہوم پر شہر چنیں۔';
+
+  @override
+  String get locationStepOff =>
+      'آپ کے فون کی لوکیشن بند ہے، اس لیے آپ کو پورے پاکستان کی ڈیلز نظر آئیں گی۔ ہوم پر کسی بھی وقت شہر چنیں۔';
+
+  @override
+  String get locationStepUnavailable =>
+      'ہم آپ کا مقام معلوم نہیں کر سکے، اس لیے آپ کو پورے پاکستان کی ڈیلز نظر آئیں گی۔ ہوم پر کسی بھی وقت شہر چنیں۔';
 
   @override
   String get cityDetecting => 'آپ کا شہر ڈھونڈ رہے ہیں…';
@@ -370,25 +406,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String cityDetected(String city) {
     return 'آپ ⁨$city⁩ میں ہیں۔';
   }
-
-  @override
-  String get cityNotCovered =>
-      'آپ کا مقام ابھی ہمارے کسی شہر کے قریب نہیں۔ نیچے سے شہر چنیں۔';
-
-  @override
-  String get cityLocationDenied => 'کوئی بات نہیں۔ نیچے سے اپنا شہر چنیں۔';
-
-  @override
-  String get cityLocationBlocked =>
-      'اس ایپ کے لیے لوکیشن بند ہے۔ سیٹنگز میں آن کریں یا نیچے سے اپنا شہر چنیں۔';
-
-  @override
-  String get cityLocationOff =>
-      'آپ کے فون کی لوکیشن بند ہے۔ نیچے سے اپنا شہر چنیں۔';
-
-  @override
-  String get cityLocationUnavailable =>
-      'ہم آپ کا مقام معلوم نہیں کر سکے۔ نیچے سے اپنا شہر چنیں۔';
 
   @override
   String get cityLocalSoon => 'مقامی ڈیلز جلد آ رہی ہیں';
@@ -611,6 +628,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get homeFeaturedTitle => 'نمایاں';
+
+  @override
+  String get homeDealsIn => 'ڈیلز برائے';
+
+  @override
+  String get homeSearchHint => 'برانڈز، ڈیلز، بینک تلاش کریں';
 
   @override
   String get homeTrendingTitle => 'آج کی مقبول ڈیلز';
@@ -1231,7 +1254,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get privacyOnPhoneBody =>
-      'آپ کی زبان، شہر، فالو، محفوظ کردہ ڈیلز، حالیہ تلاش اور کارڈز۔ آپ کا اندازاً مقام صرف \"آپ کے قریب\" کے لیے استعمال ہوتا ہے، اور کبھی محفوظ نہیں ہوتا۔';
+      'آپ کی زبان، شہر، فالو، محفوظ کردہ ڈیلز، حالیہ تلاش اور کارڈز۔ آپ کا اندازاً مقام صرف آپ کا شہر معلوم کرنے اور \"آپ کے قریب\" کے لیے استعمال ہوتا ہے، اور کبھی محفوظ نہیں ہوتا۔';
 
   @override
   String get privacyInAccount => 'آپ کے اکاؤنٹ میں';
@@ -1265,4 +1288,40 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get clearedToast => 'صاف ہو گیا۔';
+
+  @override
+  String get adLabel => 'اشتہار';
+
+  @override
+  String get sponsoredLabel => 'سپانسرڈ';
+
+  @override
+  String get advertiseTitle => 'یہاں آپ کا برانڈ';
+
+  @override
+  String get advertiseBody =>
+      'سیل لگی ہے! پر بینر کے ذریعے پورے پاکستان کے خریداروں تک پہنچیں۔';
+
+  @override
+  String get advertiseAction => 'ہمارے ساتھ اشتہار دیں ←';
+
+  @override
+  String sponsorBannerLabel(String sponsor, String title) {
+    return '$sponsor کی جانب سے سپانسرڈ: $title';
+  }
+
+  @override
+  String popupSponsoredBy(String sponsor) {
+    return '$sponsor کی جانب سے سپانسرڈ';
+  }
+
+  @override
+  String get privacyAds => 'اشتہارات';
+
+  @override
+  String get privacyAdsBody =>
+      'ایپ میں گوگل کے اشتہارات دکھائے جاتے ہیں، جو انہیں چننے کے لیے آپ کے فون کی ایڈورٹائزنگ آئی ڈی استعمال کر سکتا ہے۔ آپ یہ آئی ڈی فون کی سیٹنگز میں ری سیٹ یا ڈیلیٹ کر سکتے ہیں۔ سپانسر بینرز صرف آپ کا شہر استعمال کرتے ہیں۔';
+
+  @override
+  String get actionAdChoices => 'اشتہارات کے انتخاب';
 }

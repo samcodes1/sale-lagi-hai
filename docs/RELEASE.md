@@ -33,7 +33,10 @@ flutter build appbundle --release \
 2. Enrol in Play App Signing when creating the app in Play Console.
 3. Add the CI secrets (keystore, passwords, prod env values) and a release workflow with `REQUIRE_RELEASE_SIGNING=true`.
 4. Check the merged manifest of the release build (`docs/security/CHECKLIST.md`, Notes).
-5. Fill in the Data safety form from the current permissions and data flows (Phase 9 keeps it up to date).
+5. Fill in the Data safety form from the current permissions and data flows (Phase 9 keeps it up to date). Declare ads and the advertising ID, and answer "yes" to "contains ads".
+   - **Location.** Declare *Approximate location*: collected (Near me sends it to our server for that one query, which keeps nothing), not shared, processed ephemerally, optional, for *App functionality*. The app declares `ACCESS_COARSE_LOCATION` only; fine and background location are stripped from the merged manifest. Matching the phone to a city happens on the phone.
+   - **Why this passes review** (User Data policy, prominent disclosure): Android's permission dialog only ever opens from a button under a screen that says what location is for (onboarding's "Deals near you" step, and the subtitle of "Use my location" in the city sheet). Nothing asks at launch, and every screen works without location (All Pakistan, or a city picked by hand). Keep it that way: never call the location service from anywhere else.
+6. Create the app and its banner, interstitial, app open and native advanced units in AdMob. Put the unit IDs in `ADMOB_BANNER_ID`, `ADMOB_INTERSTITIAL_ID`, `ADMOB_APP_OPEN_ID` and `ADMOB_NATIVE_ID` in `env/prod.json`, and set the `ADMOB_APP_ID` environment variable for the release build. Prod refuses Google's test IDs, and with no unit IDs it shows no ads. Add `app-ads.txt` to the website and set up the consent message in AdMob, Privacy & messaging. After launch, tune ad frequency in the `ad_settings` row (Studio, Table editor), and add mediation networks in AdMob to raise fill and eCPM.
 
 ## Database migrations freeze at the first deploy
 Before the first `supabase db push` to staging, record the last migration file in this section. From then on, never edit any migration up to and including it; add new ones (`docs/backend/SCHEMA.md`).

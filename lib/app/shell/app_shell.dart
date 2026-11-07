@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
+import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/features/ads/application/ads_providers.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/app_open_ad_gate.dart';
 import 'package:sale_lagi_hai/features/alerts/application/alerts_providers.dart';
 
 /// One bottom-navigation destination.
@@ -75,6 +78,8 @@ class AppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Here, not at launch: any consent form waits until onboarding is over.
+    ref.watch(adsStartupProvider);
     final destinations = _destinations(context.l10n);
     final badge = ref.watch(alertsBadgeProvider).value ?? 0;
     final index = navigationShell.currentIndex;
@@ -108,17 +113,33 @@ class AppShell extends ConsumerWidget {
     } else {
       body = Scaffold(
         body: navigationShell,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: index,
-          onDestinationSelected: _select,
-          destinations: [
-            for (final (i, d) in destinations.indexed)
-              NavigationDestination(
-                icon: _icon(context, d, i, badge),
-                selectedIcon: _icon(context, d, i, badge, selected: true),
-                label: d.label,
-              ),
-          ],
+        // The floating ink tab bar: inset from the edges and rounded, above
+        // the gesture area.
+        bottomNavigationBar: SafeArea(
+          top: false,
+          minimum: const EdgeInsets.fromLTRB(
+            BrandSpacing.s4,
+            0,
+            BrandSpacing.s4,
+            BrandSpacing.s3,
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(BrandRadii.xl),
+            ),
+            child: NavigationBar(
+              selectedIndex: index,
+              onDestinationSelected: _select,
+              destinations: [
+                for (final (i, d) in destinations.indexed)
+                  NavigationDestination(
+                    icon: _icon(context, d, i, badge),
+                    selectedIcon: _icon(context, d, i, badge, selected: true),
+                    label: d.label,
+                  ),
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -129,9 +150,11 @@ class AppShell extends ConsumerWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _select(0);
       },
-      child: _AlertsSeenOnEnter(
-        index: navigationShell.currentIndex,
-        child: body,
+      child: AppOpenAdGate(
+        child: _AlertsSeenOnEnter(
+          index: navigationShell.currentIndex,
+          child: body,
+        ),
       ),
     );
   }

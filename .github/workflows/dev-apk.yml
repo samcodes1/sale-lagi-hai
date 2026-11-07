@@ -1,0 +1,110 @@
+name: Dev APK
+
+# Builds a debug dev APK for manual testing and keeps it for 3 days. Runs only
+# on this branch, so it never affects main.
+on:
+  push:
+    branches: [fix/android-gradle-build]
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: "3.47.8"
+
+jobs:
+  build-dev-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      # The dev backend on Railway when the repository has one configured
+      # (public values only: the URL and the publishable key); demo data otherwise.
+      - name: Dev env
+        env:
+          SUPABASE_URL: ${{ vars.DEV_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.DEV_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          jq --arg url "$SUPABASE_URL" --arg key "$SUPABASE_PUBLISHABLE_KEY" \
+            '.SUPABASE_URL = $url | .SUPABASE_PUBLISHABLE_KEY = $key' \
+            env/dev.example.json > env/dev.json
+      - run: flutter pub get
+      # This Mac can't run Flutter 3.47, so generated code, the lockfile and
+      # formatting are produced here and handed back as a patch.
+      - name: Regenerate
+        run: |
+          flutter gen-l10n
+          dart run build_runner build --delete-conflicting-outputs
+          dart format lib test
+          flutter test --update-goldens --tags golden || true
+          git add -N .
+          git diff --binary > regenerated.patch
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: regenerated-patch
+          path: regenerated.patch
+          retention-days: 3
+      - name: Analyze
+        id: analyze
+        continue-on-error: true
+        run: flutter analyze
+      - name: Test
+        id: test
+        continue-on-error: true
+        run: flutter test --coverage
+      - name: Coverage
+        id: coverage
+        continue-on-error: true
+        run: dart run tool/check_coverage.dart coverage/lcov.info --min 80
+      - name: Dependency audit
+        id: audit
+        continue-on-error: true
+        run: dart run tool/audit_deps.dart pubspec.lock --online
+      - name: Web build
+        id: web
+        continue-on-error: true
+        run: flutter build web --release --dart-define-from-file=env/dev.json
+      # For looking at the screens in a browser (public config only).
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: steps.web.outcome == 'success'
+        with:
+          name: web-dev
+          path: build/web
+          retention-days: 3
+      - run: >-
+          flutter build apk --debug
+          --flavor dev
+          --dart-define-from-file=env/dev.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: app-dev-debug
+          path: build/app/outputs/flutter-apk/app-dev-debug.apk
+          if-no-files-found: error
+          retention-days: 3
+      - name: Fail if the checks failed
+        if: >-
+          steps.analyze.outcome == 'failure' ||
+          steps.test.outcome == 'failure' ||
+          steps.coverage.outcome == 'failure' ||
+          steps.audit.outcome == 'failure' ||
+          steps.web.outcome == 'failure'
+        run: exit 1
+
+  database:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install Postgres 16 with PostGIS, pgTAP and pg_cron
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q postgresql-16 postgresql-16-postgis-3 \
+            postgresql-16-pgtap postgresql-16-cron
+      - run: tool/db_test.sh

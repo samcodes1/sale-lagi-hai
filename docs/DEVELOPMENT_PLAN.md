@@ -28,7 +28,12 @@ Food & Restaurants · Fashion · Bank Cards · Groceries · Beauty & Salons · M
 1. Featured and sponsored placements for businesses, targeted by city and category and clearly labelled "Featured".
 2. Sponsored WhatsApp-channel posts and targeted push campaigns (with strict frequency caps).
 3. Later: national brand and bank sponsorships, and affiliate commissions where programs exist.
-4. Optional: low-frequency native ads (AdMob) in the feed.
+4. AdMob ads, tuned from the `ad_settings` row without a release:
+   - native ads in the app's colours after every sixth deal in lists and on Home, falling back to a rectangle banner when none fills;
+   - banners on Home and deal pages;
+   - interstitials at natural breaks, paced by `InterstitialPacing`;
+   - app open ads on coming back to the app, paced by `AppOpenPacing` (never in a shopper's first launch, after a short absence or on returning from an ad).
+5. Sponsor banners at the top of Home, sold directly and managed in `sponsor_banners`.
 
 ---
 

@@ -2,8 +2,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 
-/// How many onboarding steps there are (language, city, interests, brands,
-/// alerts).
+/// How many onboarding steps there are (language, location, interests,
+/// brands, alerts).
 const onboardingSteps = 5;
 
 /// The layout every onboarding step shares: progress, an optional Skip, the

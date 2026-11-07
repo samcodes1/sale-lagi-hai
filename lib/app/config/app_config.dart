@@ -18,6 +18,10 @@ final class AppConfig {
     required this.supabasePublishableKey,
     this.googleServerClientId = '',
     this.supportEmail = '',
+    this.adBannerUnitId = '',
+    this.adInterstitialUnitId = '',
+    this.adAppOpenUnitId = '',
+    this.adNativeUnitId = '',
   });
 
   /// Reads and validates the values compiled into this build.
@@ -32,6 +36,10 @@ final class AppConfig {
       'GOOGLE_SERVER_CLIENT_ID',
     ),
     'SUPPORT_EMAIL': String.fromEnvironment('SUPPORT_EMAIL'),
+    'ADMOB_BANNER_ID': String.fromEnvironment('ADMOB_BANNER_ID'),
+    'ADMOB_INTERSTITIAL_ID': String.fromEnvironment('ADMOB_INTERSTITIAL_ID'),
+    'ADMOB_APP_OPEN_ID': String.fromEnvironment('ADMOB_APP_OPEN_ID'),
+    'ADMOB_NATIVE_ID': String.fromEnvironment('ADMOB_NATIVE_ID'),
   });
 
   /// Builds a config from raw values, collecting every problem before
@@ -105,6 +113,27 @@ final class AppConfig {
       problems.add('SUPPORT_EMAIL must be an email address.');
     }
 
+    // Optional: without them this build shows no Google ads.
+    final adBannerUnitId = values['ADMOB_BANNER_ID']?.trim() ?? '';
+    final adInterstitialUnitId = values['ADMOB_INTERSTITIAL_ID']?.trim() ?? '';
+    final adAppOpenUnitId = values['ADMOB_APP_OPEN_ID']?.trim() ?? '';
+    final adNativeUnitId = values['ADMOB_NATIVE_ID']?.trim() ?? '';
+    for (final (key, id) in [
+      ('ADMOB_BANNER_ID', adBannerUnitId),
+      ('ADMOB_INTERSTITIAL_ID', adInterstitialUnitId),
+      ('ADMOB_APP_OPEN_ID', adAppOpenUnitId),
+      ('ADMOB_NATIVE_ID', adNativeUnitId),
+    ]) {
+      if (id.isEmpty) continue;
+      if (!_adUnitId.hasMatch(id)) {
+        problems.add(
+          '$key must be an AdMob ad unit ID (ca-app-pub-<digits>/<digits>).',
+        );
+      } else if (flavor == Flavor.prod && id.startsWith(_sampleAdPublisher)) {
+        problems.add('$key is a Google test ID, which earns nothing in prod.');
+      }
+    }
+
     if (problems.isNotEmpty) throw AppConfigException(problems);
 
     return AppConfig(
@@ -114,6 +143,10 @@ final class AppConfig {
       supabasePublishableKey: supabasePublishableKey,
       googleServerClientId: googleServerClientId,
       supportEmail: supportEmail,
+      adBannerUnitId: adBannerUnitId,
+      adInterstitialUnitId: adInterstitialUnitId,
+      adAppOpenUnitId: adAppOpenUnitId,
+      adNativeUnitId: adNativeUnitId,
     );
   }
 
@@ -125,6 +158,11 @@ final class AppConfig {
   static final _googleClientId = RegExp(
     r'^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$',
   );
+
+  static final _adUnitId = RegExp(r'^ca-app-pub-[0-9]{16}/[0-9]{10}$');
+
+  /// Google's sample publisher: its ad units only ever serve test ads.
+  static const _sampleAdPublisher = 'ca-app-pub-3940256099942544';
 
   final Flavor flavor;
   final String appName;
@@ -139,6 +177,27 @@ final class AppConfig {
 
   /// The support address for "Contact us". Empty: the row is hidden.
   final String supportEmail;
+
+  /// The AdMob banner unit. Empty: no banners.
+  final String adBannerUnitId;
+
+  /// The AdMob interstitial unit. Empty: no full-screen ads.
+  final String adInterstitialUnitId;
+
+  /// The AdMob app open unit, shown on coming back to the app. Empty: none.
+  final String adAppOpenUnitId;
+
+  /// The AdMob native unit, for ads in the deal lists. Empty: those slots
+  /// show a banner instead.
+  final String adNativeUnitId;
+
+  /// Whether this build has any Google ads.
+  bool get hasAds => [
+    adBannerUnitId,
+    adInterstitialUnitId,
+    adAppOpenUnitId,
+    adNativeUnitId,
+  ].any((id) => id.isNotEmpty);
 
   /// Whether a backend is configured for this build.
   bool get hasBackend => supabaseUrl.isNotEmpty;

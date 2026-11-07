@@ -25,6 +25,9 @@ function isHttpsUrl(value: string | undefined): boolean {
   }
 }
 
+const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const validDate = (d: Date | undefined) => d === undefined || !Number.isNaN(d.getTime());
+
 const isPercent = (n: number | undefined) => Number.isInteger(n) && n! >= 1 && n! <= 99;
 const isRupees = (n: number | undefined) => Number.isInteger(n) && n! >= 0 && n! <= 100_000_000;
 
@@ -39,7 +42,12 @@ export async function normalize(
   if (!raw.externalId || raw.externalId.length > 200) return { rejected: 'external id' };
   if (!isHttpsUrl(raw.url)) return { rejected: 'url must be https' };
   if (raw.imageUrl !== undefined && !isHttpsUrl(raw.imageUrl)) return { rejected: 'image url must be https' };
+  if (!validDate(raw.startsAt) || !validDate(raw.endsAt)) return { rejected: 'bad date' };
   if (raw.endsAt && raw.endsAt <= now) return { rejected: 'already ended' };
+  const titleUr = raw.titleUr === undefined ? undefined : collapse(raw.titleUr);
+  if (titleUr !== undefined && (titleUr.length < 3 || titleUr.length > 140)) return { rejected: 'urdu title length' };
+  if (raw.brand !== undefined && (raw.brand.length > 60 || !SLUG.test(raw.brand))) return { rejected: 'brand slug' };
+  if (raw.scope !== undefined && raw.scope !== 'online') return { rejected: 'scope' };
   if (raw.startsAt && raw.endsAt && raw.endsAt <= raw.startsAt) return { rejected: 'ends before it starts' };
 
   const o = raw.offer;
@@ -58,6 +66,8 @@ export async function normalize(
     case 'text': {
       const text = collapse(o.text ?? '');
       if (text.length < 1 || text.length > 60) return { rejected: 'offer text' };
+      const textUr = o.textUr === undefined ? '' : collapse(o.textUr);
+      if (o.textUr !== undefined && (textUr.length < 1 || textUr.length > 60)) return { rejected: 'urdu offer text' };
       break;
     }
   }
@@ -81,8 +91,11 @@ export async function normalize(
     deal: {
       ...raw,
       title,
+      titleUr,
       description: raw.description ? collapse(raw.description).slice(0, 2000) : undefined,
-      offer: o.kind === 'text' ? { ...o, text: collapse(o.text!) } : o,
+      offer: o.kind === 'text'
+        ? { ...o, text: collapse(o.text!), textUr: o.textUr === undefined ? undefined : collapse(o.textUr) }
+        : { ...o, textUr: undefined },
       fingerprint: await fingerprint(source.slug, raw.externalId),
     },
   };

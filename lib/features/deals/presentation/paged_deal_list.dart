@@ -9,6 +9,9 @@ import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
+import 'package:sale_lagi_hai/features/ads/application/ad_service.dart';
+import 'package:sale_lagi_hai/features/ads/application/ads_providers.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_banner.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
 import 'package:sale_lagi_hai/features/deals/domain/deal.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
@@ -35,6 +38,7 @@ Widget dealCardFor(
       l10n: context.l10n,
       format: AppFormatters.of(context),
       imageUrl: ref.watch(dealImageUrlProvider),
+      logoUrl: ref.watch(brandLogoUrlProvider),
       saved: saved,
     ),
     onTap: () => DealRoute(dealId: deal.id).push<void>(context),
@@ -65,6 +69,8 @@ class PagedDealSlivers extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final list = ref.watch(dealListProvider(query));
+    // An ad follows every this many deals.
+    final dealsPerAd = ref.watch(currentAdSettingsProvider).feedAdEvery;
     switch (list) {
       case AsyncData(:final value) when value.deals.isEmpty:
         return SliverToBoxAdapter(
@@ -99,7 +105,15 @@ class PagedDealSlivers extends ConsumerWidget {
                     padding: const EdgeInsetsDirectional.only(
                       bottom: BrandSpacing.s4,
                     ),
-                    child: dealCardFor(context, ref, value.deals[i]),
+                    child: (i + 1) % dealsPerAd == 0
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              dealCardFor(context, ref, value.deals[i]),
+                              const AdBanner(size: AdBannerSize.native),
+                            ],
+                          )
+                        : dealCardFor(context, ref, value.deals[i]),
                   );
                 },
               ),

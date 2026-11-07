@@ -15,14 +15,21 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sale_lagi_hai/app/config/app_config.dart';
+import 'package:sale_lagi_hai/app/config/app_config_provider.dart';
+import 'package:sale_lagi_hai/app/config/flavor.dart';
 import 'package:sale_lagi_hai/core/backend/demo/demo_data.dart';
 import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_card.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_providers.dart';
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
+import 'package:sale_lagi_hai/features/sponsors/application/sponsor_providers.dart';
+import 'package:sale_lagi_hai/features/sponsors/domain/sponsor_banner.dart';
+import 'package:sale_lagi_hai/features/sponsors/presentation/sponsor_carousel.dart';
 
 import '../features/onboarding/onboarding_harness.dart';
+import '../helpers/test_app.dart';
 import 'home_fakes.dart';
 
 const _shots = bool.fromEnvironment('QA_SHOTS');
@@ -128,6 +135,18 @@ void main() {
       await h.pump(tester, device: AppLocales.urdu, size: const Size(360, 800));
       expect(tester.takeException(), isNull);
 
+      // At 200% the search, sponsor slot and categories fill the first
+      // screen; bring the first carousel up.
+      for (var i = 0; i < 6 && find.byType(DealCard).evaluate().isEmpty; i++) {
+        await tester.drag(
+          find.byType(CustomScrollView).first,
+          const Offset(0, -300),
+        );
+        await tester.pumpAndSettle();
+      }
+      await tester.ensureVisible(find.byType(DealCard).first);
+      await tester.pumpAndSettle();
+
       // The first carousel card sits at the right edge (RTL).
       final first = tester.getRect(find.byType(DealCard).first);
       expect(first.right, greaterThan(300), reason: '$first');
@@ -156,6 +175,46 @@ void main() {
     });
   }
 
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('ur ${(scale * 100).round()}%: the longest sponsor copy is '
+        'not clipped', (tester) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = scale;
+      addTearDown(tester.platformDispatcher.clearAllTestValues);
+      // The longest the database allows: 80 and 120 characters.
+      final banner = SponsorBanner(
+        id: '1',
+        sponsorName: 'Acme',
+        titleEn: 'Title',
+        titleUr: 'بڑی سیل ' * 10,
+        subtitleUr: 'بڑی سیل ' * 15,
+      );
+      await tester.pumpWidget(
+        testApp(
+          const Scaffold(body: SponsorCarousel()),
+          locale: AppLocales.urdu,
+          overrides: [
+            appConfigProvider.overrideWithValue(
+              const AppConfig(
+                flavor: Flavor.dev,
+                appName: 'Test',
+                supabaseUrl: '',
+                supabasePublishableKey: '',
+              ),
+            ),
+            sponsorBannersProvider.overrideWith((ref) async => [banner]),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.byType(RichText), findsWidgets);
+      expect(_clipped(tester, <String>{}), isEmpty);
+    });
+  }
+
   testWidgets('ur 200%: the city sheet, nothing clipped', (tester) async {
     tester.platformDispatcher.textScaleFactorTestValue = 2;
     addTearDown(tester.platformDispatcher.clearAllTestValues);
@@ -163,7 +222,7 @@ void main() {
       saved: const ShopperPreferences(onboarded: true, cityId: karachiId),
     );
     await h.pump(tester, device: AppLocales.urdu, size: const Size(360, 800));
-    await tester.tap(find.byIcon(Icons.arrow_drop_down));
+    await tester.tap(find.byIcon(Icons.expand_more));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(_clipped(tester, <String>{}), isEmpty);

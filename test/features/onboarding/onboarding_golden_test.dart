@@ -13,9 +13,9 @@ import 'package:sale_lagi_hai/features/onboarding/application/preferences_contro
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/alerts_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/brands_step.dart';
-import 'package:sale_lagi_hai/features/onboarding/presentation/city_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/interests_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/language_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/location_step.dart';
 
 import '../../helpers/fakes.dart';
 import '../../helpers/golden_host.dart';
@@ -48,7 +48,7 @@ Widget _step(Widget step, Locale locale, Brightness brightness) =>
 void main() {
   const steps = <(String, Widget)>[
     ('1 language', LanguageStep()),
-    ('2 city', CityStep()),
+    ('2 location', LocationStep()),
     ('3 interests', InterestsStep()),
     ('4 brands', BrandsStep()),
     ('5 alerts', AlertsStep()),

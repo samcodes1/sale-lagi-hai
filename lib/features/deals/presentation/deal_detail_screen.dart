@@ -16,11 +16,15 @@ import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/core/time/clock.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_bottom_sheet.dart';
+import 'package:sale_lagi_hai/design_system/widgets/brand_logo.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/deal_labels.dart';
 import 'package:sale_lagi_hai/design_system/widgets/network_picture.dart';
 import 'package:sale_lagi_hai/design_system/widgets/price_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
+import 'package:sale_lagi_hai/features/ads/application/ad_service.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_banner.dart';
+import 'package:sale_lagi_hai/features/ads/presentation/ad_break.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_providers.dart';
 import 'package:sale_lagi_hai/features/deals/application/report_providers.dart';
@@ -43,19 +47,21 @@ class DealDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final detail = ref.watch(dealDetailProvider(dealId));
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.dealTitle)),
-      body: switch (detail) {
-        AsyncData(:final value) => _Body(value),
-        AsyncError(:final error) => ErrorView(
-          failure: error is AppFailure ? error : const UnexpectedFailure(),
-          onRetry: () => ref.invalidate(dealDetailProvider(dealId)),
-        ),
-        _ => const Padding(
-          padding: EdgeInsetsDirectional.all(BrandSpacing.s5),
-          child: DealCardSkeleton(),
-        ),
-      },
+    return AdBreak(
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.dealTitle)),
+        body: switch (detail) {
+          AsyncData(:final value) => _Body(value),
+          AsyncError(:final error) => ErrorView(
+            failure: error is AppFailure ? error : const UnexpectedFailure(),
+            onRetry: () => ref.invalidate(dealDetailProvider(dealId)),
+          ),
+          _ => const Padding(
+            padding: EdgeInsetsDirectional.all(BrandSpacing.s5),
+            child: DealCardSkeleton(),
+          ),
+        },
+      ),
     );
   }
 }
@@ -78,6 +84,21 @@ class _Body extends ConsumerWidget {
         (deal.endsAt != null && !deal.endsAt!.isAfter(now));
     final offer = deal.offer(urdu: urdu);
     final image = ref.watch(dealImageUrlProvider)(deal.imagePath);
+    final logo = ref.watch(brandLogoUrlProvider)(deal.brandLogoPath);
+    final initial = ColoredBox(
+      color: scheme.surfaceContainerHigh,
+      child: Center(
+        child: ExcludeSemantics(
+          child: Text(
+            deal.brand(urdu: urdu).characters.first,
+            style: theme.textTheme.displayMedium,
+          ),
+        ),
+      ),
+    );
+    final brandPicture = logo == null
+        ? initial
+        : BrandLogo(logo, fallback: initial);
     final description = detail.description(urdu: urdu);
     final terms = detail.terms(urdu: urdu);
     final offerUrl = deal.url ?? detail.sourceUrl;
@@ -132,21 +153,8 @@ class _Body extends ConsumerWidget {
         AspectRatio(
           aspectRatio: 16 / 9,
           child: image == null
-              ? ColoredBox(
-                  color: scheme.surfaceContainerHigh,
-                  child: Center(
-                    child: ExcludeSemantics(
-                      child: Text(
-                        deal.brand(urdu: urdu).characters.first,
-                        style: theme.textTheme.displayMedium,
-                      ),
-                    ),
-                  ),
-                )
-              : NetworkPicture(
-                  image,
-                  fallback: ColoredBox(color: scheme.surfaceContainerHigh),
-                ),
+              ? brandPicture
+              : NetworkPicture(image, fallback: brandPicture),
         ),
         Padding(
           padding: const EdgeInsetsDirectional.symmetric(
@@ -255,6 +263,8 @@ class _Body extends ConsumerWidget {
             ],
           ),
         ),
+        // Last on the page, well away from Save and Share.
+        const AdBanner(size: AdBannerSize.rectangle),
       ],
     );
   }

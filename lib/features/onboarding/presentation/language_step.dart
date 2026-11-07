@@ -69,7 +69,7 @@ class LanguageStep extends ConsumerWidget {
       primaryLabel: l10n.actionContinue,
       onPrimary: () {
         ref.read(languageChosenProvider.notifier).confirm();
-        unawaited(const WelcomeCityRoute().push<void>(context));
+        unawaited(const WelcomeLocationRoute().push<void>(context));
       },
     );
   }

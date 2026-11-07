@@ -39,9 +39,9 @@ import 'package:sale_lagi_hai/features/onboarding/data/preferences_store.dart';
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/alerts_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/brands_step.dart';
-import 'package:sale_lagi_hai/features/onboarding/presentation/city_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/interests_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/language_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/location_step.dart';
 import 'package:sale_lagi_hai/features/profile/presentation/profile_screen.dart';
 
 import '../features/onboarding/onboarding_harness.dart';
@@ -242,7 +242,7 @@ void main() {
       await tester.pump(gap);
       await tester.tapAt(at);
       await tester.pumpAndSettle();
-      expect(_count(CityStep), 1);
+      expect(_count(LocationStep), 1);
       expect(
         _count(InterestsStep),
         0,
@@ -250,7 +250,7 @@ void main() {
             'the 2nd tap must not land on '
             "the next step's Continue",
       );
-      expect(h.router.state.uri.path, '/welcome/city');
+      expect(h.router.state.uri.path, '/welcome/location');
     });
 
     testWidgets('Turn on alerts twice asks the system once', (tester) async {
@@ -277,16 +277,16 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
     });
 
-    testWidgets('Detect my city twice asks for location once', (tester) async {
+    testWidgets('Use my location twice asks for location once', (tester) async {
       final location = _SlowLocation();
       final container = await _boot(
         tester,
         store: InMemoryKeyValueStore(),
         location: location,
       );
-      container.read(routerProvider).go('/welcome/city');
+      container.read(routerProvider).go('/welcome/location');
       await tester.pumpAndSettle();
-      final at = tester.getCenter(find.text('Detect my city'));
+      final at = tester.getCenter(find.text('Use my location'));
       await tester.tapAt(at);
       await tester.pump(gap);
       await tester.tapAt(at);
@@ -316,7 +316,7 @@ void main() {
         await tester.tap(find.text(label));
         await tester.tap(find.text(label), warnIfMissed: false);
         await tester.pumpAndSettle();
-        expect(_count(CityStep), lessThanOrEqualTo(1));
+        expect(_count(LocationStep), lessThanOrEqualTo(1));
         expect(alerts.requested, lessThanOrEqualTo(1));
       });
     }
@@ -331,7 +331,7 @@ void main() {
       await tapText(tester, 'Skip');
       await tapText(tester, 'Skip');
       expect(find.byType(BrandsStep), findsOneWidget);
-      for (final step in [InterestsStep, CityStep, LanguageStep]) {
+      for (final step in [InterestsStep, LocationStep, LanguageStep]) {
         expect(await tester.binding.handlePopRoute(), isTrue);
         await tester.pumpAndSettle();
         expect(find.byType(step), findsOneWidget);
@@ -445,10 +445,11 @@ void main() {
       tester,
     ) async {
       final store = InMemoryKeyValueStore();
-      var container = await _boot(tester, store: store);
+      final lahore = FakeLocation(const Located(31.5204, 74.3587));
+      var container = await _boot(tester, store: store, location: lahore);
       await tapText(tester, 'اردو');
       await tapText(tester, 'آگے چلیں');
-      await tapText(tester, 'لاہور');
+      await tapText(tester, 'میرا مقام استعمال کریں');
       // "Kill": drop the app, boot again from the same storage.
       await tester.pumpWidget(const SizedBox());
       container = await _boot(tester, store: store);
@@ -525,15 +526,15 @@ void main() {
           platform: _ThrowingGeolocator(const PositionUpdateException('fused')),
         ),
       );
-      container.read(routerProvider).go('/welcome/city');
+      container.read(routerProvider).go('/welcome/location');
       await tester.pumpAndSettle();
-      await tapText(tester, 'Detect my city');
+      await tapText(tester, 'Use my location');
       expect(tester.takeException(), isNull);
       expect(find.text('Finding your city…'), findsNothing);
-      final detect = tester.widget<OutlinedButton>(
+      final detect = tester.widget<TextButton>(
         find.ancestor(
-          of: find.text('Detect my city'),
-          matching: find.byType(OutlinedButton),
+          of: find.text('Use my location'),
+          matching: find.byType(TextButton),
         ),
       );
       expect(detect.onPressed, isNotNull, reason: 'can try again');
@@ -547,10 +548,10 @@ void main() {
         store: InMemoryKeyValueStore(),
         location: FakeLocation(const Located(51.5, -0.12)), // London
       );
-      container.read(routerProvider).go('/welcome/city');
+      container.read(routerProvider).go('/welcome/location');
       await tester.pumpAndSettle();
-      await tapText(tester, 'Detect my city');
-      expect(find.textContaining("isn't near a city we cover"), findsOneWidget);
+      await tapText(tester, 'Use my location');
+      expect(find.textContaining('not near a city we know'), findsOneWidget);
       expect(container.read(preferencesProvider).cityId, isNull);
     });
 
@@ -566,7 +567,7 @@ void main() {
       final router = container.read(routerProvider)..go('/welcome');
       await tester.pumpAndSettle();
       await tapText(tester, 'Continue');
-      await tester.tap(find.text('Detect my city'));
+      await tester.tap(find.text('Use my location'));
       await tester.pump();
       await tester.binding.handlePopRoute(); // back to language
       await tester.pumpAndSettle();
@@ -677,10 +678,11 @@ void main() {
       await _boot(
         tester,
         store: store,
+        location: FakeLocation(const Located(31.5204, 74.3587)), // Lahore
         logger: AppLogger(sinks: [sink]),
       );
       await tapText(tester, 'Continue');
-      await tapText(tester, 'Lahore');
+      await tapText(tester, 'Use my location');
       await tapText(tester, 'Continue');
       await tapText(tester, 'Skip');
       await tapText(tester, 'Skip');
@@ -705,9 +707,9 @@ void main() {
         logger: AppLogger(sinks: [sink]),
         location: FakeLocation(const Located(24.81384, 67.03021)),
       );
-      container.read(routerProvider).go('/welcome/city');
+      container.read(routerProvider).go('/welcome/location');
       await tester.pumpAndSettle();
-      await tapText(tester, 'Detect my city');
+      await tapText(tester, 'Use my location');
       await tapText(tester, 'Continue');
       await tapText(tester, 'Skip');
       await tapText(tester, 'Skip');
@@ -745,7 +747,7 @@ void main() {
   group('screen-reader order and the modes the developer tests skip', () {
     for (final (location, first, last) in const [
       ('/welcome', 'Step 1 of 5', 'Continue'),
-      ('/welcome/city', 'Step 2 of 5', 'Continue'),
+      ('/welcome/location', 'Step 2 of 5', 'Not now'),
       ('/welcome/alerts', 'Step 5 of 5', 'Not now'),
     ]) {
       testWidgets('$location reads progress first, the actions last', (
@@ -772,7 +774,7 @@ void main() {
     ]) {
       for (final step in const [
         '/welcome',
-        '/welcome/city',
+        '/welcome/location',
         '/welcome/interests',
         '/welcome/brands',
         '/welcome/alerts',

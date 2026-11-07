@@ -10,9 +10,9 @@ import 'package:sale_lagi_hai/features/onboarding/data/preferences_store.dart';
 import 'package:sale_lagi_hai/features/onboarding/domain/shopper_preferences.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/alerts_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/brands_step.dart';
-import 'package:sale_lagi_hai/features/onboarding/presentation/city_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/interests_step.dart';
 import 'package:sale_lagi_hai/features/onboarding/presentation/language_step.dart';
+import 'package:sale_lagi_hai/features/onboarding/presentation/location_step.dart';
 
 import 'onboarding_harness.dart';
 
@@ -35,7 +35,7 @@ void main() {
     },
   );
 
-  testWidgets('the whole flow: language, detected city, interests, brands, '
+  testWidgets('the whole flow: language, location, interests, brands, '
       'alerts, then Home, all saved', (tester) async {
     final h = Harness();
     await h.pump(tester);
@@ -50,9 +50,9 @@ void main() {
     await tapText(tester, 'English');
     await tapText(tester, 'Continue');
 
-    expect(find.byType(CityStep), findsOneWidget);
+    expect(find.byType(LocationStep), findsOneWidget);
     expect(h.location.asked, 0, reason: 'location is never asked unprompted');
-    await tapText(tester, 'Detect my city');
+    await tapText(tester, 'Use my location');
     expect(h.location.asked, 1);
     expect(find.text("You're in Karachi."), findsOneWidget);
     expect(h.preferences.cityId, karachiId);
@@ -109,11 +109,11 @@ void main() {
     final h = Harness();
     await h.pump(tester);
     await tapText(tester, 'Continue');
-    await tapText(tester, 'Continue');
+    await tapText(tester, 'Not now');
     expect(find.byType(InterestsStep), findsOneWidget);
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    expect(find.byType(CityStep), findsOneWidget);
+    expect(find.byType(LocationStep), findsOneWidget);
   });
 
   testWidgets('a returning shopper opens on Home, and /welcome sends them '
@@ -121,7 +121,7 @@ void main() {
     final h = Harness(saved: const ShopperPreferences(onboarded: true));
     await h.pump(tester);
     expect(find.byType(HomeScreen), findsOneWidget);
-    h.router.go('/welcome/city');
+    h.router.go('/welcome/location');
     await tester.pumpAndSettle();
     expect(find.byType(HomeScreen), findsOneWidget);
   });
@@ -142,34 +142,40 @@ void main() {
     expect(find.byType(DealDetailScreen), findsOneWidget);
   });
 
-  group('city detection outcomes', () {
+  group('location outcomes', () {
     for (final (outcome, message) in [
-      (const LocationDenied(), 'No problem. Pick your city below.'),
+      (
+        const LocationDenied(),
+        "No problem. You'll see deals from all over Pakistan. Pick a city on "
+            'Home any time.',
+      ),
       (
         const LocationServiceOff(),
-        "Your phone's location is off. Pick your city below.",
+        "Your phone's location is off, so you'll see deals from all over "
+            'Pakistan. Pick a city on Home any time.',
       ),
       (
         const LocationUnavailable(),
-        "We couldn't find your location. Pick your city below.",
+        "We couldn't find your location, so you'll see deals from all over "
+            'Pakistan. Pick a city on Home any time.',
       ),
       (
-        const Located(25.12, 62.32), // Gwadar: no covered city near
-        "Your location isn't near a city we cover yet. Pick one below.",
+        const Located(21, 63), // The Arabian Sea: no city near
+        "You're not near a city we know yet, so you'll see deals from all "
+            'over Pakistan. Pick a city on Home any time.',
       ),
     ]) {
-      testWidgets('${outcome.runtimeType}: says so; the list still works', (
-        tester,
-      ) async {
+      testWidgets('${outcome.runtimeType}: says so and carries on with All '
+          'Pakistan', (tester) async {
         final h = Harness(location: outcome);
         await h.pump(tester);
         await tapText(tester, 'Continue');
-        await tapText(tester, 'Detect my city');
+        await tapText(tester, 'Use my location');
         expect(find.text(message), findsOneWidget);
         expect(h.preferences.cityId, isNull);
-        await tapText(tester, 'Lahore');
-        expect(h.preferences.cityId, lahoreId);
-        expect(find.text('Local deals coming soon'), findsWidgets);
+        await tapText(tester, 'Continue');
+        expect(find.byType(InterestsStep), findsOneWidget);
+        expect(h.preferences.cityId, isNull);
       });
     }
 
@@ -177,13 +183,28 @@ void main() {
       final h = Harness(location: const LocationDenied(permanently: true));
       await h.pump(tester);
       await tapText(tester, 'Continue');
-      await tapText(tester, 'Detect my city');
+      await tapText(tester, 'Use my location');
       expect(
         find.textContaining('Location is off for this app'),
         findsOneWidget,
       );
       await tapText(tester, 'Open settings');
       expect(h.location.settingsOpened, 1);
+    });
+
+    testWidgets('the step explains location before Android asks', (
+      tester,
+    ) async {
+      final h = Harness();
+      await h.pump(tester);
+      await tapText(tester, 'Continue');
+      expect(find.text('Deals near you'), findsOneWidget);
+      expect(find.textContaining('approximate location'), findsOneWidget);
+      expect(find.textContaining('never in the background'), findsOneWidget);
+      expect(h.location.asked, 0);
+      await tapText(tester, 'Not now');
+      expect(find.byType(InterestsStep), findsOneWidget);
+      expect(h.location.asked, 0);
     });
   });
 
@@ -201,16 +222,21 @@ void main() {
     expect(find.byType(HomeScreen), findsOneWidget);
   });
 
-  testWidgets('offline: the step says so and recovers on Try again', (
+  testWidgets('offline: finding the city fails gently and the flow goes on', (
     tester,
   ) async {
     final backend = FlakyGateway();
     final h = Harness(backend: backend);
     await h.pump(tester);
     await tapText(tester, 'Continue');
-    expect(find.text('Try again'), findsOneWidget);
+    await tapText(tester, 'Use my location');
+    expect(
+      find.textContaining("We couldn't find your location"),
+      findsOneWidget,
+    );
+    expect(h.preferences.cityId, isNull);
     backend.fail = false;
-    await tapText(tester, 'Try again');
-    expect(find.text('Karachi'), findsOneWidget);
+    await tapText(tester, 'Continue');
+    expect(find.byType(InterestsStep), findsOneWidget);
   });
 }

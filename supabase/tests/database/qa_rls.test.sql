@@ -56,8 +56,8 @@ select is(
    join pg_namespace s on s.oid = c.relnamespace
    where s.nspname = 'public' and c.relkind in ('r', 'v')
      and has_table_privilege('anon', c.oid, 'select')),
-  array['areas', 'banks', 'brands', 'card_offers', 'card_products', 'categories', 'cities',
-        'deal_cards', 'deal_targets', 'deals', 'outlets', 'placements'],
+  array['ad_settings', 'areas', 'banks', 'brands', 'card_offers', 'card_products', 'categories', 'cities',
+        'deal_cards', 'deal_targets', 'deals', 'outlets', 'placements', 'popup_banners', 'sponsor_banners'],
   'anon can select only the public catalogue, deals and live placements');
 select tests.clear_authentication();
 

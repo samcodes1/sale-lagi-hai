@@ -50,6 +50,14 @@ Color glyphColor(WidgetTester tester, Finder finder) {
   return tester.renderObject<RenderParagraph>(rich).text.style!.color!;
 }
 
+/// The solid fill of a box or shape decoration (chips and calendar days
+/// paint theirs with a `ShapeDecoration`).
+Color? _fillOf(Decoration? d) => switch (d) {
+  BoxDecoration(:final color) => color,
+  ShapeDecoration(:final color) => color,
+  _ => null,
+};
+
 /// The fill painted behind [finder]: translucent layers (state overlays,
 /// tints) are composited onto the nearest opaque ancestor fill.
 Color backgroundOf(WidgetTester tester, Finder finder) {
@@ -60,9 +68,8 @@ Color backgroundOf(WidgetTester tester, Finder finder) {
     Color? c;
     if (w is Material && w.type != MaterialType.transparency) c = w.color;
     if (w is ColoredBox) c = w.color;
-    if (w is DecoratedBox && w.decoration is BoxDecoration) {
-      c = (w.decoration as BoxDecoration).color;
-    }
+    if (w is DecoratedBox) c = _fillOf(w.decoration);
+    if (w is Ink) c = _fillOf(w.decoration);
     if (w is Scaffold) c = Theme.of(e).scaffoldBackgroundColor;
     if (c == null || c.a == 0) return true;
     if (c.a < 1) {

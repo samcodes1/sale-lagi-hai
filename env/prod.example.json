@@ -4,5 +4,9 @@
   "SUPABASE_URL": "https://YOUR-PROD-PROJECT.supabase.co",
   "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_REPLACE_ME",
   "GOOGLE_SERVER_CLIENT_ID": "",
-  "SUPPORT_EMAIL": ""
+  "SUPPORT_EMAIL": "",
+  "ADMOB_BANNER_ID": "",
+  "ADMOB_INTERSTITIAL_ID": "",
+  "ADMOB_APP_OPEN_ID": "",
+  "ADMOB_NATIVE_ID": ""
 }

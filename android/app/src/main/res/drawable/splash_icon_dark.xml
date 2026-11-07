@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12 splash icon (no icon background; dark theme: Haldi on Surma). Content inside the 192dp circle. -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="288dp" android:height="288dp"
-    android:viewportWidth="288" android:viewportHeight="288">
-    <path android:fillColor="#FFC414" android:pathData="M137.54 95.47L178.13 69C174.6 113.12 155.19 150.18 144.6 166.94L139.31 167.47C134.89 144.88 134.89 118.41 137.54 95.47ZM132.49 180.28Q134.36 178.41 136.24 180.28L152.79 196.83Q154.66 198.71 152.79 200.58L136.24 217.13Q134.36 219 132.49 217.13L115.94 200.58Q114.07 198.71 115.94 196.83Z"/>
-</vector>

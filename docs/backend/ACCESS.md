@@ -14,6 +14,7 @@ Who can do what, enforced by grants, RLS policies and guard triggers (`supabase/
 | Business members | — | — | Read team. Owners add, remove and change roles; anyone may leave, even the last owner; the last owner can't hand over the role without a successor | Read all | Manage |
 | Brands | Read active | Read active | Read own. Add with a `pending-…` slug (hidden until staff set the real slug and activate it). Edit details, not slug, owner, bank, verified or active; rename only while hidden | Read all, add, edit, activate, verify | Delete |
 | Outlets | Read active | Read active | Manage own brands' outlets | Manage | Manage |
+| Sponsor banners | Read running | Read running | Read running | Read all | Manage |
 | Deals | Read published and expired, once started | Same | Read all own. Write drafts, send for review, take back to draft, remove; edit content only as a draft (not while in review); never publish, reject or verify | Read all, publish, reject, edit | Delete |
 | Deal targets, card offers | With their deal | With their deal | Edit while the deal is a draft | Manage | Manage |
 | Follows, saves, my cards | — | Own (saves: only deals they can see) | Own | Own | Own (no one reads others') |

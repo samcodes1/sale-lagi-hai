@@ -11,9 +11,11 @@ enum AppScript { latin, urdu }
 /// Rules (see the flutter-ui-ux skill):
 /// - Colours come only from the tokens; there is no seed colour and no
 ///   dynamic (wallpaper) colour.
+/// - The look is "Clean" (v2, November 2026): a white canvas, Mirch red
+///   as the one accent (primary buttons, offers), ink for selection, no
+///   borders on cards, pill chips and a floating ink tab bar.
 /// - Haldi yellow is a **fill** colour. It fails contrast as text or as a
-///   thin mark on white (1.6:1), so text buttons, links, focus rings,
-///   progress indicators and selection controls use Neel instead.
+///   thin mark on white (1.6:1), so it is never text on light surfaces.
 /// - Components are styled here, never per widget. Material 3 defaults pull
 ///   `primary` (yellow) into text and thin marks in many widgets, so every
 ///   such widget gets a component theme here, and each is covered by a
@@ -162,34 +164,44 @@ abstract final class AppTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BrandRadii.card,
-          side: BorderSide(color: scheme.outlineVariant),
-        ),
+        // Clean: no borders; the photo's rounded corners give the shape.
+        shape: const RoundedRectangleBorder(borderRadius: BrandRadii.card),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: scheme.surfaceContainerLowest,
-        selectedColor: scheme.secondaryContainer,
-        labelStyle: textTheme.labelMedium?.copyWith(color: scheme.onSurface),
-        secondaryLabelStyle: textTheme.labelMedium?.copyWith(
-          color: scheme.onSecondaryContainer,
+        // Selected chips are solid ink (Clean): the label flips with them.
+        selectedColor: scheme.secondary,
+        labelStyle: textTheme.labelMedium?.copyWith(
+          color: WidgetStateColor.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? scheme.onSecondary
+                : scheme.onSurface,
+          ),
         ),
-        checkmarkColor: scheme.onSecondaryContainer,
+        secondaryLabelStyle: textTheme.labelMedium?.copyWith(
+          color: scheme.onSecondary,
+        ),
+        checkmarkColor: scheme.onSecondary,
         iconTheme: IconThemeData(color: scheme.onSurface, size: 18),
-        side: BorderSide(color: scheme.outline),
-        shape: const RoundedRectangleBorder(borderRadius: BrandRadii.button),
+        // Chips don't resolve this per state, and a selected chip is ink:
+        // Surma 500 clears 3:1 on both fills in both themes.
+        deleteIconColor: BrandColors.surma500,
+        // The label identifies the chip; the hairline only groups it.
+        side: BorderSide(color: scheme.outlineVariant),
+        shape: const StadiumBorder(),
         padding: const EdgeInsetsDirectional.symmetric(
-          horizontal: BrandSpacing.s3,
+          horizontal: BrandSpacing.s4,
+          vertical: BrandSpacing.s2,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: scheme.surfaceContainerLowest,
+        fillColor: scheme.surfaceContainerLow,
         contentPadding: const EdgeInsetsDirectional.symmetric(
           horizontal: BrandSpacing.s5,
           vertical: BrandSpacing.s4,
         ),
-        border: _inputBorder(scheme.outline),
+        border: _inputBorder(scheme.outlineVariant),
         enabledBorder: _inputBorder(scheme.outline),
         focusedBorder: _inputBorder(deal.focus, width: 2),
         errorBorder: _inputBorder(scheme.error),
@@ -202,25 +214,26 @@ abstract final class AppTheme {
         ),
         errorStyle: textTheme.bodySmall?.copyWith(color: scheme.error),
       ),
+      // The floating ink tab bar (AppNavigationBar), in both themes.
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: scheme.surface,
+        backgroundColor: isLight ? BrandColors.surma900 : BrandColors.surma800,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        height: 80,
-        indicatorColor: isLight ? BrandLight.indicator : BrandDark.indicator,
+        height: 68,
+        indicatorColor: scheme.primary,
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
             size: 24,
             color: states.contains(WidgetState.selected)
-                ? (isLight ? BrandColors.haldi500 : BrandColors.surma900)
-                : scheme.onSurfaceVariant,
+                ? scheme.onPrimary
+                : BrandColors.surma300,
           ),
         ),
         labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) => textTheme.labelMedium?.copyWith(
+          (states) => textTheme.labelSmall?.copyWith(
             color: states.contains(WidgetState.selected)
-                ? scheme.onSurface
-                : scheme.onSurfaceVariant,
+                ? BrandColors.surma0
+                : BrandColors.surma300,
           ),
         ),
       ),
@@ -228,7 +241,7 @@ abstract final class AppTheme {
         backgroundColor: scheme.surface,
         indicatorColor: isLight ? BrandLight.indicator : BrandDark.indicator,
         selectedIconTheme: IconThemeData(
-          color: isLight ? BrandColors.haldi500 : BrandColors.surma900,
+          color: isLight ? BrandColors.surma0 : BrandColors.surma900,
         ),
         unselectedIconTheme: IconThemeData(color: scheme.onSurfaceVariant),
       ),
@@ -442,8 +455,9 @@ abstract final class AppTheme {
             onSurfaceVariant: scheme.onSurface,
             outline: BrandColors.surma800,
             outlineVariant: BrandColors.surma500,
-            secondary: BrandColors.neel700,
-            onSecondary: BrandColors.surma0,
+            // White on Mirch 700 is 8.8:1. Ink secondary already passes.
+            primary: BrandColors.mirch700,
+            onPrimary: BrandColors.surma0,
             tertiary: BrandColors.mirch700,
             onTertiary: BrandColors.surma0,
             error: BrandColors.error800,
@@ -453,10 +467,8 @@ abstract final class AppTheme {
             onSurfaceVariant: scheme.onSurface,
             outline: BrandColors.surma200,
             outlineVariant: BrandColors.surma400,
-            // Lifted further than the light theme: dark containers go up to
-            // Surma 700, and text must still reach 7:1 on them.
-            secondary: BrandColors.neel100,
-            onSecondary: BrandColors.neel900,
+            primary: BrandColors.mirch300,
+            onPrimary: BrandColors.surma950,
             tertiary: BrandColors.mirch200,
             onTertiary: BrandColors.surma950,
             error: BrandColors.error50,

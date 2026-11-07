@@ -252,7 +252,7 @@ void main() {
         final handle = tester.ensureSemantics();
         final h = Harness(saved: _shopper);
         await h.pump(tester, device: locale, size: size);
-        await tester.tap(find.byIcon(Icons.arrow_drop_down));
+        await tester.tap(find.byIcon(Icons.expand_more));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
         final tiles = find.byType(ListTile);

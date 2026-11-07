@@ -73,6 +73,11 @@ void main() {
   ) async {
     final handle = tester.ensureSemantics();
     await _open(tester);
+    await tester.scrollUntilVisible(
+      find.text('Trending today'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(
       tester.getSemantics(find.text('Trending today')),
       isSemantics(label: 'Trending today', isHeader: true),

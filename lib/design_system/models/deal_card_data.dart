@@ -16,6 +16,7 @@ final class DealCardData {
     this.verifiedAt,
     this.place,
     this.imageUrl,
+    this.logoUrl,
     this.featured = false,
     this.saved = false,
     this.cardNames = const [],
@@ -41,8 +42,12 @@ final class DealCardData {
   /// Where: "DHA · 1.2 km", "Online", "All Pakistan". Already localized.
   final String? place;
 
-  /// Remote image (16:9). Without one, the card shows a brand plate.
+  /// Remote image (16:9). Without one, the card shows the brand's logo,
+  /// and without that a brand plate.
   final String? imageUrl;
+
+  /// The brand's logo, shown when there is no [imageUrl].
+  final String? logoUrl;
 
   /// A paid placement: always labelled "Featured".
   final bool featured;
