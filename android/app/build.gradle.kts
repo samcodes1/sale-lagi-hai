@@ -6,9 +6,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Google's sample AdMob app: it only ever serves test ads. Prod takes the real
-// app ID from ADMOB_APP_ID, and the plugin crashes at startup without one.
+// Google's sample AdMob app: it only ever serves test ads, so dev and staging
+// use it (AdMob bans accounts whose own real ads are shown while testing).
+// Prod uses the real Sale Lagi Hai! app; ADMOB_APP_ID overrides it. App IDs
+// are public: they ship inside every APK.
 val sampleAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
+val prodAdmobAppId = "ca-app-pub-8647701429172755~4595808320"
 
 val keystoreProperties = Properties().apply {
     val file = rootProject.file("key.properties")
@@ -64,7 +67,7 @@ android {
             dimension = "env"
             manifestPlaceholders["appLabel"] = "Sale Lagi Hai!"
             manifestPlaceholders["admobAppId"] =
-                System.getenv("ADMOB_APP_ID") ?: sampleAdmobAppId
+                System.getenv("ADMOB_APP_ID") ?: prodAdmobAppId
         }
     }
 
