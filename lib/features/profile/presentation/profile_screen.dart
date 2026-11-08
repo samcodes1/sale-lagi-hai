@@ -5,6 +5,7 @@ import 'package:sale_lagi_hai/app/router/routes.dart';
 import 'package:sale_lagi_hai/core/l10n/l10n.dart';
 import 'package:sale_lagi_hai/core/result/result.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/design_system/widgets/grouped_section.dart';
 import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/auth/domain/auth_repository.dart';
 import 'package:sale_lagi_hai/features/auth/domain/phone_number.dart';
@@ -24,38 +25,42 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navProfile)),
       body: ListView(
+        padding: const EdgeInsetsDirectional.only(bottom: BrandSpacing.s8),
         children: [
           const _AccountSection(),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.credit_card),
-            title: Text(l10n.myCardsTitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => const MyCardsRoute().push<void>(context),
+          GroupedSection(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.credit_card),
+                title: Text(l10n.myCardsTitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => const MyCardsRoute().push<void>(context),
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings_outlined),
+                title: Text(l10n.settingsTitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => const SettingsRoute().push<void>(context),
+              ),
+            ],
           ),
-          const Divider(),
           const LanguageChoice(),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.settings_outlined),
-            title: Text(l10n.settingsTitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => const SettingsRoute().push<void>(context),
-          ),
-          if (!isProduction) ...[
-            const Divider(),
-            // Developer tool: its label is not localized on purpose.
-            ListTile(
-              leading: const Icon(Icons.palette_outlined),
-              title: const Text('Theme preview (dev)'),
-              onTap: () => const ThemePreviewRoute().go(context),
+          if (!isProduction)
+            // Developer tools: their labels are not localized on purpose.
+            GroupedSection(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.palette_outlined),
+                  title: const Text('Theme preview (dev)'),
+                  onTap: () => const ThemePreviewRoute().go(context),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.widgets_outlined),
+                  title: const Text('Widget gallery (dev)'),
+                  onTap: () => const WidgetGalleryRoute().go(context),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.widgets_outlined),
-              title: const Text('Widget gallery (dev)'),
-              onTap: () => const WidgetGalleryRoute().go(context),
-            ),
-          ],
         ],
       ),
     );
@@ -73,29 +78,34 @@ class _AccountSection extends ConsumerWidget {
     final theme = Theme.of(context);
     final user = ref.watch(currentUserProvider).value;
 
-    Widget heading() => ListTile(
-      title: Semantics(
-        header: true,
-        child: Text(l10n.settingsAccount, style: theme.textTheme.titleMedium),
-      ),
-    );
-
     if (user == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      return GroupedSection(
+        title: l10n.settingsAccount,
         children: [
-          heading(),
           Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              BrandSpacing.s5,
-              0,
-              BrandSpacing.s5,
-              BrandSpacing.s5,
-            ),
+            padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(l10n.profileGuestTitle, style: theme.textTheme.bodyLarge),
+                Row(
+                  children: [
+                    ExcludeSemantics(
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: theme.colorScheme.secondary,
+                        foregroundColor: theme.colorScheme.onSecondary,
+                        child: const Icon(Icons.person_outline),
+                      ),
+                    ),
+                    const SizedBox(width: BrandSpacing.s4),
+                    Expanded(
+                      child: Text(
+                        l10n.profileGuestTitle,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: BrandSpacing.s4),
                 FilledButton(
                   onPressed: () => const SignInRoute().push<bool>(context),
@@ -113,10 +123,9 @@ class _AccountSection extends ConsumerWidget {
       AppUser(email: final email?) => email,
       _ => l10n.settingsAccount,
     };
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return GroupedSection(
+      title: l10n.settingsAccount,
       children: [
-        heading(),
         ListTile(
           leading: const ExcludeSemantics(child: Icon(Icons.person_outline)),
           // Numbers and addresses read left to right in both languages,

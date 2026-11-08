@@ -7,11 +7,13 @@ import 'package:sale_lagi_hai/core/links/open_link.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/app_refresh_indicator.dart';
+import 'package:sale_lagi_hai/design_system/widgets/brand_avatar.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
 import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
 import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
 import 'package:sale_lagi_hai/features/deals/application/deal_list.dart';
+import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
 import 'package:sale_lagi_hai/features/deals/presentation/paged_deal_list.dart';
 import 'package:sale_lagi_hai/features/follows/presentation/follow_button.dart';
 import 'package:sale_lagi_hai/features/home/application/home_providers.dart';
@@ -85,14 +87,12 @@ class _Page extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        ExcludeSemantics(
-                          child: CircleAvatar(
-                            radius: 28,
-                            child: Text(
-                              name.characters.first,
-                              style: theme.textTheme.titleLarge,
-                            ),
+                        BrandAvatar(
+                          name: name,
+                          logoUrl: ref.watch(brandLogoUrlProvider)(
+                            brand.logoPath,
                           ),
+                          size: 64,
                         ),
                         const SizedBox(width: BrandSpacing.s4),
                         Expanded(

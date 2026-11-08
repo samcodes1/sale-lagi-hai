@@ -77,8 +77,9 @@ class _AdvertiseHere extends ConsumerWidget {
       button: open != null,
       excludeSemantics: true,
       onTap: open,
+      // Clean: the empty slot is the red hero card from the concept.
       child: Material(
-        color: scheme.inverseSurface,
+        color: scheme.primary,
         borderRadius: BrandRadii.card,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -87,35 +88,60 @@ class _AdvertiseHere extends ConsumerWidget {
             padding: const EdgeInsetsDirectional.all(BrandSpacing.s5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: scheme.onPrimary.withValues(alpha: 0.16),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.all(BrandSpacing.s3),
+                    child: Icon(
+                      Icons.campaign_outlined,
+                      color: scheme.onPrimary,
+                    ),
+                  ),
+                ),
+                // Flexible: the text block gets the height left over, so
+                // the title can shrink to fit at large text.
                 Flexible(
-                  child: Text(
-                    l10n.advertiseTitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: scheme.onInverseSurface,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          l10n.advertiseTitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            color: scheme.onPrimary,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        l10n.advertiseBody,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: scheme.onPrimary,
+                        ),
+                      ),
+                      if (open != null) ...[
+                        const SizedBox(height: BrandSpacing.s3),
+                        Text(
+                          l10n.advertiseAction,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: scheme.onPrimary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: scheme.onPrimary,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-                Text(
-                  l10n.advertiseBody,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: scheme.onInverseSurface,
-                  ),
-                ),
-                if (open != null) ...[
-                  const SizedBox(height: BrandSpacing.s3),
-                  Text(
-                    l10n.advertiseAction,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: scheme.inversePrimary,
-                    ),
-                  ),
-                ],
               ],
             ),
           ),

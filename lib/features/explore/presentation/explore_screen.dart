@@ -6,10 +6,13 @@ import 'package:sale_lagi_hai/core/l10n/locale_controller.dart';
 import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/design_system/icons/category_icons.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
+import 'package:sale_lagi_hai/design_system/widgets/brand_avatar.dart';
+import 'package:sale_lagi_hai/design_system/widgets/category_tile.dart';
 import 'package:sale_lagi_hai/design_system/widgets/content_text.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
 import 'package:sale_lagi_hai/features/catalog/application/catalog_providers.dart';
 import 'package:sale_lagi_hai/features/catalog/domain/catalog.dart';
+import 'package:sale_lagi_hai/features/deals/presentation/deal_card_mapper.dart';
 import 'package:sale_lagi_hai/features/follows/presentation/follow_button.dart';
 
 /// Explore tab (screen S04): search, every category, then the brands to
@@ -82,19 +85,33 @@ class ExploreScreen extends ConsumerWidget {
                 horizontal: BrandSpacing.s5,
               ),
               sliver: SliverToBoxAdapter(
-                child: Wrap(
-                  spacing: BrandSpacing.s3,
-                  runSpacing: BrandSpacing.s3,
-                  children: [
-                    for (final category in value)
-                      ActionChip(
-                        avatar: Icon(categoryIcon(category.icon)),
-                        label: Text(category.name(urdu: urdu)),
-                        onPressed: () =>
-                            CategoryRoute(slug: category.slug)
-                                .push<void>(context),
-                      ),
-                  ],
+                // Tiles like Home's, four to a row on a phone; fewer as
+                // text grows, so names wrap instead of being cut.
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final per =
+                        (constraints.maxWidth /
+                                MediaQuery.textScalerOf(context).scale(84))
+                            .floor()
+                            .clamp(2, 6);
+                    final width = constraints.maxWidth / per;
+                    return Wrap(
+                      runSpacing: BrandSpacing.s3,
+                      children: [
+                        for (final category in value)
+                          SizedBox(
+                            width: width,
+                            child: CategoryTile(
+                              icon: categoryIcon(category.icon),
+                              label: category.name(urdu: urdu),
+                              onTap: () =>
+                                  CategoryRoute(slug: category.slug)
+                                      .push<void>(context),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -180,14 +197,14 @@ class ExploreScreen extends ConsumerWidget {
 
 /// A brand: tap the name to open its page; Follow beside it, or under it
 /// at large text sizes so neither is squeezed.
-class _BrandRow extends StatelessWidget {
+class _BrandRow extends ConsumerWidget {
   const new(this.brand, {required this.urdu});
 
   final Brand brand;
   final bool urdu;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final name = brand.displayName(urdu: urdu);
     final stacked = MediaQuery.textScalerOf(context).scale(10) > 15;
     final follow = FollowButton(
@@ -201,8 +218,9 @@ class _BrandRow extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 48),
         child: Row(
           children: [
-            ExcludeSemantics(
-              child: CircleAvatar(child: Text(name.characters.first)),
+            BrandAvatar(
+              name: name,
+              logoUrl: ref.watch(brandLogoUrlProvider)(brand.logoPath),
             ),
             const SizedBox(width: BrandSpacing.s4),
             Expanded(

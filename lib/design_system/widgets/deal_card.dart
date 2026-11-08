@@ -63,7 +63,10 @@ class DealCard extends ConsumerWidget {
       ),
     };
 
+    // Clean: no card fill; the rounded photo is the card and the text sits
+    // on the page under it.
     return Card(
+      color: Colors.transparent,
       child: Stack(
         children: [
           Semantics(
@@ -138,8 +141,8 @@ class _FullBody extends StatelessWidget {
           children: [
             // Clean: the photo is the card, rounded on every corner, with
             // the text under it.
-            ClipRRect(
-              borderRadius: BrandRadii.card,
+            _Framed(
+              radius: BrandRadii.card,
               child: AspectRatio(
                 aspectRatio: large ? 16 / 10 : 4 / 3,
                 child: _DealImage(deal: deal),
@@ -220,8 +223,8 @@ class _CompactBody extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BrandRadii.button,
+          _Framed(
+            radius: BrandRadii.button,
             child: SizedBox.square(
               dimension: 72,
               child: _DealImage(deal: deal),
@@ -326,6 +329,25 @@ class _CardChips extends StatelessWidget {
 /// The deal photo; else the brand's logo; else a brand plate with the
 /// brand's initial (also when a picture fails to load). Decorative: the card
 /// label carries the meaning.
+/// Rounds a picture and draws a hairline round it, so a white logo tile
+/// still has an edge on the white page.
+class _Framed extends StatelessWidget {
+  const new({required this.radius, required this.child});
+
+  final BorderRadius radius;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    position: DecorationPosition.foreground,
+    decoration: BoxDecoration(
+      borderRadius: radius,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+    ),
+    child: ClipRRect(borderRadius: radius, child: child),
+  );
+}
+
 class _DealImage extends StatelessWidget {
   const new({required this.deal});
 
