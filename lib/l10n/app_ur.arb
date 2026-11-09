@@ -300,6 +300,7 @@
   "alertsEarlier": "پہلے",
   "actionMarkAllRead": "سب کو پڑھا ہوا کریں",
   "alertsGuest": "یہاں الرٹس پانے کے لیے سائن اِن کریں، ہر اُس فون پر جو آپ استعمال کرتے ہیں۔ فالو کرنا اکاؤنٹ کے بغیر بھی ہوتا ہے۔",
+  "alertsComingSoon": "الرٹس ایپ کی اگلی اپ ڈیٹ میں آ رہے ہیں۔ ابھی برانڈز فالو کریں، تاکہ اُن کی سیل شروع ہوتے ہی آپ کو سب سے پہلے پتا چلے۔",
   "followingTitle": "فالو کیے ہوئے",
   "followingSummary": "{brands, plural, =0{کوئی برانڈ نہیں} =1{ایک برانڈ} other{⁦{brands}⁩ برانڈز}} · {categories, plural, =0{کوئی زمرہ نہیں} =1{ایک زمرہ} other{⁦{categories}⁩ زمرے}}",
   "followingBrands": "برانڈز",

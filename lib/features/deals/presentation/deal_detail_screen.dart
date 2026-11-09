@@ -272,15 +272,18 @@ class _Body extends ConsumerWidget {
                   ),
                 ),
               ],
-              const Divider(height: BrandSpacing.s9),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: TextButton.icon(
-                  onPressed: () => _report(context, ref, deal.id),
-                  icon: const Icon(Icons.flag_outlined),
-                  label: Text(l10n.actionReportProblem),
+              // Reports need an account, so builds without sign-in hide it.
+              if (ref.watch(signInAvailableProvider)) ...[
+                const Divider(height: BrandSpacing.s9),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton.icon(
+                    onPressed: () => _report(context, ref, deal.id),
+                    icon: const Icon(Icons.flag_outlined),
+                    label: Text(l10n.actionReportProblem),
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),

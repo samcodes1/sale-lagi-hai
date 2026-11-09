@@ -17,6 +17,7 @@ final class AppConfig {
     required this.supabaseUrl,
     required this.supabasePublishableKey,
     this.googleServerClientId = '',
+    this.phoneSignIn = true,
     this.supportEmail = '',
     this.adBannerUnitId = '',
     this.adInterstitialUnitId = '',
@@ -35,6 +36,7 @@ final class AppConfig {
     'GOOGLE_SERVER_CLIENT_ID': String.fromEnvironment(
       'GOOGLE_SERVER_CLIENT_ID',
     ),
+    'PHONE_SIGN_IN': String.fromEnvironment('PHONE_SIGN_IN'),
     'SUPPORT_EMAIL': String.fromEnvironment('SUPPORT_EMAIL'),
     'ADMOB_BANNER_ID': String.fromEnvironment('ADMOB_BANNER_ID'),
     'ADMOB_INTERSTITIAL_ID': String.fromEnvironment('ADMOB_INTERSTITIAL_ID'),
@@ -107,6 +109,14 @@ final class AppConfig {
       );
     }
 
+    // Optional: "false" hides phone sign-in (the backend has no SMS
+    // provider yet). Missing or empty means on.
+    final rawPhoneSignIn = values['PHONE_SIGN_IN']?.trim() ?? '';
+    if (!const {'', 'true', 'false'}.contains(rawPhoneSignIn)) {
+      problems.add('PHONE_SIGN_IN must be "true" or "false".');
+    }
+    final phoneSignIn = rawPhoneSignIn != 'false';
+
     // Optional: where "Contact us" (Settings, About) writes to.
     final supportEmail = values['SUPPORT_EMAIL']?.trim() ?? '';
     if (supportEmail.isNotEmpty && !_email.hasMatch(supportEmail)) {
@@ -142,6 +152,7 @@ final class AppConfig {
       supabaseUrl: supabaseUrl,
       supabasePublishableKey: supabasePublishableKey,
       googleServerClientId: googleServerClientId,
+      phoneSignIn: phoneSignIn,
       supportEmail: supportEmail,
       adBannerUnitId: adBannerUnitId,
       adInterstitialUnitId: adInterstitialUnitId,
@@ -174,6 +185,13 @@ final class AppConfig {
   final String googleServerClientId;
 
   bool get hasGoogleSignIn => googleServerClientId.isNotEmpty;
+
+  /// Whether sign-in by mobile number (a code by SMS) is offered.
+  final bool phoneSignIn;
+
+  /// Whether this build offers any way to sign in. Without one, every
+  /// "Sign in" button is hidden and the app works as a guest.
+  bool get hasSignIn => phoneSignIn || hasGoogleSignIn;
 
   /// The support address for "Contact us". Empty: the row is hidden.
   final String supportEmail;

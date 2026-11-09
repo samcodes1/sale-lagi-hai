@@ -38,5 +38,17 @@ flutter build appbundle --release \
    - **Why this passes review** (User Data policy, prominent disclosure): Android's permission dialog only ever opens from a button under a screen that says what location is for (onboarding's "Deals near you" step, and the subtitle of "Use my location" in the city sheet). Nothing asks at launch, and every screen works without location (All Pakistan, or a city picked by hand). Keep it that way: never call the location service from anywhere else.
 6. AdMob. The app is `ca-app-pub-8647701429172755~4595808320` (the prod default in `android/app/build.gradle.kts`; the `ADMOB_APP_ID` environment variable overrides it) and its units are in `env/prod.example.json` (copy them into `env/prod.json`): banner `…/1550842584` (`ADMOB_BANNER_ID`), interstitial `…/6803169267` (`ADMOB_INTERSTITIAL_ID`) and native advanced `…/5490087595` (`ADMOB_NATIVE_ID`). Create ad units with "Partner bidding" (real-time bidding on a third-party mediation platform) **unticked**: the app requests ads straight from AdMob, and a unit set for a third-party platform can't use AdMob mediation or Google demand through a waterfall. Dev and staging keep Google's test IDs on purpose: never show your own real ads on a test phone, and never tap them, or AdMob can disable the account. App open ads are off until an app open unit goes in `ADMOB_APP_OPEN_ID`; an empty ID means that format is off. Prod refuses Google's test IDs. Publish `app-ads.txt` at the root of the developer website listed in Play Console, containing `google.com, pub-8647701429172755, DIRECT, f08c47fec0942fa0`, and set up the consent message in AdMob, Privacy & messaging. After launch, tune ad frequency in the `ad_settings` row (Studio, Table editor), and add mediation networks in AdMob to raise fill and eCPM.
 
+## Sign and upload (each release)
+The upload key stays on the owner's computer (`~/Documents/SaleLagiHai-upload-key/`: `upload-keystore.jks` and `key.properties`); back up both. GitHub never sees it.
+1. Bump `version:` in `pubspec.yaml` (the number after `+` must go up every upload).
+2. Push a `v<version>` tag, or a `release/<version>` branch. The **Release AAB** workflow builds `app-prod-release.aab` (prod flavor, real AdMob IDs, `PHONE_SIGN_IN=false`, obfuscated) with the debug key, plus the symbols.
+3. Download the `app-prod-release-aab` artifact and sign it with the upload key:
+   ```
+   zip -d app-prod-release.aab 'META-INF/*'
+   jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore ~/Documents/SaleLagiHai-upload-key/upload-keystore.jks app-prod-release.aab upload
+   jarsigner -verify app-prod-release.aab
+   ```
+4. Play Console, your app, Test and release: create a release on a track (internal or closed testing first) and upload the signed `.aab`. Upload `mapping.txt` from the `symbols` artifact under the release's App bundle explorer, Downloads, so crash reports are readable.
+
 ## Database migrations freeze at the first deploy
 Before the first `supabase db push` to staging, record the last migration file in this section. From then on, never edit any migration up to and including it; add new ones (`docs/backend/SCHEMA.md`).

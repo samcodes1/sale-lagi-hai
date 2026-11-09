@@ -1802,6 +1802,12 @@ abstract class AppLocalizations {
   /// **'Sign in to get alerts here, on every phone you use. Follows work without an account too.'**
   String get alertsGuest;
 
+  /// No description provided for @alertsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts are coming in an app update. Follow brands now, and you'll hear first when their sales start.'**
+  String get alertsComingSoon;
+
   /// No description provided for @followingTitle.
   ///
   /// In en, this message translates to:
