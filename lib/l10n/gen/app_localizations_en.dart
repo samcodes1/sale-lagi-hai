@@ -1080,7 +1080,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alertsComingSoon =>
-      "Alerts are coming in an app update. Follow brands now, and you'll hear first when their sales start.";
+      'Alerts are coming in an app update. Follow brands now, and you\'ll hear first when their sales start.';
 
   @override
   String get followingTitle => 'Following';
