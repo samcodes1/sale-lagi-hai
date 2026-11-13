@@ -10,6 +10,7 @@ import 'package:sale_lagi_hai/core/result/app_failure.dart';
 import 'package:sale_lagi_hai/design_system/tokens/brand_tokens.dart';
 import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
+import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/settings/application/alert_prefs_providers.dart';
 import 'package:sale_lagi_hai/features/settings/domain/alert_prefs.dart';
 
@@ -133,6 +134,11 @@ class _NotificationSettingsScreenState
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsNotifications)),
       body: switch (prefs) {
+        AsyncData(value: null) when !ref.watch(signInAvailableProvider) =>
+          MessageView(
+            icon: Icons.notifications_none,
+            message: l10n.alertsComingSoon,
+          ),
         AsyncData(value: null) => MessageView(
           icon: Icons.notifications_none,
           message: l10n.notifSignIn,

@@ -22,6 +22,11 @@ final authRepositoryProvider = Provider<AuthRepository>(
   ),
 );
 
+/// Whether this build offers any way to sign in (`AppConfig.hasSignIn`).
+/// Overridden in `bootstrap()`; when `false`, every "Sign in" button is
+/// hidden and features that need an account say so instead.
+final signInAvailableProvider = Provider<bool>((ref) => true);
+
 /// The signed-in shopper, or `null` for a guest.
 final currentUserProvider = StreamProvider<AppUser?>(
   (ref) => ref.watch(authRepositoryProvider).userChanges(),

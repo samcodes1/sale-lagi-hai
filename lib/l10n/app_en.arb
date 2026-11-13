@@ -355,6 +355,7 @@
   "alertsEarlier": "Earlier",
   "actionMarkAllRead": "Mark all as read",
   "alertsGuest": "Sign in to get alerts here, on every phone you use. Follows work without an account too.",
+  "alertsComingSoon": "Alerts are coming in an app update. Follow brands now, and you'll hear first when their sales start.",
   "followingTitle": "Following",
   "followingSummary": "{brands, plural, =0{No brands} =1{1 brand} other{{brands} brands}} · {categories, plural, =0{no categories} =1{1 category} other{{categories} categories}}",
   "@followingSummary": {"placeholders": {"brands": {"type": "int"}, "categories": {"type": "int"}}},

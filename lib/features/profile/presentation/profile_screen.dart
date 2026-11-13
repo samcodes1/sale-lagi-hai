@@ -77,6 +77,9 @@ class _AccountSection extends ConsumerWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final user = ref.watch(currentUserProvider).value;
+    if (user == null && !ref.watch(signInAvailableProvider)) {
+      return const SizedBox.shrink();
+    }
 
     if (user == null) {
       return GroupedSection(

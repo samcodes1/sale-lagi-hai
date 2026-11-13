@@ -224,6 +224,50 @@ void main() {
     });
   });
 
+  group('Phone sign-in', () {
+    test('on unless PHONE_SIGN_IN is "false"', () {
+      expect(AppConfig.fromMap(validValues()).phoneSignIn, isTrue);
+      expect(
+        AppConfig.fromMap({...validValues(), 'PHONE_SIGN_IN': 'true'})
+            .phoneSignIn,
+        isTrue,
+      );
+      final off = AppConfig.fromMap({
+        ...validValues(),
+        'PHONE_SIGN_IN': ' false ',
+      });
+      expect(off.phoneSignIn, isFalse);
+    });
+
+    test('hasSignIn: phone or Google', () {
+      expect(AppConfig.fromMap(validValues()).hasSignIn, isTrue);
+      expect(
+        AppConfig.fromMap({...validValues(), 'PHONE_SIGN_IN': 'false'})
+            .hasSignIn,
+        isFalse,
+      );
+      expect(
+        AppConfig.fromMap({
+          ...validValues(),
+          'PHONE_SIGN_IN': 'false',
+          'GOOGLE_SERVER_CLIENT_ID':
+              '1234567890-abc123def456.apps.googleusercontent.com',
+        }).hasSignIn,
+        isTrue,
+      );
+    });
+
+    test('anything but true or false is rejected', () {
+      for (final bad in ['no', '0', 'FALSE', 'off']) {
+        expect(
+          () => AppConfig.fromMap({...validValues(), 'PHONE_SIGN_IN': bad}),
+          throwsConfigProblem('PHONE_SIGN_IN'),
+          reason: bad,
+        );
+      }
+    });
+  });
+
   group('AdMob ad units', () {
     const unit = 'ca-app-pub-1234567890123456/1234567890';
     const sample = 'ca-app-pub-3940256099942544/1033173712';

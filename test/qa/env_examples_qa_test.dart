@@ -16,6 +16,8 @@ const _expectedKeys = {
   'SUPABASE_PUBLISHABLE_KEY',
   // Optional (4.2): empty hides Google sign-in.
   'GOOGLE_SERVER_CLIENT_ID',
+  // Optional: "false" hides sign-in by mobile number.
+  'PHONE_SIGN_IN',
   // Optional (4.9, added by the developer): empty hides "Contact us".
   'SUPPORT_EMAIL',
   // Optional: empty means no Google ads in this build.

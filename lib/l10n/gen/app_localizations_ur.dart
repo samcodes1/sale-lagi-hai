@@ -1082,6 +1082,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'یہاں الرٹس پانے کے لیے سائن اِن کریں، ہر اُس فون پر جو آپ استعمال کرتے ہیں۔ فالو کرنا اکاؤنٹ کے بغیر بھی ہوتا ہے۔';
 
   @override
+  String get alertsComingSoon =>
+      'الرٹس ایپ کی اگلی اپ ڈیٹ میں آ رہے ہیں۔ ابھی برانڈز فالو کریں، تاکہ اُن کی سیل شروع ہوتے ہی آپ کو سب سے پہلے پتا چلے۔';
+
+  @override
   String get followingTitle => 'فالو کیے ہوئے';
 
   @override

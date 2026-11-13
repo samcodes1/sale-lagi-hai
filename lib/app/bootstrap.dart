@@ -84,6 +84,7 @@ Future<void> bootstrap() async {
       retry: appRetryPolicy,
       overrides: [
         appConfigProvider.overrideWithValue(config),
+        signInAvailableProvider.overrideWithValue(config.hasSignIn),
         loggerProvider.overrideWithValue(logger),
         crashReporterProvider.overrideWithValue(crashReporter),
         if (settings.store case final store?)

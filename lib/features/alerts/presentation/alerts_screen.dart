@@ -14,6 +14,7 @@ import 'package:sale_lagi_hai/design_system/widgets/message_view.dart';
 import 'package:sale_lagi_hai/design_system/widgets/state_views.dart';
 import 'package:sale_lagi_hai/features/alerts/application/alerts_providers.dart';
 import 'package:sale_lagi_hai/features/alerts/domain/app_alert.dart';
+import 'package:sale_lagi_hai/features/auth/application/auth_providers.dart';
 import 'package:sale_lagi_hai/features/follows/application/follow_providers.dart';
 import 'package:sale_lagi_hai/features/onboarding/application/preferences_controller.dart';
 
@@ -66,12 +67,18 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
             ...switch (inbox) {
               AsyncData(value: InboxState(signedIn: false)) => [
                 SliverToBoxAdapter(
-                  child: MessageView(
-                    icon: Icons.notifications_none,
-                    message: l10n.alertsGuest,
-                    actionLabel: l10n.actionSignIn,
-                    onAction: () => const SignInRoute().push<bool>(context),
-                  ),
+                  child: ref.watch(signInAvailableProvider)
+                      ? MessageView(
+                          icon: Icons.notifications_none,
+                          message: l10n.alertsGuest,
+                          actionLabel: l10n.actionSignIn,
+                          onAction: () =>
+                              const SignInRoute().push<bool>(context),
+                        )
+                      : MessageView(
+                          icon: Icons.notifications_none,
+                          message: l10n.alertsComingSoon,
+                        ),
                 ),
               ],
               AsyncData(:final value) when value.alerts.isEmpty => [

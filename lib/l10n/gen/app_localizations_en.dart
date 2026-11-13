@@ -1079,6 +1079,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign in to get alerts here, on every phone you use. Follows work without an account too.';
 
   @override
+  String get alertsComingSoon =>
+      'Alerts are coming in an app update. Follow brands now, and you\'ll hear first when their sales start.';
+
+  @override
   String get followingTitle => 'Following';
 
   @override
