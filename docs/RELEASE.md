@@ -48,7 +48,8 @@ The upload key stays on the owner's computer (`~/Documents/SaleLagiHai-upload-ke
    jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore ~/Documents/SaleLagiHai-upload-key/upload-keystore.jks app-prod-release.aab upload
    jarsigner -verify app-prod-release.aab
    ```
-4. Play Console, your app, Test and release: create a release on a track (internal or closed testing first) and upload the signed `.aab`. Upload `mapping.txt` from the `symbols` artifact under the release's App bundle explorer, Downloads, so crash reports are readable.
+4. Test the release build before uploading. The same workflow builds `app-prod-release-apk` (the identical release build as an APK) and its **smoke-test** job opens it on an emulator and fails on a crash. Also install that APK on a phone or emulator and go through every tab: release builds are shrunk by R8 and can crash where debug builds never do (1.0.0 was rejected by Play for a launch crash: R8 removed the constructor WorkManager's database needs; the fix is in `android/app/proguard-rules.pro`).
+5. Play Console, your app, Test and release: create a release on a track (internal or closed testing first) and upload the signed `.aab`. Upload `mapping.txt` from the `symbols` artifact under the release's App bundle explorer, Downloads, so crash reports are readable.
 
 ## Database migrations freeze at the first deploy
 Before the first `supabase db push` to staging, record the last migration file in this section. From then on, never edit any migration up to and including it; add new ones (`docs/backend/SCHEMA.md`).
